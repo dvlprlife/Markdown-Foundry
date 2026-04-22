@@ -1,0 +1,134 @@
+{
+  "name": "markdown-forge",
+  "displayName": "Markdown Forge",
+  "description": "Powerful Markdown table editing and authoring tools — align, navigate, insert, and transform tables with ease.",
+  "version": "0.1.0",
+  "publisher": "your-publisher-id",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Formatters",
+    "Other"
+  ],
+  "keywords": [
+    "markdown",
+    "table",
+    "tables",
+    "formatter",
+    "authoring",
+    "md"
+  ],
+  "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dvlprlife/Markdown-Forge"
+  },
+  "activationEvents": [
+    "onLanguage:markdown"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "markdownForge.alignTable",              "title": "Markdown Forge: Align Table",               "category": "Markdown Forge" },
+      { "command": "markdownForge.insertRowAbove",          "title": "Markdown Forge: Insert Row Above",          "category": "Markdown Forge" },
+      { "command": "markdownForge.insertRowBelow",          "title": "Markdown Forge: Insert Row Below",          "category": "Markdown Forge" },
+      { "command": "markdownForge.insertColumnLeft",        "title": "Markdown Forge: Insert Column Left",        "category": "Markdown Forge" },
+      { "command": "markdownForge.insertColumnRight",       "title": "Markdown Forge: Insert Column Right",       "category": "Markdown Forge" },
+      { "command": "markdownForge.deleteRow",               "title": "Markdown Forge: Delete Row",                "category": "Markdown Forge" },
+      { "command": "markdownForge.deleteColumn",            "title": "Markdown Forge: Delete Column",             "category": "Markdown Forge" },
+      { "command": "markdownForge.moveRowUp",               "title": "Markdown Forge: Move Row Up",               "category": "Markdown Forge" },
+      { "command": "markdownForge.moveRowDown",             "title": "Markdown Forge: Move Row Down",             "category": "Markdown Forge" },
+      { "command": "markdownForge.moveColumnLeft",          "title": "Markdown Forge: Move Column Left",          "category": "Markdown Forge" },
+      { "command": "markdownForge.moveColumnRight",         "title": "Markdown Forge: Move Column Right",         "category": "Markdown Forge" },
+      { "command": "markdownForge.sortByColumn",            "title": "Markdown Forge: Sort Table by Column",      "category": "Markdown Forge" },
+      { "command": "markdownForge.convertSelectionToTable", "title": "Markdown Forge: Convert Selection to Table","category": "Markdown Forge" },
+      { "command": "markdownForge.nextCell",                "title": "Markdown Forge: Next Cell",                 "category": "Markdown Forge" },
+      { "command": "markdownForge.previousCell",            "title": "Markdown Forge: Previous Cell",             "category": "Markdown Forge" },
+      { "command": "markdownForge.nextRow",                 "title": "Markdown Forge: Next Row",                  "category": "Markdown Forge" },
+      { "command": "markdownForge.pasteLink",               "title": "Markdown Forge: Paste Link",                "category": "Markdown Forge" },
+      { "command": "markdownForge.pasteImage",              "title": "Markdown Forge: Paste Image",               "category": "Markdown Forge" }
+    ],
+    "keybindings": [
+      {
+        "command": "markdownForge.nextCell",
+        "key": "tab",
+        "when": "editorTextFocus && editorLangId == markdown && markdownForge.inTable && !editorHasSelection && !suggestWidgetVisible"
+      },
+      {
+        "command": "markdownForge.previousCell",
+        "key": "shift+tab",
+        "when": "editorTextFocus && editorLangId == markdown && markdownForge.inTable && !editorHasSelection && !suggestWidgetVisible"
+      },
+      {
+        "command": "markdownForge.nextRow",
+        "key": "enter",
+        "when": "editorTextFocus && editorLangId == markdown && markdownForge.inTable && !editorHasSelection && !suggestWidgetVisible"
+      },
+      {
+        "command": "markdownForge.alignTable",
+        "key": "ctrl+shift+t",
+        "mac": "cmd+shift+t",
+        "when": "editorTextFocus && editorLangId == markdown"
+      },
+      {
+        "command": "markdownForge.pasteImage",
+        "key": "ctrl+alt+v",
+        "mac": "cmd+alt+v",
+        "when": "editorTextFocus && editorLangId == markdown"
+      }
+    ],
+    "configuration": {
+      "title": "Markdown Forge",
+      "properties": {
+        "markdownForge.alignOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically align all Markdown tables in the file when it is saved."
+        },
+        "markdownForge.defaultAlignment": {
+          "type": "string",
+          "enum": ["left", "center", "right"],
+          "default": "left",
+          "description": "Default column alignment for new tables and newly inserted columns."
+        },
+        "markdownForge.imageFolder": {
+          "type": "string",
+          "default": "images",
+          "description": "Folder (relative to the current file) where pasted images are saved."
+        },
+        "markdownForge.imageNameFormat": {
+          "type": "string",
+          "default": "image-${timestamp}",
+          "description": "Filename template for pasted images. Supported tokens: ${timestamp}, ${filename}, ${date}."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && node esbuild.js --production",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test",
+    "pretest": "npm run compile && npm run lint"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.3.9",
+    "esbuild": "^0.20.0",
+    "eslint": "^8.56.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.3.0"
+  }
+}
