@@ -1,24 +1,13 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { promises as fs } from 'fs';
+import { execFile } from 'child_process';
+import { promisify } from 'util';
 
-/**
- * Paste the clipboard image (if any) into the configured folder and insert a
- * Markdown image reference at the cursor.
- *
- * NOTE: VS Code's extension API does not expose clipboard image data directly.
- * The standard approach is to shell out to a platform-specific helper
- * (PowerShell on Windows, osascript on macOS, xclip/wl-paste on Linux).
- *
- * TODO (v1 polish):
- *   - Windows: powershell Get-Clipboard -Format Image | Save to file
- *   - macOS:  osascript to write the pasteboard picture to a file
- *   - Linux:  xclip -selection clipboard -t image/png -o > file
- *
- * The stub below handles the filesystem and insertion logic so you can wire
- * each platform handler in turn. To test without clipboard image data, you
- * can temporarily point saveClipboardImage to a known PNG file.
- */
+const execFileAsync = promisify(execFile);
+
+// VS Code's extension API does not expose clipboard image data, so we shell
+// out to a platform-specific helper.
 export async function pasteImageCommand(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
   if (!editor) return;
@@ -76,13 +65,52 @@ function pad2(n: number): string {
   return n.toString().padStart(2, '0');
 }
 
-/**
- * Platform-specific clipboard-to-file save. Stubbed for v1 — implement per
- * platform before publishing. See function docstring for the recommended
- * approach on each OS.
- */
-async function saveClipboardImage(_targetPath: string): Promise<void> {
-  throw new Error(
-    'Image paste is not yet implemented. Wire up platform-specific clipboard handlers in src/insert/image.ts.'
-  );
+async function saveClipboardImage(targetPath: string): Promise<void> {
+  switch (process.platform) {
+    case 'win32':
+      return saveClipboardImageWindows(targetPath);
+    case 'darwin':
+      throw new Error('Clipboard image paste is not yet supported on macOS.');
+    case 'linux':
+      throw new Error('Clipboard image paste is not yet supported on Linux.');
+    default:
+      throw new Error(`Clipboard image paste is not yet supported on ${process.platform}.`);
+  }
+}
+
+const WINDOWS_CLIPBOARD_SCRIPT =
+  "Add-Type -AssemblyName System.Windows.Forms, System.Drawing; " +
+  "$img = [System.Windows.Forms.Clipboard]::GetImage(); " +
+  "if ($null -eq $img) { Write-Error 'NO_IMAGE'; exit 1 } " +
+  "$img.Save($env:MDFORGE_IMAGE_PATH, [System.Drawing.Imaging.ImageFormat]::Png)";
+
+async function saveClipboardImageWindows(targetPath: string): Promise<void> {
+  try {
+    // Pass the target path via an environment variable to avoid any shell
+    // quoting of paths that may contain spaces or quotes.
+    await execFileAsync(
+      'powershell.exe',
+      ['-NoProfile', '-NonInteractive', '-Command', WINDOWS_CLIPBOARD_SCRIPT],
+      {
+        env: { ...process.env, MDFORGE_IMAGE_PATH: targetPath },
+        windowsHide: true,
+      }
+    );
+  } catch (err) {
+    const stderr = readStderr(err);
+    const message = err instanceof Error ? err.message : String(err);
+    if (stderr.includes('NO_IMAGE') || message.includes('NO_IMAGE')) {
+      throw new Error('Clipboard does not contain an image.');
+    }
+    throw new Error(`powershell failed: ${message}`);
+  }
+}
+
+function readStderr(err: unknown): string {
+  if (typeof err === 'object' && err !== null && 'stderr' in err) {
+    const stderr = (err as { stderr: unknown }).stderr;
+    if (typeof stderr === 'string') return stderr;
+    if (Buffer.isBuffer(stderr)) return stderr.toString();
+  }
+  return '';
 }
