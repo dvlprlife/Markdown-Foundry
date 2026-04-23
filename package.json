@@ -2,7 +2,7 @@
   "name": "mdfoundry",
   "displayName": "Markdown Foundry",
   "description": "Powerful Markdown table editing and authoring tools — align, navigate, insert, and transform tables with ease.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "dvlprlife",
   "license": "MIT",
   "engines": {
@@ -17,8 +17,13 @@
     "table",
     "tables",
     "formatter",
-    "authoring",
-    "md"
+    "csv",
+    "tsv",
+    "align",
+    "sort",
+    "navigation",
+    "gfm",
+    "editor"
   ],
   "icon": "images/icon.png",
   "repository": {
