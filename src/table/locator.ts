@@ -12,7 +12,7 @@ const TABLE_LINE_RE = /^\s*\|.*\|\s*$/;
  * Matches a separator row: pipes plus dashes, colons for alignment, whitespace.
  * Examples: |---|---|, |:--|--:|, | :---: | --- |
  */
-const SEPARATOR_RE = /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/;
+const SEPARATOR_RE = /^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?\s*$/;
 
 /**
  * Result of locating a table in the document.

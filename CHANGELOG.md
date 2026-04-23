@@ -11,6 +11,10 @@ All notable changes to the Markdown Foundry extension will be documented in this
 - Paste Image on macOS — shells out to `osascript` to pull the PNG from the pasteboard ([#42](https://github.com/dvlprlife/Markdown-Foundry/pull/42)).
 - Paste Image on Linux — detects `XDG_SESSION_TYPE` and dispatches to `wl-paste` (Wayland) or `xclip` (X11); includes install-hint errors when the helper binary is missing ([#43](https://github.com/dvlprlife/Markdown-Foundry/pull/43)).
 
+### Fixed
+
+- Table commands (align, sort, insert/delete/move row/column) now recognize tables with short separator markers such as `:--` or `--:`. The locator regex previously required 3+ dashes per column, silently rejecting valid GFM tables that use 1- or 2-dash separators ([#49](https://github.com/dvlprlife/Markdown-Foundry/pull/49)).
+
 ## [0.1.1] - 2026-04-23
 
 ### Changed
