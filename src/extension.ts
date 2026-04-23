@@ -29,28 +29,28 @@ export function activate(context: vscode.ExtensionContext): void {
   };
 
   // Table structure
-  register('markdownForge.alignTable',              alignTableCommand);
-  register('markdownForge.insertRowAbove',          insertRowAboveCommand);
-  register('markdownForge.insertRowBelow',          insertRowBelowCommand);
-  register('markdownForge.insertColumnLeft',        insertColumnLeftCommand);
-  register('markdownForge.insertColumnRight',       insertColumnRightCommand);
-  register('markdownForge.deleteRow',               deleteRowCommand);
-  register('markdownForge.deleteColumn',            deleteColumnCommand);
-  register('markdownForge.moveRowUp',               moveRowUpCommand);
-  register('markdownForge.moveRowDown',             moveRowDownCommand);
-  register('markdownForge.moveColumnLeft',          moveColumnLeftCommand);
-  register('markdownForge.moveColumnRight',         moveColumnRightCommand);
-  register('markdownForge.sortByColumn',            sortByColumnCommand);
-  register('markdownForge.convertSelectionToTable', convertSelectionToTableCommand);
+  register('markdownFoundry.alignTable',              alignTableCommand);
+  register('markdownFoundry.insertRowAbove',          insertRowAboveCommand);
+  register('markdownFoundry.insertRowBelow',          insertRowBelowCommand);
+  register('markdownFoundry.insertColumnLeft',        insertColumnLeftCommand);
+  register('markdownFoundry.insertColumnRight',       insertColumnRightCommand);
+  register('markdownFoundry.deleteRow',               deleteRowCommand);
+  register('markdownFoundry.deleteColumn',            deleteColumnCommand);
+  register('markdownFoundry.moveRowUp',               moveRowUpCommand);
+  register('markdownFoundry.moveRowDown',             moveRowDownCommand);
+  register('markdownFoundry.moveColumnLeft',          moveColumnLeftCommand);
+  register('markdownFoundry.moveColumnRight',         moveColumnRightCommand);
+  register('markdownFoundry.sortByColumn',            sortByColumnCommand);
+  register('markdownFoundry.convertSelectionToTable', convertSelectionToTableCommand);
 
   // Navigation
-  register('markdownForge.nextCell',     nextCellCommand);
-  register('markdownForge.previousCell', previousCellCommand);
-  register('markdownForge.nextRow',      nextRowCommand);
+  register('markdownFoundry.nextCell',     nextCellCommand);
+  register('markdownFoundry.previousCell', previousCellCommand);
+  register('markdownFoundry.nextRow',      nextRowCommand);
 
   // Insertion
-  register('markdownForge.pasteLink',  pasteLinkCommand);
-  register('markdownForge.pasteImage', pasteImageCommand);
+  register('markdownFoundry.pasteLink',  pasteLinkCommand);
+  register('markdownFoundry.pasteImage', pasteImageCommand);
 
   // Context key for Tab/Shift-Tab/Enter bindings
   registerInTableContext(context);
@@ -59,7 +59,7 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.workspace.onWillSaveTextDocument((event) => {
       if (event.document.languageId !== 'markdown') return;
-      const config = vscode.workspace.getConfiguration('markdownForge');
+      const config = vscode.workspace.getConfiguration('markdownFoundry');
       if (!config.get<boolean>('alignOnSave')) return;
       event.waitUntil(Promise.resolve(alignAllTablesInDocument(event.document)));
     })

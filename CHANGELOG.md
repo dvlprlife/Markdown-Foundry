@@ -7,7 +7,7 @@ All notable changes to the Markdown Foundry extension will be documented in this
 ### Added
 
 - Align table command (`Ctrl+Shift+T` / `Cmd+Shift+T`)
-- Align all tables in document on save (opt-in via `markdownForge.alignOnSave`)
+- Align all tables in document on save (opt-in via `markdownFoundry.alignOnSave`)
 - Insert/delete/move row and column commands
 - Sort table by column (ascending/descending, numeric detection)
 - Convert CSV/TSV selection to Markdown table

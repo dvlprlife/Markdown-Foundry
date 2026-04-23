@@ -18,7 +18,7 @@ export async function pasteImageCommand(): Promise<void> {
     return;
   }
 
-  const config = vscode.workspace.getConfiguration('markdownForge');
+  const config = vscode.workspace.getConfiguration('markdownFoundry');
   const folderName = config.get<string>('imageFolder') ?? 'images';
   const nameFormat = config.get<string>('imageNameFormat') ?? 'image-${timestamp}';
 

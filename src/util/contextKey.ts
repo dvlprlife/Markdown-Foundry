@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import { locateTable } from '../table/locator';
 
-const CONTEXT_KEY = 'markdownForge.inTable';
+const CONTEXT_KEY = 'markdownFoundry.inTable';
 
 /**
- * Watch selection changes and keep the `markdownForge.inTable` context key
+ * Watch selection changes and keep the `markdownFoundry.inTable` context key
  * in sync. Used by the Tab/Shift-Tab/Enter keybindings so they only override
  * default behavior when the cursor is actually inside a table.
  */

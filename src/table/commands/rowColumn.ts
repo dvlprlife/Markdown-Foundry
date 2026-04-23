@@ -40,7 +40,7 @@ async function transformTable(
 
 /** Get the default alignment from user config. */
 function defaultAlignment(): Alignment {
-  const config = vscode.workspace.getConfiguration('markdownForge');
+  const config = vscode.workspace.getConfiguration('markdownFoundry');
   return (config.get<Alignment>('defaultAlignment') ?? 'left');
 }
 
