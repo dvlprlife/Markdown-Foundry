@@ -31,49 +31,49 @@
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
-      { "command": "markdownForge.alignTable",              "title": "Markdown Foundry: Align Table",               "category": "Markdown Foundry" },
-      { "command": "markdownForge.insertRowAbove",          "title": "Markdown Foundry: Insert Row Above",          "category": "Markdown Foundry" },
-      { "command": "markdownForge.insertRowBelow",          "title": "Markdown Foundry: Insert Row Below",          "category": "Markdown Foundry" },
-      { "command": "markdownForge.insertColumnLeft",        "title": "Markdown Foundry: Insert Column Left",        "category": "Markdown Foundry" },
-      { "command": "markdownForge.insertColumnRight",       "title": "Markdown Foundry: Insert Column Right",       "category": "Markdown Foundry" },
-      { "command": "markdownForge.deleteRow",               "title": "Markdown Foundry: Delete Row",                "category": "Markdown Foundry" },
-      { "command": "markdownForge.deleteColumn",            "title": "Markdown Foundry: Delete Column",             "category": "Markdown Foundry" },
-      { "command": "markdownForge.moveRowUp",               "title": "Markdown Foundry: Move Row Up",               "category": "Markdown Foundry" },
-      { "command": "markdownForge.moveRowDown",             "title": "Markdown Foundry: Move Row Down",             "category": "Markdown Foundry" },
-      { "command": "markdownForge.moveColumnLeft",          "title": "Markdown Foundry: Move Column Left",          "category": "Markdown Foundry" },
-      { "command": "markdownForge.moveColumnRight",         "title": "Markdown Foundry: Move Column Right",         "category": "Markdown Foundry" },
-      { "command": "markdownForge.sortByColumn",            "title": "Markdown Foundry: Sort Table by Column",      "category": "Markdown Foundry" },
-      { "command": "markdownForge.convertSelectionToTable", "title": "Markdown Foundry: Convert Selection to Table","category": "Markdown Foundry" },
-      { "command": "markdownForge.nextCell",                "title": "Markdown Foundry: Next Cell",                 "category": "Markdown Foundry" },
-      { "command": "markdownForge.previousCell",            "title": "Markdown Foundry: Previous Cell",             "category": "Markdown Foundry" },
-      { "command": "markdownForge.nextRow",                 "title": "Markdown Foundry: Next Row",                  "category": "Markdown Foundry" },
-      { "command": "markdownForge.pasteLink",               "title": "Markdown Foundry: Paste Link",                "category": "Markdown Foundry" },
-      { "command": "markdownForge.pasteImage",              "title": "Markdown Foundry: Paste Image",               "category": "Markdown Foundry" }
+      { "command": "markdownFoundry.alignTable",              "title": "Markdown Foundry: Align Table",               "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.insertRowAbove",          "title": "Markdown Foundry: Insert Row Above",          "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.insertRowBelow",          "title": "Markdown Foundry: Insert Row Below",          "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.insertColumnLeft",        "title": "Markdown Foundry: Insert Column Left",        "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.insertColumnRight",       "title": "Markdown Foundry: Insert Column Right",       "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.deleteRow",               "title": "Markdown Foundry: Delete Row",                "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.deleteColumn",            "title": "Markdown Foundry: Delete Column",             "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.moveRowUp",               "title": "Markdown Foundry: Move Row Up",               "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.moveRowDown",             "title": "Markdown Foundry: Move Row Down",             "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.moveColumnLeft",          "title": "Markdown Foundry: Move Column Left",          "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.moveColumnRight",         "title": "Markdown Foundry: Move Column Right",         "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.sortByColumn",            "title": "Markdown Foundry: Sort Table by Column",      "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.convertSelectionToTable", "title": "Markdown Foundry: Convert Selection to Table","category": "Markdown Foundry" },
+      { "command": "markdownFoundry.nextCell",                "title": "Markdown Foundry: Next Cell",                 "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.previousCell",            "title": "Markdown Foundry: Previous Cell",             "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.nextRow",                 "title": "Markdown Foundry: Next Row",                  "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.pasteLink",               "title": "Markdown Foundry: Paste Link",                "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.pasteImage",              "title": "Markdown Foundry: Paste Image",               "category": "Markdown Foundry" }
     ],
     "keybindings": [
       {
-        "command": "markdownForge.nextCell",
+        "command": "markdownFoundry.nextCell",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId == markdown && markdownForge.inTable && !editorHasSelection && !suggestWidgetVisible"
+        "when": "editorTextFocus && editorLangId == markdown && markdownFoundry.inTable && !editorHasSelection && !suggestWidgetVisible"
       },
       {
-        "command": "markdownForge.previousCell",
+        "command": "markdownFoundry.previousCell",
         "key": "shift+tab",
-        "when": "editorTextFocus && editorLangId == markdown && markdownForge.inTable && !editorHasSelection && !suggestWidgetVisible"
+        "when": "editorTextFocus && editorLangId == markdown && markdownFoundry.inTable && !editorHasSelection && !suggestWidgetVisible"
       },
       {
-        "command": "markdownForge.nextRow",
+        "command": "markdownFoundry.nextRow",
         "key": "enter",
-        "when": "editorTextFocus && editorLangId == markdown && markdownForge.inTable && !editorHasSelection && !suggestWidgetVisible"
+        "when": "editorTextFocus && editorLangId == markdown && markdownFoundry.inTable && !editorHasSelection && !suggestWidgetVisible"
       },
       {
-        "command": "markdownForge.alignTable",
+        "command": "markdownFoundry.alignTable",
         "key": "ctrl+shift+t",
         "mac": "cmd+shift+t",
         "when": "editorTextFocus && editorLangId == markdown"
       },
       {
-        "command": "markdownForge.pasteImage",
+        "command": "markdownFoundry.pasteImage",
         "key": "ctrl+alt+v",
         "mac": "cmd+alt+v",
         "when": "editorTextFocus && editorLangId == markdown"
@@ -82,23 +82,23 @@
     "configuration": {
       "title": "Markdown Foundry",
       "properties": {
-        "markdownForge.alignOnSave": {
+        "markdownFoundry.alignOnSave": {
           "type": "boolean",
           "default": false,
           "description": "Automatically align all Markdown tables in the file when it is saved."
         },
-        "markdownForge.defaultAlignment": {
+        "markdownFoundry.defaultAlignment": {
           "type": "string",
           "enum": ["left", "center", "right"],
           "default": "left",
           "description": "Default column alignment for new tables and newly inserted columns."
         },
-        "markdownForge.imageFolder": {
+        "markdownFoundry.imageFolder": {
           "type": "string",
           "default": "images",
           "description": "Folder (relative to the current file) where pasted images are saved."
         },
-        "markdownForge.imageNameFormat": {
+        "markdownFoundry.imageNameFormat": {
           "type": "string",
           "default": "image-${timestamp}",
           "description": "Filename template for pasted images. Supported tokens: ${timestamp}, ${filename}, ${date}."

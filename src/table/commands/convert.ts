@@ -36,7 +36,7 @@ export async function convertSelectionToTableCommand(): Promise<void> {
 
   const headers = normalized[0];
   const rows = normalized.slice(1);
-  const config = vscode.workspace.getConfiguration('markdownForge');
+  const config = vscode.workspace.getConfiguration('markdownFoundry');
   const defaultAlign = (config.get<Alignment>('defaultAlignment') ?? 'left');
   const alignments: Alignment[] = Array(columnCount).fill(defaultAlign);
 

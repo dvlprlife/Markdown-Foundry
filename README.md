@@ -45,10 +45,10 @@ All other commands are available through the Command Palette (search for "Markdo
 
 | Setting | Default | Description |
 | --- | --- | --- |
-| `markdownForge.alignOnSave` | `false` | Align all tables in the file when saving. |
-| `markdownForge.defaultAlignment` | `"left"` | Alignment for new columns. |
-| `markdownForge.imageFolder` | `"images"` | Folder (relative to the file) where pasted images are saved. |
-| `markdownForge.imageNameFormat` | `"image-${timestamp}"` | Template for pasted image filenames. Tokens: `${timestamp}`, `${date}`, `${filename}`. |
+| `markdownFoundry.alignOnSave` | `false` | Align all tables in the file when saving. |
+| `markdownFoundry.defaultAlignment` | `"left"` | Alignment for new columns. |
+| `markdownFoundry.imageFolder` | `"images"` | Folder (relative to the file) where pasted images are saved. |
+| `markdownFoundry.imageNameFormat` | `"image-${timestamp}"` | Template for pasted image filenames. Tokens: `${timestamp}`, `${date}`, `${filename}`. |
 
 ## Requirements
 
