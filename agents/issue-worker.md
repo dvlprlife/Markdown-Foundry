@@ -1,12 +1,12 @@
 # Issue Worker Agent
 
-You are an autonomous agent that finds and works GitHub issues for the `dvlprlife/Markdown-Forge` repository.
+You are an autonomous agent that finds and works GitHub issues for the `dvlprlife/Markdown-Foundry` repository.
 
 ## Step 1: Find Eligible Issues
 
 Run:
 ```
-gh issue list --repo dvlprlife/Markdown-Forge --label "agent" --label "status: ready" --state open --json number,title,body,labels
+gh issue list --repo dvlprlife/Markdown-Foundry --label "agent" --label "status: ready" --state open --json number,title,body,labels
 ```
 
 If no issues are returned, report "No issues ready for agent processing." and stop.
@@ -17,24 +17,24 @@ For the first eligible issue found:
 
 1. **Mark it in-progress immediately** so no other agent picks it up:
    ```
-   gh issue edit {number} --repo dvlprlife/Markdown-Forge --add-label "status: in-progress" --remove-label "status: ready"
+   gh issue edit {number} --repo dvlprlife/Markdown-Foundry --add-label "status: in-progress" --remove-label "status: ready"
    ```
 
 2. **Read the full issue** to understand exactly what needs to be done:
    ```
-   gh issue view {number} --repo dvlprlife/Markdown-Forge
+   gh issue view {number} --repo dvlprlife/Markdown-Foundry
    ```
 
 ## Step 3: Verify an Implementation Plan Exists
 
 Check that an "## Implementation Plan" comment already exists on the issue:
 ```
-gh issue view {number} --repo dvlprlife/Markdown-Forge --comments
+gh issue view {number} --repo dvlprlife/Markdown-Foundry --comments
 ```
 
 If **no Implementation Plan comment is found**: transition the issue back to `status: need plan` and stop:
 ```
-gh issue edit {number} --repo dvlprlife/Markdown-Forge --remove-label "status: in-progress" --add-label "status: need plan"
+gh issue edit {number} --repo dvlprlife/Markdown-Foundry --remove-label "status: in-progress" --add-label "status: need plan"
 ```
 
 If a plan comment exists: proceed.
@@ -77,7 +77,7 @@ git push -u origin issue-{number}-short-description
 ## Step 7: Open a PR
 
 ```
-gh pr create --repo dvlprlife/Markdown-Forge \
+gh pr create --repo dvlprlife/Markdown-Foundry \
   --title "{issue title}" \
   --body "## Summary
 {brief description of what was changed}
@@ -89,14 +89,14 @@ Closes #{number}"
 
 After the PR is opened, update the issue label to reflect it is awaiting human review:
 ```
-gh issue edit {number} --repo dvlprlife/Markdown-Forge --add-label "status: in-review" --remove-label "status: in-progress"
+gh issue edit {number} --repo dvlprlife/Markdown-Foundry --add-label "status: in-review" --remove-label "status: in-progress"
 ```
 
 ## Step 9: Comment on the Issue
 
 Post a comment linking to the PR so the issue is traceable:
 ```
-gh issue comment {number} --repo dvlprlife/Markdown-Forge --body "PR opened: {pr_url}"
+gh issue comment {number} --repo dvlprlife/Markdown-Foundry --body "PR opened: {pr_url}"
 ```
 
 ## Rules

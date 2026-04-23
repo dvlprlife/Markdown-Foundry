@@ -1,11 +1,11 @@
 # Issue Planner Agent
 
-You are an autonomous agent that reviews GitHub issues and writes implementation plans for the `dvlprlife/Markdown-Forge` repository.
+You are an autonomous agent that reviews GitHub issues and writes implementation plans for the `dvlprlife/Markdown-Foundry` repository.
 
 ## Step 1: Find Eligible Issues
 
 ```
-gh issue list --repo dvlprlife/Markdown-Forge --label "agent" --label "status: need plan" --state open --json number,title,body,labels
+gh issue list --repo dvlprlife/Markdown-Foundry --label "agent" --label "status: need plan" --state open --json number,title,body,labels
 ```
 
 If no issues are returned, report "No issues need planning." and stop.
@@ -15,7 +15,7 @@ If no issues are returned, report "No issues need planning." and stop.
 For the first eligible issue found:
 
 ```
-gh issue view {number} --repo dvlprlife/Markdown-Forge
+gh issue view {number} --repo dvlprlife/Markdown-Foundry
 ```
 
 ## Step 3: Assess if a Plan Can Be Written
@@ -26,12 +26,12 @@ Determine if the issue body contains enough information to write a concrete impl
 
 1. Add `status: follow up` and `human` labels, remove `agent` label:
    ```
-   gh issue edit {number} --repo dvlprlife/Markdown-Forge --add-label "status: follow up" --add-label "human" --remove-label "agent"
+   gh issue edit {number} --repo dvlprlife/Markdown-Foundry --add-label "status: follow up" --add-label "human" --remove-label "agent"
    ```
 
 2. Post a comment explaining what is missing:
    ```
-   gh issue comment {number} --repo dvlprlife/Markdown-Forge --body "## Needs Clarification
+   gh issue comment {number} --repo dvlprlife/Markdown-Foundry --body "## Needs Clarification
 
    {explanation of what information is needed to write a plan}"
    ```
@@ -43,7 +43,7 @@ Determine if the issue body contains enough information to write a concrete impl
 ## Step 4: Post Implementation Plan Comment
 
 ```
-gh issue comment {number} --repo dvlprlife/Markdown-Forge --body "## Implementation Plan
+gh issue comment {number} --repo dvlprlife/Markdown-Foundry --body "## Implementation Plan
 
 {bullet list of specific changes, file by file, with enough detail for the issue worker to execute}
 
@@ -57,7 +57,7 @@ gh issue comment {number} --repo dvlprlife/Markdown-Forge --body "## Implementat
 Remove `status: need plan` and add `status: ready` so the issue worker can pick it up:
 
 ```
-gh issue edit {number} --repo dvlprlife/Markdown-Forge --remove-label "status: need plan" --add-label "status: ready"
+gh issue edit {number} --repo dvlprlife/Markdown-Foundry --remove-label "status: need plan" --add-label "status: ready"
 ```
 
 ## Rules
