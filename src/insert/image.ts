@@ -82,7 +82,7 @@ const WINDOWS_CLIPBOARD_SCRIPT =
   "Add-Type -AssemblyName System.Windows.Forms, System.Drawing; " +
   "$img = [System.Windows.Forms.Clipboard]::GetImage(); " +
   "if ($null -eq $img) { Write-Error 'NO_IMAGE'; exit 1 } " +
-  "$img.Save($env:MDFORGE_IMAGE_PATH, [System.Drawing.Imaging.ImageFormat]::Png)";
+  "$img.Save($env:MDFOUNDRY_IMAGE_PATH, [System.Drawing.Imaging.ImageFormat]::Png)";
 
 async function saveClipboardImageWindows(targetPath: string): Promise<void> {
   try {
@@ -92,7 +92,7 @@ async function saveClipboardImageWindows(targetPath: string): Promise<void> {
       'powershell.exe',
       ['-NoProfile', '-NonInteractive', '-Command', WINDOWS_CLIPBOARD_SCRIPT],
       {
-        env: { ...process.env, MDFORGE_IMAGE_PATH: targetPath },
+        env: { ...process.env, MDFOUNDRY_IMAGE_PATH: targetPath },
         windowsHide: true,
       }
     );
