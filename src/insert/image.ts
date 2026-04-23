@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { promises as fs } from 'fs';
-import { execFile } from 'child_process';
+import { createWriteStream, promises as fs } from 'fs';
+import { execFile, spawn } from 'child_process';
 import { promisify } from 'util';
 
 const execFileAsync = promisify(execFile);
@@ -72,7 +72,7 @@ async function saveClipboardImage(targetPath: string): Promise<void> {
     case 'darwin':
       return saveClipboardImageMacOS(targetPath);
     case 'linux':
-      throw new Error('Clipboard image paste is not yet supported on Linux.');
+      return saveClipboardImageLinux(targetPath);
     default:
       throw new Error(`Clipboard image paste is not yet supported on ${process.platform}.`);
   }
@@ -136,6 +136,61 @@ async function saveClipboardImageMacOS(targetPath: string): Promise<void> {
     }
     throw new Error(`osascript failed: ${message}`);
   }
+}
+
+async function saveClipboardImageLinux(targetPath: string): Promise<void> {
+  const isWayland = process.env.XDG_SESSION_TYPE === 'wayland';
+  const command = isWayland ? 'wl-paste' : 'xclip';
+  const args = isWayland
+    ? ['--type', 'image/png']
+    : ['-selection', 'clipboard', '-t', 'image/png', '-o'];
+  const installHint = isWayland
+    ? 'Clipboard paste requires wl-clipboard. Install with your package manager (e.g. sudo apt install wl-clipboard).'
+    : 'Clipboard paste requires xclip. Install with your package manager (e.g. sudo apt install xclip).';
+
+  await runAndCapture(command, args, targetPath, installHint);
+}
+
+async function runAndCapture(
+  command: string,
+  args: readonly string[],
+  targetPath: string,
+  installHint: string
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, { stdio: ['ignore', 'pipe', 'pipe'] });
+    const out = createWriteStream(targetPath);
+    let stderr = '';
+    let bytesWritten = 0;
+
+    child.on('error', (err: NodeJS.ErrnoException) => {
+      out.destroy();
+      if (err.code === 'ENOENT') {
+        reject(new Error(installHint));
+      } else {
+        reject(new Error(`${command} failed: ${err.message}`));
+      }
+    });
+    child.stderr?.on('data', (chunk: Buffer) => { stderr += chunk.toString(); });
+    child.stdout?.on('data', (chunk: Buffer) => { bytesWritten += chunk.length; });
+    child.stdout?.pipe(out);
+
+    out.on('error', (err) => reject(new Error(`failed writing ${targetPath}: ${err.message}`)));
+
+    child.on('close', (code) => {
+      out.end(() => {
+        if (code !== 0 || bytesWritten === 0) {
+          fs.unlink(targetPath).catch(() => { /* best-effort cleanup of empty/partial file */ });
+          reject(new Error('Clipboard does not contain an image.'));
+          return;
+        }
+        resolve();
+      });
+    });
+
+    // Silence noUnusedLocals for the stderr accumulator (kept for future diagnostics).
+    void stderr;
+  });
 }
 
 function readStderr(err: unknown): string {
