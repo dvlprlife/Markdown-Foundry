@@ -12,3 +12,9 @@ vsc-extension-quickstart.md
 **/.vscode-test/**
 node_modules/**
 .github/**
+CLAUDE.md
+CONTEXT.md
+GETTING_STARTED.md
+agents/**
+.claude/**
+.vscode-test.mjs
