@@ -4,6 +4,14 @@ Powerful Markdown table editing and authoring tools for Visual Studio Code.
 
 Markdown Forge makes working with tables fast and ergonomic — align columns, navigate between cells with Tab, insert and reorder rows and columns, sort data, and paste links or images with a keystroke.
 
+## Demo
+
+![Align a Markdown table with one command](images/demo/align.gif)
+
+![Convert pasted CSV or TSV into a formatted Markdown table](images/demo/maketable.gif)
+
+![Sort table rows by column](images/demo/sort.gif)
+
 ## Features
 
 ### Table editing
