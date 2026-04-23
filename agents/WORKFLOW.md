@@ -1,6 +1,6 @@
 # Agent Workflow
 
-This document describes the full lifecycle of an issue through the agent system for the `dvlprlife/Markdown-Forge` repository.
+This document describes the full lifecycle of an issue through the agent system for the `dvlprlife/Markdown-Foundry` repository.
 
 ## Agents
 

@@ -23,7 +23,7 @@
   "icon": "images/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dvlprlife/Markdown-Forge"
+    "url": "https://github.com/dvlprlife/Markdown-Foundry"
   },
   "activationEvents": [
     "onLanguage:markdown"
