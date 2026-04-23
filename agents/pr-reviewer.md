@@ -40,12 +40,13 @@ From the issue, extract:
 - The issue body (especially Acceptance Criteria)
 - The `## Implementation Plan` comment posted by the issue planner
 
-## Step 4: Review Against Four Criteria
+## Step 4: Review Against Five Criteria
 
 1. **Implementation Plan adherence** — does the diff match the file-by-file changes described in the plan comment?
 2. **Acceptance Criteria** — is each acceptance criterion in the issue body satisfied by the diff?
 3. **Code quality** — bugs, missing edge cases, security issues, dead code, obvious style problems.
 4. **CLAUDE.md compliance** — commit messages reference the issue, branch is named `issue-{number}-*`, TypeScript strict-mode rules upheld (no `any`, no unused locals, all returns explicit), project conventions in `CLAUDE.md` respected (locator/parser/formatter layering, forward-slash paths in inserted Markdown, stubs fail loudly rather than silently), no other violations of documented conventions.
+5. **CHANGELOG compliance** — if the PR introduces a user-visible change (new command, changed behavior, fixed bug, marketplace metadata affecting the listing), the diff must include an entry under `## [Unreleased]` in `CHANGELOG.md`. If the PR is contributor-facing only (tests, CI, `agents/`, internal docs) or a pure refactor, no entry is required — but note the skip in the review so it's a conscious choice, not an oversight.
 
 ## Step 5: Post Review on the PR
 
