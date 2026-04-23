@@ -1,8 +1,8 @@
-# Markdown Forge
+# Markdown Foundry
 
 Powerful Markdown table editing and authoring tools for Visual Studio Code.
 
-Markdown Forge makes working with tables fast and ergonomic — align columns, navigate between cells with Tab, insert and reorder rows and columns, sort data, and paste links or images with a keystroke.
+Markdown Foundry makes working with tables fast and ergonomic — align columns, navigate between cells with Tab, insert and reorder rows and columns, sort data, and paste links or images with a keystroke.
 
 ## Demo
 
@@ -39,7 +39,7 @@ Markdown Forge makes working with tables fast and ergonomic — align columns, n
 | `Ctrl+Shift+T` / `Cmd+Shift+T` | Align table |
 | `Ctrl+Alt+V` / `Cmd+Alt+V` | Paste image |
 
-All other commands are available through the Command Palette (search for "Markdown Forge").
+All other commands are available through the Command Palette (search for "Markdown Foundry").
 
 ## Settings
 

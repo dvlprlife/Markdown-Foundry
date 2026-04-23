@@ -23,7 +23,7 @@ export async function alignTableCommand(): Promise<void> {
 
   const location = locateTable(document, cursorLine);
   if (!location) {
-    vscode.window.showInformationMessage('Markdown Forge: cursor is not inside a table.');
+    vscode.window.showInformationMessage('Markdown Foundry: cursor is not inside a table.');
     return;
   }
 

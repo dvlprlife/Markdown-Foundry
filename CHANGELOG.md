@@ -1,6 +1,6 @@
 # Change Log
 
-All notable changes to the Markdown Forge extension will be documented in this file.
+All notable changes to the Markdown Foundry extension will be documented in this file.
 
 ## [0.1.0] - Unreleased
 

@@ -14,7 +14,7 @@ export async function pasteImageCommand(): Promise<void> {
 
   const document = editor.document;
   if (document.uri.scheme !== 'file') {
-    vscode.window.showInformationMessage('Markdown Forge: image paste requires a saved file.');
+    vscode.window.showInformationMessage('Markdown Foundry: image paste requires a saved file.');
     return;
   }
 
@@ -33,7 +33,7 @@ export async function pasteImageCommand(): Promise<void> {
     await saveClipboardImage(targetPath);
   } catch (err) {
     vscode.window.showErrorMessage(
-      `Markdown Forge: could not paste image. ${err instanceof Error ? err.message : String(err)}`
+      `Markdown Foundry: could not paste image. ${err instanceof Error ? err.message : String(err)}`
     );
     return;
   }

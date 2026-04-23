@@ -17,7 +17,7 @@ export async function pasteLinkCommand(): Promise<void> {
 
   const clipboard = (await vscode.env.clipboard.readText()).trim();
   if (!URL_RE.test(clipboard)) {
-    vscode.window.showInformationMessage('Markdown Forge: clipboard does not contain a URL.');
+    vscode.window.showInformationMessage('Markdown Foundry: clipboard does not contain a URL.');
     return;
   }
 
