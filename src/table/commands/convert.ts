@@ -19,7 +19,7 @@ export async function convertSelectionToTableCommand(): Promise<void> {
 
   const selection = editor.selection;
   if (selection.isEmpty) {
-    vscode.window.showInformationMessage('Markdown Forge: select CSV or TSV text to convert.');
+    vscode.window.showInformationMessage('Markdown Foundry: select CSV or TSV text to convert.');
     return;
   }
 

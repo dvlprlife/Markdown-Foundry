@@ -18,13 +18,13 @@ async function transformTable(
   const cursorLine = editor.selection.active.line;
   const location = locateTable(document, cursorLine);
   if (!location) {
-    vscode.window.showInformationMessage('Markdown Forge: cursor is not inside a table.');
+    vscode.window.showInformationMessage('Markdown Foundry: cursor is not inside a table.');
     return;
   }
 
   const coords = cursorToTableCoords(document, location, editor.selection.active);
   if (!coords) {
-    vscode.window.showInformationMessage('Markdown Forge: cursor is on the separator row.');
+    vscode.window.showInformationMessage('Markdown Foundry: cursor is on the separator row.');
     return;
   }
 
@@ -93,7 +93,7 @@ function insertColumnAt(model: TableModel, index: number): TableModel {
 export async function deleteRowCommand(): Promise<void> {
   await transformTable((model, { rowIndex }) => {
     if (rowIndex < 0) {
-      vscode.window.showInformationMessage('Markdown Forge: cannot delete the header row.');
+      vscode.window.showInformationMessage('Markdown Foundry: cannot delete the header row.');
       return null;
     }
     if (model.rows.length === 0) return null;
@@ -106,7 +106,7 @@ export async function deleteRowCommand(): Promise<void> {
 export async function deleteColumnCommand(): Promise<void> {
   await transformTable((model, { columnIndex }) => {
     if (model.headers.length <= 1) {
-      vscode.window.showInformationMessage('Markdown Forge: cannot delete the last column.');
+      vscode.window.showInformationMessage('Markdown Foundry: cannot delete the last column.');
       return null;
     }
     const headers = [...model.headers];

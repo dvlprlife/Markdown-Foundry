@@ -1,6 +1,6 @@
 {
   "name": "mdforge",
-  "displayName": "Markdown Forge",
+  "displayName": "Markdown Foundry",
   "description": "Powerful Markdown table editing and authoring tools — align, navigate, insert, and transform tables with ease.",
   "version": "0.1.0",
   "publisher": "dvlprlife",
@@ -31,24 +31,24 @@
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
-      { "command": "markdownForge.alignTable",              "title": "Markdown Forge: Align Table",               "category": "Markdown Forge" },
-      { "command": "markdownForge.insertRowAbove",          "title": "Markdown Forge: Insert Row Above",          "category": "Markdown Forge" },
-      { "command": "markdownForge.insertRowBelow",          "title": "Markdown Forge: Insert Row Below",          "category": "Markdown Forge" },
-      { "command": "markdownForge.insertColumnLeft",        "title": "Markdown Forge: Insert Column Left",        "category": "Markdown Forge" },
-      { "command": "markdownForge.insertColumnRight",       "title": "Markdown Forge: Insert Column Right",       "category": "Markdown Forge" },
-      { "command": "markdownForge.deleteRow",               "title": "Markdown Forge: Delete Row",                "category": "Markdown Forge" },
-      { "command": "markdownForge.deleteColumn",            "title": "Markdown Forge: Delete Column",             "category": "Markdown Forge" },
-      { "command": "markdownForge.moveRowUp",               "title": "Markdown Forge: Move Row Up",               "category": "Markdown Forge" },
-      { "command": "markdownForge.moveRowDown",             "title": "Markdown Forge: Move Row Down",             "category": "Markdown Forge" },
-      { "command": "markdownForge.moveColumnLeft",          "title": "Markdown Forge: Move Column Left",          "category": "Markdown Forge" },
-      { "command": "markdownForge.moveColumnRight",         "title": "Markdown Forge: Move Column Right",         "category": "Markdown Forge" },
-      { "command": "markdownForge.sortByColumn",            "title": "Markdown Forge: Sort Table by Column",      "category": "Markdown Forge" },
-      { "command": "markdownForge.convertSelectionToTable", "title": "Markdown Forge: Convert Selection to Table","category": "Markdown Forge" },
-      { "command": "markdownForge.nextCell",                "title": "Markdown Forge: Next Cell",                 "category": "Markdown Forge" },
-      { "command": "markdownForge.previousCell",            "title": "Markdown Forge: Previous Cell",             "category": "Markdown Forge" },
-      { "command": "markdownForge.nextRow",                 "title": "Markdown Forge: Next Row",                  "category": "Markdown Forge" },
-      { "command": "markdownForge.pasteLink",               "title": "Markdown Forge: Paste Link",                "category": "Markdown Forge" },
-      { "command": "markdownForge.pasteImage",              "title": "Markdown Forge: Paste Image",               "category": "Markdown Forge" }
+      { "command": "markdownForge.alignTable",              "title": "Markdown Foundry: Align Table",               "category": "Markdown Foundry" },
+      { "command": "markdownForge.insertRowAbove",          "title": "Markdown Foundry: Insert Row Above",          "category": "Markdown Foundry" },
+      { "command": "markdownForge.insertRowBelow",          "title": "Markdown Foundry: Insert Row Below",          "category": "Markdown Foundry" },
+      { "command": "markdownForge.insertColumnLeft",        "title": "Markdown Foundry: Insert Column Left",        "category": "Markdown Foundry" },
+      { "command": "markdownForge.insertColumnRight",       "title": "Markdown Foundry: Insert Column Right",       "category": "Markdown Foundry" },
+      { "command": "markdownForge.deleteRow",               "title": "Markdown Foundry: Delete Row",                "category": "Markdown Foundry" },
+      { "command": "markdownForge.deleteColumn",            "title": "Markdown Foundry: Delete Column",             "category": "Markdown Foundry" },
+      { "command": "markdownForge.moveRowUp",               "title": "Markdown Foundry: Move Row Up",               "category": "Markdown Foundry" },
+      { "command": "markdownForge.moveRowDown",             "title": "Markdown Foundry: Move Row Down",             "category": "Markdown Foundry" },
+      { "command": "markdownForge.moveColumnLeft",          "title": "Markdown Foundry: Move Column Left",          "category": "Markdown Foundry" },
+      { "command": "markdownForge.moveColumnRight",         "title": "Markdown Foundry: Move Column Right",         "category": "Markdown Foundry" },
+      { "command": "markdownForge.sortByColumn",            "title": "Markdown Foundry: Sort Table by Column",      "category": "Markdown Foundry" },
+      { "command": "markdownForge.convertSelectionToTable", "title": "Markdown Foundry: Convert Selection to Table","category": "Markdown Foundry" },
+      { "command": "markdownForge.nextCell",                "title": "Markdown Foundry: Next Cell",                 "category": "Markdown Foundry" },
+      { "command": "markdownForge.previousCell",            "title": "Markdown Foundry: Previous Cell",             "category": "Markdown Foundry" },
+      { "command": "markdownForge.nextRow",                 "title": "Markdown Foundry: Next Row",                  "category": "Markdown Foundry" },
+      { "command": "markdownForge.pasteLink",               "title": "Markdown Foundry: Paste Link",                "category": "Markdown Foundry" },
+      { "command": "markdownForge.pasteImage",              "title": "Markdown Foundry: Paste Image",               "category": "Markdown Foundry" }
     ],
     "keybindings": [
       {
@@ -80,7 +80,7 @@
       }
     ],
     "configuration": {
-      "title": "Markdown Forge",
+      "title": "Markdown Foundry",
       "properties": {
         "markdownForge.alignOnSave": {
           "type": "boolean",
