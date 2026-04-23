@@ -70,7 +70,7 @@ async function saveClipboardImage(targetPath: string): Promise<void> {
     case 'win32':
       return saveClipboardImageWindows(targetPath);
     case 'darwin':
-      throw new Error('Clipboard image paste is not yet supported on macOS.');
+      return saveClipboardImageMacOS(targetPath);
     case 'linux':
       throw new Error('Clipboard image paste is not yet supported on Linux.');
     default:
@@ -103,6 +103,38 @@ async function saveClipboardImageWindows(targetPath: string): Promise<void> {
       throw new Error('Clipboard does not contain an image.');
     }
     throw new Error(`powershell failed: ${message}`);
+  }
+}
+
+const MACOS_CLIPBOARD_SCRIPT = [
+  'try',
+  '  set targetPath to (system attribute "MDFOUNDRY_IMAGE_PATH")',
+  '  set pngData to the clipboard as «class PNGf»',
+  '  set fp to open for access (POSIX file targetPath) with write permission',
+  '  set eof of fp to 0',
+  '  write pngData to fp',
+  '  close access fp',
+  'on error',
+  '  error "NO_IMAGE" number 1',
+  'end try',
+].join('\n');
+
+async function saveClipboardImageMacOS(targetPath: string): Promise<void> {
+  try {
+    await execFileAsync(
+      'osascript',
+      ['-e', MACOS_CLIPBOARD_SCRIPT],
+      {
+        env: { ...process.env, MDFOUNDRY_IMAGE_PATH: targetPath },
+      }
+    );
+  } catch (err) {
+    const stderr = readStderr(err);
+    const message = err instanceof Error ? err.message : String(err);
+    if (stderr.includes('NO_IMAGE') || message.includes('NO_IMAGE')) {
+      throw new Error('Clipboard does not contain an image.');
+    }
+    throw new Error(`osascript failed: ${message}`);
   }
 }
 
