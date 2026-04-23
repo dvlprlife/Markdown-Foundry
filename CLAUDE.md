@@ -59,6 +59,35 @@ These are non-negotiable:
 - New table commands should have at least one integration-style test exercising the full parse → transform → format pipeline.
 - Don't delete failing tests to make CI pass. Fix the code or the test, with a commit message that explains which.
 
+## CHANGELOG maintenance
+
+`CHANGELOG.md` follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and is the public record of what users get in each version. Every PR that lands a **user-visible change** updates it.
+
+**What counts as user-visible** (entry required):
+
+- New commands, settings, or keybindings
+- Behavior changes to existing commands or settings
+- Bug fixes to user-facing features
+- Marketplace metadata that affects discoverability or listing copy (displayName, description, keywords, icon)
+
+**What does NOT count** (no entry needed):
+
+- Internal refactors with no behavior change
+- Test-only changes
+- CI workflow, `.gitignore`, `.vscodeignore` updates
+- Contributor-facing docs (`CLAUDE.md`, `agents/**`, `CONTEXT.md`)
+
+**How to update during development:**
+
+- Maintain a `## [Unreleased]` section at the top of `CHANGELOG.md`
+- Inside `[Unreleased]`, use the Keep-a-Changelog subsections as needed: `### Added`, `### Changed`, `### Fixed`, `### Removed`, `### Deprecated`, `### Security`
+- Each entry is one concise line: what shipped, from the user's POV. Reference the PR number in parentheses where useful.
+
+**At release time:**
+
+- Rename `## [Unreleased]` → `## [X.Y.Z] - YYYY-MM-DD` (use the actual publish date)
+- Add a fresh empty `## [Unreleased]` section above it for the next cycle
+
 ## Code style
 
 - **Default to no comments.** Only add a comment when the WHY is non-obvious (a hidden constraint, a workaround, behavior that would surprise a reader). Never explain WHAT — well-named identifiers do that.

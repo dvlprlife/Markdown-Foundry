@@ -59,6 +59,8 @@ Read the issue body and the Implementation Plan comment carefully. The plan desc
 
 Make all necessary changes to satisfy the acceptance criteria. Follow all rules in `CLAUDE.md`.
 
+**CHANGELOG:** if the change is user-visible (per the classification in `CLAUDE.md` → CHANGELOG maintenance), add a one-line entry under `## [Unreleased]` in `CHANGELOG.md` as part of the same PR. Not a separate commit; bundle it with the implementation. If the change is contributor-facing only, skip the entry and note the reason in the PR body so the reviewer doesn't flag it.
+
 ## Step 6: Commit and Push
 
 Commit with a message that references the issue:
