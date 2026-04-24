@@ -7,6 +7,7 @@ All notable changes to the Markdown Foundry extension will be documented in this
 ### Changed
 
 - Table column alignment now uses the `string-width` library for width calculation, correctly handling ZWJ emoji sequences (e.g. 👨‍👩‍👧‍👦), combining marks, variation selectors, and the full East Asian Width table — previously a hand-rolled approximation under-counted width in some Unicode cases ([#53](https://github.com/dvlprlife/Markdown-Foundry/pull/53)).
+- README Paste Image description updated: drops the stale "Windows only" note (macOS and Linux both shipped in 0.2.0) and adds a Linux dependency note for `xclip` / `wl-clipboard` ([#55](https://github.com/dvlprlife/Markdown-Foundry/pull/55)).
 
 ## [0.2.1] - 2026-04-23
 
