@@ -27,7 +27,7 @@ Markdown Foundry makes working with tables fast and ergonomic — align columns,
 ### Insertion commands
 
 - **Paste Link** — If the clipboard contains a URL, wrap the selection (or prompt for text) and insert `[text](url)`.
-- **Paste Image** — Save the clipboard image to a configurable folder and insert a Markdown image reference. *Windows only in v0.x; macOS and Linux support is tracked in [#4](https://github.com/dvlprlife/Markdown-Foundry/issues/4) and [#5](https://github.com/dvlprlife/Markdown-Foundry/issues/5).*
+- **Paste Image** — Save the clipboard image to a configurable folder and insert a Markdown image reference. On Linux, requires `xclip` (X11) or `wl-clipboard` (Wayland) to be installed.
 
 ## Keybindings
 
