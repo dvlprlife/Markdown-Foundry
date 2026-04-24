@@ -4,6 +4,10 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ## [Unreleased]
 
+### Added
+
+- `Convert Selection to Table` now handles CSV data with multi-line quoted fields — embedded newlines become `<br>` so the resulting Markdown table cell renders on one line while preserving the line break visually ([#56](https://github.com/dvlprlife/Markdown-Foundry/pull/56)).
+
 ### Changed
 
 - Table column alignment now uses the `string-width` library for width calculation, correctly handling ZWJ emoji sequences (e.g. 👨‍👩‍👧‍👦), combining marks, variation selectors, and the full East Asian Width table — previously a hand-rolled approximation under-counted width in some Unicode cases ([#53](https://github.com/dvlprlife/Markdown-Foundry/pull/53)).
