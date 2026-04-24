@@ -53,7 +53,13 @@
       { "command": "markdownFoundry.previousCell",            "title": "Previous Cell",             "category": "Markdown Foundry" },
       { "command": "markdownFoundry.nextRow",                 "title": "Next Row",                  "category": "Markdown Foundry" },
       { "command": "markdownFoundry.pasteLink",               "title": "Paste Link",                "category": "Markdown Foundry" },
-      { "command": "markdownFoundry.pasteImage",              "title": "Paste Image",               "category": "Markdown Foundry" }
+      { "command": "markdownFoundry.pasteImage",              "title": "Paste Image",               "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleBold",              "title": "Toggle Bold",               "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleItalic",            "title": "Toggle Italic",             "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleBoldItalic",        "title": "Toggle Bold+Italic",        "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleStrikethrough",     "title": "Toggle Strikethrough",      "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleBlockquote",        "title": "Toggle Blockquote",         "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleBlockCode",         "title": "Toggle Block Code",         "category": "Markdown Foundry" }
     ],
     "keybindings": [
       {
@@ -82,6 +88,18 @@
         "key": "ctrl+alt+v",
         "mac": "cmd+alt+v",
         "when": "editorTextFocus && editorLangId == markdown"
+      },
+      {
+        "command": "markdownFoundry.toggleBold",
+        "key": "ctrl+b",
+        "mac": "cmd+b",
+        "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
+      },
+      {
+        "command": "markdownFoundry.toggleItalic",
+        "key": "ctrl+i",
+        "mac": "cmd+i",
+        "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
       }
     ],
     "configuration": {
