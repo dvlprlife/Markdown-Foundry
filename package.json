@@ -123,6 +123,9 @@
     "test": "vscode-test",
     "pretest": "npm run compile && npm run lint"
   },
+  "dependencies": {
+    "string-width": "^4.2.3"
+  },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
     "@types/node": "20.x",

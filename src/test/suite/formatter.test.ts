@@ -91,4 +91,11 @@ suite('formatter: visualWidth', () => {
   test('mixed ASCII and CJK', () => {
     assert.strictEqual(visualWidth('hi你'), 4);
   });
+
+  test('ZWJ emoji family renders as a single grapheme of width 2', () => {
+    // U+1F468 U+200D U+1F469 U+200D U+1F467 U+200D U+1F466 — four person
+    // emoji joined by zero-width joiners. Displays as one glyph; the
+    // hand-rolled width table counted each emoji codepoint separately.
+    assert.strictEqual(visualWidth('👨‍👩‍👧‍👦'), 2);
+  });
 });

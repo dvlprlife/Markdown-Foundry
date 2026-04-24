@@ -1,3 +1,4 @@
+import stringWidth from 'string-width';
 import { Alignment, TableModel } from './types';
 
 /**
@@ -90,46 +91,8 @@ function escapeForCell(value: string): string {
   return value.replace(/\|/g, '\\|');
 }
 
-/**
- * Visual width of a string. For ASCII content this equals .length.
- * For non-ASCII content (CJK, emoji, etc.) this is an approximation using
- * character codepoints. A pure implementation would use the East Asian Width
- * algorithm; we keep this dependency-free and good enough for v1.
- */
+// Delegates to `string-width` for grapheme-aware width calculation (CJK,
+// emoji including ZWJ sequences, combining marks, variation selectors).
 export function visualWidth(text: string): number {
-  let width = 0;
-  for (const char of text) {
-    const code = char.codePointAt(0) ?? 0;
-    if (isWideCodePoint(code)) {
-      width += 2;
-    } else {
-      width += 1;
-    }
-  }
-  return width;
-}
-
-/**
- * Returns true for codepoints that are typically rendered two columns wide
- * in monospaced fonts: CJK characters, fullwidth forms, most emoji.
- * Based on common East Asian Width ranges; simplified for v1.
- */
-function isWideCodePoint(code: number): boolean {
-  return (
-    (code >= 0x1100 && code <= 0x115f) ||    // Hangul Jamo
-    (code >= 0x2e80 && code <= 0x303e) ||    // CJK Radicals, Kangxi, etc.
-    (code >= 0x3041 && code <= 0x33ff) ||    // Hiragana, Katakana, CJK symbols
-    (code >= 0x3400 && code <= 0x4dbf) ||    // CJK Extension A
-    (code >= 0x4e00 && code <= 0x9fff) ||    // CJK Unified Ideographs
-    (code >= 0xa000 && code <= 0xa4cf) ||    // Yi
-    (code >= 0xac00 && code <= 0xd7a3) ||    // Hangul Syllables
-    (code >= 0xf900 && code <= 0xfaff) ||    // CJK Compatibility Ideographs
-    (code >= 0xfe30 && code <= 0xfe4f) ||    // CJK Compatibility Forms
-    (code >= 0xff00 && code <= 0xff60) ||    // Fullwidth Forms
-    (code >= 0xffe0 && code <= 0xffe6) ||    // Fullwidth Signs
-    (code >= 0x1f300 && code <= 0x1f64f) ||  // Emoji block 1
-    (code >= 0x1f680 && code <= 0x1f6ff) ||  // Transport & Map Symbols
-    (code >= 0x1f900 && code <= 0x1f9ff) ||  // Supplemental Symbols and Pictographs
-    (code >= 0x20000 && code <= 0x2fffd)     // CJK Extension B-F
-  );
+  return stringWidth(text);
 }
