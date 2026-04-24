@@ -29,6 +29,12 @@ Markdown Foundry makes working with tables fast and ergonomic — align columns,
 - **Paste Link** — If the clipboard contains a URL, wrap the selection (or prompt for text) and insert `[text](url)`.
 - **Paste Image** — Save the clipboard image to a configurable folder and insert a Markdown image reference. On Linux, requires `xclip` (X11) or `wl-clipboard` (Wayland) to be installed.
 
+### Formatting
+
+- **Toggle bold / italic / bold+italic / strikethrough** — wrap a selection with the Markdown marker; re-invoke to unwrap. With no selection, inserts the doubled markers with the cursor between them.
+- **Toggle blockquote** — prefix every non-empty line in the selection with `> `; re-invoke to strip the prefix.
+- **Toggle block code** — wrap the selection with fenced ` ``` ` lines; re-invoke to remove the fence.
+
 ## Keybindings
 
 | Shortcut | Command |
@@ -38,6 +44,8 @@ Markdown Foundry makes working with tables fast and ergonomic — align columns,
 | `Enter` | Next row (when inside a table) |
 | `Ctrl+Shift+T` / `Cmd+Shift+T` | Align table |
 | `Ctrl+Alt+V` / `Cmd+Alt+V` | Paste image |
+| `Ctrl+B` / `Cmd+B` | Toggle bold (when editing a Markdown file) |
+| `Ctrl+I` / `Cmd+I` | Toggle italic (when editing a Markdown file) |
 
 All other commands are available through the Command Palette (search for "Markdown Foundry").
 
