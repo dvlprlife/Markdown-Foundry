@@ -59,17 +59,17 @@
       {
         "command": "markdownFoundry.nextCell",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId == markdown && markdownFoundry.inTable && !editorHasSelection && !suggestWidgetVisible"
+        "when": "editorTextFocus && editorLangId == markdown && markdownFoundry.inTable && !suggestWidgetVisible"
       },
       {
         "command": "markdownFoundry.previousCell",
         "key": "shift+tab",
-        "when": "editorTextFocus && editorLangId == markdown && markdownFoundry.inTable && !editorHasSelection && !suggestWidgetVisible"
+        "when": "editorTextFocus && editorLangId == markdown && markdownFoundry.inTable && !suggestWidgetVisible"
       },
       {
         "command": "markdownFoundry.nextRow",
         "key": "enter",
-        "when": "editorTextFocus && editorLangId == markdown && markdownFoundry.inTable && !editorHasSelection && !suggestWidgetVisible"
+        "when": "editorTextFocus && editorLangId == markdown && markdownFoundry.inTable && !suggestWidgetVisible"
       },
       {
         "command": "markdownFoundry.alignTable",
