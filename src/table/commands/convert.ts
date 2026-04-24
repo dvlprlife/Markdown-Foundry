@@ -24,11 +24,16 @@ export async function convertSelectionToTableCommand(): Promise<void> {
   }
 
   const text = editor.document.getText(selection);
-  const lines = text.split(/\r?\n/).filter((line) => line.trim().length > 0);
-  if (lines.length === 0) return;
-
   const delimiter = detectDelimiter(text);
-  const grid = lines.map((line) => splitLine(line, delimiter));
+
+  let grid: string[][];
+  if (delimiter === 'comma') {
+    grid = parseCsv(text);
+  } else {
+    const lines = text.split(/\r?\n/).filter((line) => line.trim().length > 0);
+    grid = lines.map((line) => splitLine(line, delimiter));
+  }
+  if (grid.length === 0) return;
   const columnCount = Math.max(...grid.map((row) => row.length));
   const normalized = grid.map((row) =>
     row.length === columnCount ? row : [...row, ...Array(columnCount - row.length).fill('')]
@@ -64,25 +69,28 @@ function detectDelimiter(text: string): Delimiter {
   return 'whitespace';
 }
 
-/**
- * Split a line by the detected delimiter. For CSV, handle quoted fields
- * (double-quoted, with "" representing a literal quote).
- */
-function splitLine(line: string, delimiter: Delimiter): string[] {
+function splitLine(line: string, delimiter: 'tab' | 'whitespace'): string[] {
   if (delimiter === 'tab') {
     return line.split('\t').map((c) => c.trim());
   }
-  if (delimiter === 'whitespace') {
-    return line.trim().split(/\s+/);
-  }
-  // CSV
-  const cells: string[] = [];
+  return line.trim().split(/\s+/);
+}
+
+/**
+ * Parse CSV text into rows, tracking quote state across newlines so a quoted
+ * field can span multiple lines. Embedded newlines inside quoted fields become
+ * `<br>` since Markdown table cells can't contain raw line breaks.
+ */
+export function parseCsv(text: string): string[][] {
+  const rows: string[][] = [];
+  let row: string[] = [];
   let current = '';
   let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
     if (inQuotes) {
-      if (ch === '"' && line[i + 1] === '"') {
+      if (ch === '"' && text[i + 1] === '"') {
         current += '"';
         i++;
       } else if (ch === '"') {
@@ -94,13 +102,33 @@ function splitLine(line: string, delimiter: Delimiter): string[] {
       if (ch === '"') {
         inQuotes = true;
       } else if (ch === ',') {
-        cells.push(current.trim());
+        row.push(finalizeCell(current));
+        current = '';
+      } else if (ch === '\r' && text[i + 1] === '\n') {
+        row.push(finalizeCell(current));
+        rows.push(row);
+        row = [];
+        current = '';
+        i++;
+      } else if (ch === '\n' || ch === '\r') {
+        row.push(finalizeCell(current));
+        rows.push(row);
+        row = [];
         current = '';
       } else {
         current += ch;
       }
     }
   }
-  cells.push(current.trim());
-  return cells;
+  // Flush any trailing cell / row.
+  if (current.length > 0 || row.length > 0) {
+    row.push(finalizeCell(current));
+    rows.push(row);
+  }
+  // Drop trailing all-empty rows (matches prior behavior of filtering blank lines).
+  return rows.filter((r) => !(r.length === 1 && r[0].length === 0));
+}
+
+function finalizeCell(raw: string): string {
+  return raw.replace(/\r?\n/g, '<br>').trim();
 }
