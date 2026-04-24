@@ -21,6 +21,14 @@ import { sortByColumnCommand } from './table/commands/sort';
 import { convertSelectionToTableCommand } from './table/commands/convert';
 import { pasteLinkCommand } from './insert/link';
 import { pasteImageCommand } from './insert/image';
+import {
+  toggleBoldCommand,
+  toggleItalicCommand,
+  toggleBoldItalicCommand,
+  toggleStrikethroughCommand,
+  toggleBlockquoteCommand,
+  toggleBlockCodeCommand
+} from './format/commands';
 import { registerInTableContext } from './util/contextKey';
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -51,6 +59,14 @@ export function activate(context: vscode.ExtensionContext): void {
   // Insertion
   register('markdownFoundry.pasteLink',  pasteLinkCommand);
   register('markdownFoundry.pasteImage', pasteImageCommand);
+
+  // Formatting toggles
+  register('markdownFoundry.toggleBold',          toggleBoldCommand);
+  register('markdownFoundry.toggleItalic',        toggleItalicCommand);
+  register('markdownFoundry.toggleBoldItalic',    toggleBoldItalicCommand);
+  register('markdownFoundry.toggleStrikethrough', toggleStrikethroughCommand);
+  register('markdownFoundry.toggleBlockquote',    toggleBlockquoteCommand);
+  register('markdownFoundry.toggleBlockCode',     toggleBlockCodeCommand);
 
   // Context key for Tab/Shift-Tab/Enter bindings
   registerInTableContext(context);

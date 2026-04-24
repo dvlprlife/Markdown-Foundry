@@ -6,6 +6,7 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ### Added
 
+- Formatting toggles: bold (`Ctrl/Cmd+B`), italic (`Ctrl/Cmd+I`), bold+italic, blockquote, block code (fenced), strikethrough. Wrap the selection or insert empty markers at the cursor ([#58](https://github.com/dvlprlife/Markdown-Foundry/pull/58)).
 - `Convert Selection to Table` now handles CSV data with multi-line quoted fields — embedded newlines become `<br>` so the resulting Markdown table cell renders on one line while preserving the line break visually ([#56](https://github.com/dvlprlife/Markdown-Foundry/pull/56)).
 
 ### Changed
