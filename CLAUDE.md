@@ -51,7 +51,7 @@ These are non-negotiable:
 - **Layer discipline.** `locator` / `parser` / `formatter` are pure (no `vscode` imports beyond types). Only files in `src/table/commands/` and `src/insert/` touch the editor.
 - **Forward slashes in inserted Markdown.** When writing a path into the document, normalize with `path.relative(...).split(path.sep).join('/')`. Markdown rendered on non-Windows must work.
 - **Stubs fail loudly.** A not-yet-implemented platform handler must throw with a clear message (e.g. `"saveClipboardImage: Linux/Wayland not yet supported"`), never silently no-op or return a fake success.
-- **Tab/Shift-Tab/Enter gating.** Keybindings must include `markdownFoundry.inTable && !editorHasSelection && !suggestWidgetVisible` so default editor behavior is preserved outside tables and the suggest widget is not hijacked.
+- **Tab/Shift-Tab/Enter gating.** Keybindings must include `markdownFoundry.inTable && !suggestWidgetVisible` so default editor behavior is preserved outside tables and the suggest widget is not hijacked. The nav commands intentionally fire with a live selection so Tab-after-cell-select advances to the next cell instead of replacing the selection with a literal tab character.
 
 ## Tests
 

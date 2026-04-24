@@ -4,7 +4,7 @@ import { parseTable } from '../parser';
 import { formatTable } from '../formatter';
 
 /**
- * Move cursor to the start of the next cell.
+ * Move cursor to the next cell.
  * If already at the last cell of the last row, add a new row and move there.
  */
 export async function nextCellCommand(): Promise<void> {
@@ -21,7 +21,6 @@ export async function nextCellCommand(): Promise<void> {
   const model = parseTable(document, location);
   const columnCount = model.headers.length;
 
-  // Determine destination cell.
   let targetRow = coords.rowIndex;
   let targetCol = coords.columnIndex + 1;
 
@@ -30,18 +29,16 @@ export async function nextCellCommand(): Promise<void> {
     targetRow = targetRow + 1;
 
     if (targetRow >= model.rows.length) {
-      // Append a new empty row.
       const newRow = Array(columnCount).fill('');
       model.rows.push(newRow);
       const formatted = formatTable(model);
       await editor.edit((edit) => edit.replace(location.range, formatted));
-      // Recalculate position after the edit.
-      await moveCursorToCell(location.headerLine, targetRow, targetCol, model.indent, columnCount);
+      await moveCursorToCell(location.headerLine, targetRow, targetCol);
       return;
     }
   }
 
-  await moveCursorToCell(location.headerLine, targetRow, targetCol, model.indent, columnCount);
+  await moveCursorToCell(location.headerLine, targetRow, targetCol);
 }
 
 export async function previousCellCommand(): Promise<void> {
@@ -63,10 +60,10 @@ export async function previousCellCommand(): Promise<void> {
   if (targetCol < 0) {
     targetCol = model.headers.length - 1;
     targetRow = targetRow - 1;
-    if (targetRow < -1) return; // at start of table, do nothing
+    if (targetRow < -1) return;
   }
 
-  await moveCursorToCell(location.headerLine, targetRow, targetCol, model.indent, model.headers.length);
+  await moveCursorToCell(location.headerLine, targetRow, targetCol);
 }
 
 /**
@@ -95,22 +92,18 @@ export async function nextRowCommand(): Promise<void> {
     await editor.edit((edit) => edit.replace(location.range, formatted));
   }
 
-  await moveCursorToCell(location.headerLine, targetRow, 0, model.indent, columnCount);
+  await moveCursorToCell(location.headerLine, targetRow, 0);
 }
 
 /**
- * Move the cursor into the first character of the given cell (after the
- * leading pipe and padding space).
- *
- * This is an approximation: because the table may have been reformatted,
- * we re-read the line and find the Nth pipe, then position one space past it.
+ * Select the target cell's contents in the active editor. If the cell is
+ * empty or whitespace-only, collapses to a zero-width cursor at the cell's
+ * start (selection anchor === active).
  */
 async function moveCursorToCell(
   headerLine: number,
   rowIndex: number,
-  columnIndex: number,
-  _indent: string,
-  _columnCount: number
+  columnIndex: number
 ): Promise<void> {
   const editor = vscode.window.activeTextEditor;
   if (!editor) return;
@@ -123,8 +116,30 @@ async function moveCursorToCell(
   if (lineNumber >= document.lineCount) return;
   const lineText = document.lineAt(lineNumber).text;
 
+  const range = computeCellRange(lineText, columnIndex);
+  if (!range) return;
+
+  const anchor = new vscode.Position(lineNumber, range.start);
+  const active = new vscode.Position(lineNumber, range.end);
+  editor.selection = new vscode.Selection(anchor, active);
+  editor.revealRange(new vscode.Range(anchor, active));
+}
+
+/**
+ * Given a table-row line and a 0-based column index, return the start/end
+ * character offsets that cover the cell's non-whitespace content. Collapses
+ * (start === end) for empty or whitespace-only cells. Returns undefined if
+ * columnIndex exceeds the line's column count. Handles escaped pipes (\|)
+ * as cell content, not as column separators.
+ */
+export function computeCellRange(
+  lineText: string,
+  columnIndex: number
+): { start: number; end: number } | undefined {
+  let startPos = -1;
+  let endPos = -1;
   let pipesSeen = 0;
-  let charPos = 0;
+
   for (let i = 0; i < lineText.length; i++) {
     if (lineText[i] === '\\' && lineText[i + 1] === '|') {
       i++;
@@ -132,14 +147,25 @@ async function moveCursorToCell(
     }
     if (lineText[i] === '|') {
       if (pipesSeen === columnIndex) {
-        charPos = i + 2; // skip pipe and one pad space
+        startPos = i + 1;
+      } else if (pipesSeen === columnIndex + 1) {
+        endPos = i;
         break;
       }
       pipesSeen++;
     }
   }
 
-  const newPos = new vscode.Position(lineNumber, Math.min(charPos, lineText.length));
-  editor.selection = new vscode.Selection(newPos, newPos);
-  editor.revealRange(new vscode.Range(newPos, newPos));
+  if (startPos === -1) return undefined;
+  if (endPos === -1) endPos = lineText.length;
+
+  // Skip the single pad space that formatTable inserts after the opening pipe.
+  if (lineText[startPos] === ' ') startPos++;
+
+  let trimmedEnd = endPos;
+  while (trimmedEnd > startPos && /\s/.test(lineText[trimmedEnd - 1])) {
+    trimmedEnd--;
+  }
+
+  return { start: startPos, end: trimmedEnd };
 }
