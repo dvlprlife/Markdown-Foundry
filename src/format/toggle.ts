@@ -48,3 +48,53 @@ export function wrapLinePrefix(text: string, prefix: string): string {
   }
   return lines.map((l) => (l === '' ? l : prefix + l)).join('\n');
 }
+
+/**
+ * Set the heading level of a line. `level === 0` removes the heading. If the
+ * line is already at the target level, also removes the heading (toggle off).
+ * Strips leading whitespace from the body when adding a heading.
+ */
+export function wrapHeading(line: string, level: number): string {
+  const existing = line.match(/^(#{1,6})\s+(.*)$/);
+  const body = existing ? existing[2] : line.replace(/^\s+/, '');
+  const existingLevel = existing ? existing[1].length : 0;
+
+  if (level === 0 || level === existingLevel) {
+    return body;
+  }
+  return '#'.repeat(level) + ' ' + body;
+}
+
+/**
+ * Adjust an existing heading by `delta` (negative = promote toward H1,
+ * positive = demote toward H6). No-op on non-heading lines or if the
+ * adjustment would push the level outside [1, 6].
+ */
+export function adjustHeading(line: string, delta: number): string {
+  const m = line.match(/^(#{1,6})\s+(.*)$/);
+  if (!m) return line;
+  const newLevel = m[1].length + delta;
+  if (newLevel < 1 || newLevel > 6) return line;
+  return '#'.repeat(newLevel) + ' ' + m[2];
+}
+
+/**
+ * Cycle a line through: plain → `- [ ] x` → `- [x] x` → `- [ ] x` → ... .
+ * Preserves leading indentation. A bullet line without a checkbox (`- x`) is
+ * promoted to an unchecked task (`- [ ] x`).
+ */
+export function toggleTaskItem(line: string): string {
+  const indentMatch = line.match(/^(\s*)(.*)$/);
+  const indent = indentMatch ? indentMatch[1] : '';
+  const body = indentMatch ? indentMatch[2] : line;
+
+  const checked = body.match(/^-\s+\[x\]\s+(.*)$/i);
+  if (checked) return `${indent}- [ ] ${checked[1]}`;
+
+  const unchecked = body.match(/^-\s+\[ \]\s+(.*)$/);
+  if (unchecked) return `${indent}- [x] ${unchecked[1]}`;
+
+  const bullet = body.match(/^-\s+(.*)$/);
+  const text = bullet ? bullet[1] : body;
+  return `${indent}- [ ] ${text}`;
+}

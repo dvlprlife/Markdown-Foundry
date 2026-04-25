@@ -27,7 +27,18 @@ import {
   toggleBoldItalicCommand,
   toggleStrikethroughCommand,
   toggleBlockquoteCommand,
-  toggleBlockCodeCommand
+  toggleBlockCodeCommand,
+  toggleInlineCodeCommand,
+  toggleHeading1Command,
+  toggleHeading2Command,
+  toggleHeading3Command,
+  toggleHeading4Command,
+  toggleHeading5Command,
+  toggleHeading6Command,
+  promoteHeadingCommand,
+  demoteHeadingCommand,
+  toggleTaskListCommand,
+  insertHorizontalRuleCommand
 } from './format/commands';
 import { registerInTableContext } from './util/contextKey';
 
@@ -67,6 +78,17 @@ export function activate(context: vscode.ExtensionContext): void {
   register('markdownFoundry.toggleStrikethrough', toggleStrikethroughCommand);
   register('markdownFoundry.toggleBlockquote',    toggleBlockquoteCommand);
   register('markdownFoundry.toggleBlockCode',     toggleBlockCodeCommand);
+  register('markdownFoundry.toggleInlineCode',    toggleInlineCodeCommand);
+  register('markdownFoundry.toggleHeading1',      toggleHeading1Command);
+  register('markdownFoundry.toggleHeading2',      toggleHeading2Command);
+  register('markdownFoundry.toggleHeading3',      toggleHeading3Command);
+  register('markdownFoundry.toggleHeading4',      toggleHeading4Command);
+  register('markdownFoundry.toggleHeading5',      toggleHeading5Command);
+  register('markdownFoundry.toggleHeading6',      toggleHeading6Command);
+  register('markdownFoundry.promoteHeading',      promoteHeadingCommand);
+  register('markdownFoundry.demoteHeading',       demoteHeadingCommand);
+  register('markdownFoundry.toggleTaskList',      toggleTaskListCommand);
+  register('markdownFoundry.insertHorizontalRule', insertHorizontalRuleCommand);
 
   // Context key for Tab/Shift-Tab/Enter bindings
   registerInTableContext(context);

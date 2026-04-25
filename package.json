@@ -59,7 +59,18 @@
       { "command": "markdownFoundry.toggleBoldItalic",        "title": "Toggle Bold+Italic",        "category": "Markdown Foundry" },
       { "command": "markdownFoundry.toggleStrikethrough",     "title": "Toggle Strikethrough",      "category": "Markdown Foundry" },
       { "command": "markdownFoundry.toggleBlockquote",        "title": "Toggle Blockquote",         "category": "Markdown Foundry" },
-      { "command": "markdownFoundry.toggleBlockCode",         "title": "Toggle Block Code",         "category": "Markdown Foundry" }
+      { "command": "markdownFoundry.toggleBlockCode",         "title": "Toggle Block Code",         "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleInlineCode",        "title": "Toggle Inline Code",        "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleHeading1",          "title": "Toggle Heading 1",          "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleHeading2",          "title": "Toggle Heading 2",          "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleHeading3",          "title": "Toggle Heading 3",          "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleHeading4",          "title": "Toggle Heading 4",          "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleHeading5",          "title": "Toggle Heading 5",          "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleHeading6",          "title": "Toggle Heading 6",          "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.promoteHeading",          "title": "Promote Heading",           "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.demoteHeading",           "title": "Demote Heading",            "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleTaskList",          "title": "Toggle Task List Item",     "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.insertHorizontalRule",    "title": "Insert Horizontal Rule",    "category": "Markdown Foundry" }
     ],
     "keybindings": [
       {

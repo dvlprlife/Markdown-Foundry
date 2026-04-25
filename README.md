@@ -34,6 +34,10 @@ Markdown Foundry makes working with tables fast and ergonomic — align columns,
 - **Toggle bold / italic / bold+italic / strikethrough** — wrap a selection with the Markdown marker; re-invoke to unwrap. With no selection, inserts the doubled markers with the cursor between them.
 - **Toggle blockquote** — prefix every non-empty line in the selection with `> `; re-invoke to strip the prefix.
 - **Toggle block code** — wrap the selection with fenced ` ``` ` lines; re-invoke to remove the fence.
+- **Toggle inline code** — wrap the selection with single backticks; re-invoke to unwrap.
+- **Toggle heading levels 1–6** — set the current line to the chosen heading level, or remove the heading if it's already at that level. Plus **Promote / Demote heading** to shift the existing level by one (clamped to H1–H6).
+- **Toggle task list item** — cycle the current line through plain → `- [ ] todo` → `- [x] done` → `- [ ] todo` …, preserving leading indentation.
+- **Insert horizontal rule** — drop a `---` line below the cursor's current line.
 
 ## Keybindings
 

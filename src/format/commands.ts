@@ -1,5 +1,12 @@
 import * as vscode from 'vscode';
-import { wrapInline, wrapFenced, wrapLinePrefix } from './toggle';
+import {
+  wrapInline,
+  wrapFenced,
+  wrapLinePrefix,
+  wrapHeading,
+  adjustHeading,
+  toggleTaskItem
+} from './toggle';
 
 /**
  * Apply an inline wrap to the current selection. If no selection, insert
@@ -69,4 +76,69 @@ export async function toggleBlockquoteCommand(): Promise<void> {
 
 export async function toggleBlockCodeCommand(): Promise<void> {
   await applyLineRange((text) => wrapFenced(text));
+}
+
+/**
+ * Apply a line-aware transform to the cursor's current line, replacing only
+ * that line. Used by heading toggles, task list, etc. — operations where the
+ * single-line semantics differ from `applyLineRange`'s multi-line block.
+ */
+async function applyCurrentLine(
+  transform: (line: string) => string
+): Promise<void> {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) return;
+  const cursorLine = editor.selection.active.line;
+  const line = editor.document.lineAt(cursorLine);
+  const replaced = transform(line.text);
+  await editor.edit((edit) => edit.replace(line.range, replaced));
+}
+
+export async function toggleInlineCodeCommand(): Promise<void> {
+  await applyInline('`');
+}
+
+export async function toggleHeading1Command(): Promise<void> {
+  await applyCurrentLine((line) => wrapHeading(line, 1));
+}
+
+export async function toggleHeading2Command(): Promise<void> {
+  await applyCurrentLine((line) => wrapHeading(line, 2));
+}
+
+export async function toggleHeading3Command(): Promise<void> {
+  await applyCurrentLine((line) => wrapHeading(line, 3));
+}
+
+export async function toggleHeading4Command(): Promise<void> {
+  await applyCurrentLine((line) => wrapHeading(line, 4));
+}
+
+export async function toggleHeading5Command(): Promise<void> {
+  await applyCurrentLine((line) => wrapHeading(line, 5));
+}
+
+export async function toggleHeading6Command(): Promise<void> {
+  await applyCurrentLine((line) => wrapHeading(line, 6));
+}
+
+export async function promoteHeadingCommand(): Promise<void> {
+  await applyCurrentLine((line) => adjustHeading(line, -1));
+}
+
+export async function demoteHeadingCommand(): Promise<void> {
+  await applyCurrentLine((line) => adjustHeading(line, 1));
+}
+
+export async function toggleTaskListCommand(): Promise<void> {
+  await applyCurrentLine(toggleTaskItem);
+}
+
+export async function insertHorizontalRuleCommand(): Promise<void> {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) return;
+  const cursorLine = editor.selection.active.line;
+  const line = editor.document.lineAt(cursorLine);
+  const insertPos = new vscode.Position(cursorLine, line.text.length);
+  await editor.edit((edit) => edit.insert(insertPos, '\n---'));
 }

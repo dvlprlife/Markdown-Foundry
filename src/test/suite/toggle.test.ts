@@ -1,5 +1,12 @@
 import * as assert from 'assert';
-import { wrapInline, wrapFenced, wrapLinePrefix } from '../../format/toggle';
+import {
+  wrapInline,
+  wrapFenced,
+  wrapLinePrefix,
+  wrapHeading,
+  adjustHeading,
+  toggleTaskItem
+} from '../../format/toggle';
 
 suite('format: wrapInline', () => {
   test('wraps plain text with the marker', () => {
@@ -95,5 +102,89 @@ suite('format: wrapLinePrefix', () => {
 
   test('empty string stays empty', () => {
     assert.strictEqual(wrapLinePrefix('', '> '), '');
+  });
+});
+
+suite('format: wrapHeading', () => {
+  test('adds heading at the requested level on a plain line', () => {
+    assert.strictEqual(wrapHeading('Some text', 2), '## Some text');
+  });
+
+  test('toggles off when applied at the existing level', () => {
+    assert.strictEqual(wrapHeading('## Some text', 2), 'Some text');
+  });
+
+  test('changes level when applied at a different existing level', () => {
+    assert.strictEqual(wrapHeading('# Some text', 3), '### Some text');
+  });
+
+  test('strips leading whitespace from a non-heading line when adding a heading', () => {
+    assert.strictEqual(wrapHeading('   leading spaces', 1), '# leading spaces');
+  });
+
+  test('level 0 removes any heading', () => {
+    assert.strictEqual(wrapHeading('### Demoted', 0), 'Demoted');
+  });
+
+  test('level 0 on a non-heading line is effectively a leading-trim', () => {
+    assert.strictEqual(wrapHeading('plain', 0), 'plain');
+  });
+
+  test('empty input', () => {
+    assert.strictEqual(wrapHeading('', 1), '# ');
+  });
+});
+
+suite('format: adjustHeading', () => {
+  test('promotes H2 to H1', () => {
+    assert.strictEqual(adjustHeading('## hi', -1), '# hi');
+  });
+
+  test('demotes H1 to H2', () => {
+    assert.strictEqual(adjustHeading('# hi', 1), '## hi');
+  });
+
+  test('clamps at H1 (promote no-op)', () => {
+    assert.strictEqual(adjustHeading('# hi', -1), '# hi');
+  });
+
+  test('clamps at H6 (demote no-op)', () => {
+    assert.strictEqual(adjustHeading('###### hi', 1), '###### hi');
+  });
+
+  test('non-heading line is no-op', () => {
+    assert.strictEqual(adjustHeading('plain text', -1), 'plain text');
+    assert.strictEqual(adjustHeading('plain text', 1), 'plain text');
+  });
+
+  test('empty input is no-op', () => {
+    assert.strictEqual(adjustHeading('', -1), '');
+  });
+});
+
+suite('format: toggleTaskItem', () => {
+  test('plain text becomes an unchecked task item', () => {
+    assert.strictEqual(toggleTaskItem('do laundry'), '- [ ] do laundry');
+  });
+
+  test('unchecked task item becomes checked', () => {
+    assert.strictEqual(toggleTaskItem('- [ ] do laundry'), '- [x] do laundry');
+  });
+
+  test('checked task item becomes unchecked', () => {
+    assert.strictEqual(toggleTaskItem('- [x] do laundry'), '- [ ] do laundry');
+  });
+
+  test('plain bullet without checkbox becomes an unchecked task', () => {
+    assert.strictEqual(toggleTaskItem('- bullet'), '- [ ] bullet');
+  });
+
+  test('preserves leading indentation when wrapping', () => {
+    assert.strictEqual(toggleTaskItem('  do laundry'), '  - [ ] do laundry');
+  });
+
+  test('preserves leading indentation when toggling check state', () => {
+    assert.strictEqual(toggleTaskItem('  - [ ] do laundry'), '  - [x] do laundry');
+    assert.strictEqual(toggleTaskItem('  - [x] do laundry'), '  - [ ] do laundry');
   });
 });
