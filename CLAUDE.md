@@ -87,6 +87,9 @@ These are non-negotiable:
 
 - Rename `## [Unreleased]` → `## [X.Y.Z] - YYYY-MM-DD` (use the actual publish date)
 - Add a fresh empty `## [Unreleased]` section above it for the next cycle
+- After `vsce publish` succeeds, tag the merged housekeeping commit on `main`:
+  `git tag -a vX.Y.Z -m "vX.Y.Z" <sha> && git push origin vX.Y.Z`
+- Delete the local `mdfoundry-X.Y.Z.vsix` artifact — it's not committed, and the marketplace holds the canonical copy
 
 ## README maintenance
 
