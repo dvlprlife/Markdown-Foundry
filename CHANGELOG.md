@@ -4,6 +4,8 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-25
+
 ### Added
 
 - Formatting toggles (round 2): inline code, heading levels 1–6, promote/demote heading, task list checkbox cycle, and insert horizontal rule. Palette-only access; no default keybindings ([#65](https://github.com/dvlprlife/Markdown-Foundry/pull/65)).
