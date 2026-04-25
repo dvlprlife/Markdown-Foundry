@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <radialGradient id="ember" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffd089" />
+      <stop offset="35%" stop-color="#ff8a3d" />
+      <stop offset="75%" stop-color="#e84a1a" />
+      <stop offset="100%" stop-color="#9c2a06" />
+    </radialGradient>
+    <radialGradient id="forgeWell" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#3d2818" />
+      <stop offset="100%" stop-color="#1a2332" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="vignette" cx="50%" cy="50%" r="75%">
+      <stop offset="40%" stop-color="#1a2332" stop-opacity="0" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.45" />
+    </radialGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="14" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter id="softBlur"><feGaussianBlur stdDeviation="22" /></filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="#1a2332" />
+  <rect width="1200" height="630" fill="url(#vignette)" />
+
+  <!-- Mark on the left -->
+  <g transform="translate(140, 130)">
+    <!-- forge well shadow behind ember -->
+    <ellipse cx="180" cy="80" rx="120" ry="60" fill="url(#forgeWell)" />
+
+    <!-- ember halo -->
+    <circle cx="180" cy="80" r="80" fill="#ff6b2a" opacity="0.35" filter="url(#softBlur)" />
+
+    <!-- ember core -->
+    <circle cx="180" cy="80" r="32" fill="url(#ember)" filter="url(#glow)" />
+
+    <!-- the M -->
+    <path d="
+      M 0 130
+      L 0 370
+      L 60 370
+      L 60 240
+      L 150 360
+      L 210 360
+      L 300 240
+      L 300 370
+      L 360 370
+      L 360 130
+      L 300 130
+      L 180 290
+      L 60 130
+      Z"
+      fill="#eef1f5" />
+  </g>
+
+  <!-- Wordmark on the right -->
+  <g transform="translate(620, 0)">
+    <text x="0" y="270" font-family="Georgia, 'Times New Roman', serif" font-size="78" font-weight="700" fill="#eef1f5" letter-spacing="-1">Markdown</text>
+    <text x="0" y="360" font-family="Georgia, 'Times New Roman', serif" font-size="78" font-weight="700" fill="#ff8a3d" letter-spacing="-1">Foundry</text>
+    <line x1="0" y1="395" x2="120" y2="395" stroke="#ff8a3d" stroke-width="3" />
+    <text x="0" y="445" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="26" fill="#aab8c5" font-style="italic">A VS Code extension for markdown people.</text>
+    <text x="0" y="495" font-family="ui-monospace, 'SF Mono', Consolas, monospace" font-size="20" fill="#7a8896">dvlprlife.mdfoundry</text>
+  </g>
+</svg>
