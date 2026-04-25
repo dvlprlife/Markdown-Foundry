@@ -1,8 +1,8 @@
 # Markdown Foundry
 
-Powerful Markdown table editing and authoring tools for Visual Studio Code.
+Powerful Markdown editing tools for Visual Studio Code — table-centric ergonomics plus formatting toggles for everyday authoring.
 
-Markdown Foundry makes working with tables fast and ergonomic — align columns, navigate between cells with Tab, insert and reorder rows and columns, sort data, and paste links or images with a keystroke.
+Markdown Foundry combines fast table editing with one-keystroke Markdown formatting. Align tables, navigate cells with Tab, sort columns, paste links and images — and toggle bold, italic, blockquotes, code blocks, headings, and task lists from the palette or keybindings.
 
 ## Demo
 
