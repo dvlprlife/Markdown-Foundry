@@ -1,10 +1,12 @@
 # Markdown Foundry
 
-Powerful Markdown table editing and authoring tools for Visual Studio Code.
+Powerful Markdown editing tools for Visual Studio Code — table-centric ergonomics plus formatting toggles for everyday authoring.
 
-Markdown Foundry makes working with tables fast and ergonomic — align columns, navigate between cells with Tab, insert and reorder rows and columns, sort data, and paste links or images with a keystroke.
+Markdown Foundry combines fast table editing with one-keystroke Markdown formatting. Align tables, navigate cells with Tab, sort columns, paste links and images — and toggle bold, italic, blockquotes, code blocks, headings, and task lists from the palette or keybindings.
 
 ## Demo
+
+![Browse Markdown Foundry commands in the Command Palette](images/demo/menu.gif)
 
 ![Align a Markdown table with one command](images/demo/align.gif)
 
@@ -32,11 +34,19 @@ Markdown Foundry makes working with tables fast and ergonomic — align columns,
 ### Formatting
 
 - **Toggle bold / italic / bold+italic / strikethrough** — wrap a selection with the Markdown marker; re-invoke to unwrap. With no selection, inserts the doubled markers with the cursor between them.
+
+  ![Toggle bold with Ctrl+B, again to unwrap](images/demo/bold.gif)
+
 - **Toggle blockquote** — prefix every non-empty line in the selection with `> `; re-invoke to strip the prefix.
 - **Toggle block code** — wrap the selection with fenced ` ``` ` lines; re-invoke to remove the fence.
 - **Toggle inline code** — wrap the selection with single backticks; re-invoke to unwrap.
 - **Toggle heading levels 1–6** — set the current line to the chosen heading level, or remove the heading if it's already at that level. Plus **Promote / Demote heading** to shift the existing level by one (clamped to H1–H6).
+
+  ![Toggle, promote, and demote headings](images/demo/heading.gif)
+
 - **Toggle task list item** — cycle the current line through plain → `- [ ] todo` → `- [x] done` → `- [ ] todo` …, preserving leading indentation.
+
+  ![Toggle a task list item between plain, unchecked, and checked](images/demo/tasklist.gif)
 - **Insert horizontal rule** — drop a `---` line below the cursor's current line.
 
 ## Keybindings
