@@ -61,6 +61,8 @@ Make all necessary changes to satisfy the acceptance criteria. Follow all rules 
 
 **CHANGELOG:** if the change is user-visible (per the classification in `CLAUDE.md` → CHANGELOG maintenance), add a one-line entry under `## [Unreleased]` in `CHANGELOG.md` as part of the same PR. Not a separate commit; bundle it with the implementation. If the change is contributor-facing only, skip the entry and note the reason in the PR body so the reviewer doesn't flag it.
 
+**README:** if the change introduces a new user-discoverable command, setting, or keybinding (per `CLAUDE.md` → README maintenance), update `README.md` in the same PR — Features list, Keybindings table, or Settings table as appropriate. Bundle the README change with the implementation, not as a separate commit. If the change is internal-only, skip the update and note the reason in the PR body so the reviewer doesn't flag it.
+
 ## Step 6: Commit and Push
 
 Commit with a message that references the issue:

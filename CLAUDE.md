@@ -88,6 +88,35 @@ These are non-negotiable:
 - Rename `## [Unreleased]` → `## [X.Y.Z] - YYYY-MM-DD` (use the actual publish date)
 - Add a fresh empty `## [Unreleased]` section above it for the next cycle
 
+## README maintenance
+
+`README.md` is the public face of the extension on the VS Code Marketplace listing. Any PR that introduces a **new user-discoverable command, setting, or keybinding** must include matching README updates in the same PR.
+
+**What counts as user-discoverable** (README update required):
+
+- New commands accessible via the Command Palette
+- New keybindings (or removed keybindings)
+- New configuration settings users can change
+- Behavior changes to documented features that make the existing README description inaccurate
+- Removed commands, settings, or keybindings — strip them from the README
+
+**What does NOT count** (no README update needed):
+
+- Internal refactors, helper extraction, namespace renames where the user-visible commands stay the same
+- Test-only changes
+- Bug fixes that restore documented behavior
+- Marketplace metadata only (`keywords`, `categories` — those go in CHANGELOG, not README)
+- Build, CI, `.gitignore` / `.vscodeignore` updates
+- Contributor-facing docs (`CLAUDE.md`, `agents/**`, `CONTEXT.md`)
+
+**Where to update:**
+
+- New commands: add a bullet under the appropriate `## Features` subsection (Table editing / Insertion commands / Formatting). Create a new subsection if the command doesn't fit.
+- New keybindings: add a row to the `## Keybindings` table.
+- New settings: add a row to the `## Settings` table.
+
+README accumulates incrementally; there's no release-time rollover. README always describes the current state of `main`.
+
 ## Code style
 
 - **Default to no comments.** Only add a comment when the WHY is non-obvious (a hidden constraint, a workaround, behavior that would surprise a reader). Never explain WHAT — well-named identifiers do that.
