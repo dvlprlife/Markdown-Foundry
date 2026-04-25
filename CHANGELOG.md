@@ -12,6 +12,7 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ### Changed
 
+- Demo GIFs refreshed for higher quality and added new ones covering the command palette overview, bold toggle, heading toggles, and task list cycle — 7 GIFs total at ~4.6 MB combined ([#66](https://github.com/dvlprlife/Markdown-Foundry/pull/66)).
 - README Features list gains a Formatting subsection describing the new bold / italic / blockquote / block code / strikethrough toggles; Keybindings table lists `Ctrl/Cmd+B` and `Ctrl/Cmd+I` ([#60](https://github.com/dvlprlife/Markdown-Foundry/pull/60)).
 - Tab, Shift+Tab, and Enter navigation inside a table now selects the destination cell's contents (Excel-style) so typing replaces the cell, and another Tab advances to the next cell instead of inserting a literal tab character. Empty cells still get a collapsed cursor position ([#57](https://github.com/dvlprlife/Markdown-Foundry/pull/57)).
 - Table column alignment now uses the `string-width` library for width calculation, correctly handling ZWJ emoji sequences (e.g. 👨‍👩‍👧‍👦), combining marks, variation selectors, and the full East Asian Width table — previously a hand-rolled approximation under-counted width in some Unicode cases ([#53](https://github.com/dvlprlife/Markdown-Foundry/pull/53)).
