@@ -49,6 +49,7 @@
       { "command": "markdownFoundry.moveColumnRight",         "title": "Move Column Right",         "category": "Markdown Foundry" },
       { "command": "markdownFoundry.sortByColumn",            "title": "Sort Table by Column",      "category": "Markdown Foundry" },
       { "command": "markdownFoundry.convertSelectionToTable", "title": "Convert Selection to Table","category": "Markdown Foundry" },
+      { "command": "markdownFoundry.insertTable",             "title": "Insert Table",              "category": "Markdown Foundry" },
       { "command": "markdownFoundry.nextCell",                "title": "Next Cell",                 "category": "Markdown Foundry" },
       { "command": "markdownFoundry.previousCell",            "title": "Previous Cell",             "category": "Markdown Foundry" },
       { "command": "markdownFoundry.nextRow",                 "title": "Next Row",                  "category": "Markdown Foundry" },

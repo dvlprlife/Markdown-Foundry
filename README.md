@@ -25,6 +25,7 @@ Markdown Foundry combines fast table editing with one-keystroke Markdown formatt
 - **Move rows and columns** — Reorder without retyping.
 - **Sort by column** — Sort ascending or descending. Numeric columns are detected automatically.
 - **Convert selection to table** — Select pasted CSV or TSV data, run the command, get a formatted Markdown table.
+- **Insert Table** — Pick from preset sizes (2×2 through 5×4) or enter custom dimensions; a pre-aligned table is inserted at the cursor with the first header cell selected.
 
 ### Insertion commands
 
