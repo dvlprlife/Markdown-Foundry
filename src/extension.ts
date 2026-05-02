@@ -23,6 +23,7 @@ import { insertTableCommand } from './insert/insertTable';
 import { upsertTOCCommand } from './structure/commands/toc';
 import { pasteLinkCommand } from './insert/link';
 import { pasteImageCommand } from './insert/image';
+import { insertLinkToFileCommand } from './insert/linkToFile';
 import {
   toggleBoldCommand,
   toggleItalicCommand,
@@ -73,8 +74,9 @@ export function activate(context: vscode.ExtensionContext): void {
   register('markdownFoundry.nextRow',      nextRowCommand);
 
   // Insertion
-  register('markdownFoundry.pasteLink',  pasteLinkCommand);
-  register('markdownFoundry.pasteImage', pasteImageCommand);
+  register('markdownFoundry.pasteLink',         pasteLinkCommand);
+  register('markdownFoundry.pasteImage',        pasteImageCommand);
+  register('markdownFoundry.insertLinkToFile',  insertLinkToFileCommand);
 
   // Formatting toggles
   register('markdownFoundry.toggleBold',          toggleBoldCommand);

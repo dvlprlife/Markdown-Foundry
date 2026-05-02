@@ -4,6 +4,10 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ## [Unreleased]
 
+### Added
+
+- `Insert Link to File` command — pick any workspace file from a quick-pick (current-folder-first, alphabetical) and insert a relative-path link at the cursor. Image files become `![alt](path)`, everything else `[text](path)`; selection (when present) is used as the link text. Palette-only ([#85](https://github.com/dvlprlife/Markdown-Foundry/pull/85)).
+
 ### Changed
 
 - `Paste Link` now also accepts absolute file paths and `file://` URIs from the clipboard, inserting them as relative-path links. Image extensions (`.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.svg`, `.bmp`, `.ico`) are inserted as `![alt](path)`; everything else as `[text](path)`. Non-existent paths are rejected so typos don't sneak in. ([#84](https://github.com/dvlprlife/Markdown-Foundry/pull/84))
