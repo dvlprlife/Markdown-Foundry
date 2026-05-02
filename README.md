@@ -40,6 +40,7 @@ Markdown Foundry combines fast table editing with one-keystroke Markdown formatt
 
 - **Toggle blockquote** — prefix every non-empty line in the selection with `> `; re-invoke to strip the prefix.
 - **Toggle block code** — wrap the selection with fenced ` ``` ` lines; re-invoke to remove the fence.
+- **Toggle bullet list / numbered list** — prefix every non-empty line in the selection with `- ` or with sequential `1.`/`2.`/`3.`; re-invoke to strip. Leading indentation preserved for nested lists.
 - **Toggle inline code** — wrap the selection with single backticks; re-invoke to unwrap.
 - **Toggle heading levels 1–6** — set the current line to the chosen heading level, or remove the heading if it's already at that level. Plus **Promote / Demote heading** to shift the existing level by one (clamped to H1–H6).
 

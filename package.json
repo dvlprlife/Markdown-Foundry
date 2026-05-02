@@ -61,6 +61,8 @@
       { "command": "markdownFoundry.toggleStrikethrough",     "title": "Toggle Strikethrough",      "category": "Markdown Foundry" },
       { "command": "markdownFoundry.toggleBlockquote",        "title": "Toggle Blockquote",         "category": "Markdown Foundry" },
       { "command": "markdownFoundry.toggleBlockCode",         "title": "Toggle Block Code",         "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleBulletList",        "title": "Toggle Bullet List",        "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toggleNumberedList",      "title": "Toggle Numbered List",      "category": "Markdown Foundry" },
       { "command": "markdownFoundry.toggleInlineCode",        "title": "Toggle Inline Code",        "category": "Markdown Foundry" },
       { "command": "markdownFoundry.toggleHeading1",          "title": "Toggle Heading 1",          "category": "Markdown Foundry" },
       { "command": "markdownFoundry.toggleHeading2",          "title": "Toggle Heading 2",          "category": "Markdown Foundry" },

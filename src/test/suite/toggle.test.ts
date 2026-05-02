@@ -5,6 +5,8 @@ import {
   wrapLinePrefix,
   wrapHeading,
   adjustHeading,
+  toggleBulletItem,
+  toggleNumberedItem,
   toggleTaskItem
 } from '../../format/toggle';
 
@@ -186,5 +188,98 @@ suite('format: toggleTaskItem', () => {
   test('preserves leading indentation when toggling check state', () => {
     assert.strictEqual(toggleTaskItem('  - [ ] do laundry'), '  - [x] do laundry');
     assert.strictEqual(toggleTaskItem('  - [x] do laundry'), '  - [ ] do laundry');
+  });
+});
+
+suite('format: toggleBulletItem', () => {
+  test('plain line becomes a bullet', () => {
+    assert.strictEqual(toggleBulletItem('hello'), '- hello');
+  });
+
+  test('bullet line is stripped', () => {
+    assert.strictEqual(toggleBulletItem('- hello'), 'hello');
+  });
+
+  test('asterisk bullet is stripped (toggle-off accepts any bullet char)', () => {
+    assert.strictEqual(toggleBulletItem('* hello'), 'hello');
+  });
+
+  test('plus bullet is stripped', () => {
+    assert.strictEqual(toggleBulletItem('+ hello'), 'hello');
+  });
+
+  test('multi-line plain → all prefixed with `- `', () => {
+    assert.strictEqual(
+      toggleBulletItem('one\ntwo\nthree'),
+      '- one\n- two\n- three'
+    );
+  });
+
+  test('multi-line all-bulleted → all stripped', () => {
+    assert.strictEqual(
+      toggleBulletItem('- one\n- two\n- three'),
+      'one\ntwo\nthree'
+    );
+  });
+
+  test('mixed (some bulleted, some plain) → wrap path: every line gets `- `', () => {
+    assert.strictEqual(
+      toggleBulletItem('- foo\nbar'),
+      '- - foo\n- bar'
+    );
+  });
+
+  test('preserves leading indentation when stripping', () => {
+    assert.strictEqual(toggleBulletItem('  - hello'), '  hello');
+  });
+
+  test('empty lines pass through unchanged on toggle-on', () => {
+    assert.strictEqual(toggleBulletItem('foo\n\nbar'), '- foo\n\n- bar');
+  });
+
+  test('empty lines pass through unchanged on toggle-off', () => {
+    assert.strictEqual(toggleBulletItem('- foo\n\n- bar'), 'foo\n\nbar');
+  });
+});
+
+suite('format: toggleNumberedItem', () => {
+  test('plain line becomes `1. line`', () => {
+    assert.strictEqual(toggleNumberedItem('hello'), '1. hello');
+  });
+
+  test('three plain lines become `1.`/`2.`/`3.`', () => {
+    assert.strictEqual(
+      toggleNumberedItem('one\ntwo\nthree'),
+      '1. one\n2. two\n3. three'
+    );
+  });
+
+  test('numbered line is stripped', () => {
+    assert.strictEqual(toggleNumberedItem('1. hello'), 'hello');
+  });
+
+  test('three numbered lines → all stripped', () => {
+    assert.strictEqual(
+      toggleNumberedItem('1. one\n2. two\n3. three'),
+      'one\ntwo\nthree'
+    );
+  });
+
+  test('preserves leading indentation when stripping', () => {
+    assert.strictEqual(toggleNumberedItem('  1. hello'), '  hello');
+  });
+
+  test('indented lines preserve indent and increment globally', () => {
+    assert.strictEqual(
+      toggleNumberedItem('one\n  two\nthree'),
+      '1. one\n  2. two\n3. three'
+    );
+  });
+
+  test('empty lines pass through and do not consume a number', () => {
+    assert.strictEqual(
+      toggleNumberedItem('one\n\ntwo'),
+      '1. one\n\n2. two'
+    );
   });
 });
