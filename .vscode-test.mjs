@@ -4,7 +4,7 @@ export default defineConfig({
   files: 'dist/test/**/*.test.js',
   version: 'stable',
   mocha: {
-    ui: 'bdd',
+    ui: 'tdd',
     timeout: 10000
   }
 });
