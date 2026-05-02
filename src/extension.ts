@@ -20,6 +20,7 @@ import {
 import { sortByColumnCommand } from './table/commands/sort';
 import { convertSelectionToTableCommand } from './table/commands/convert';
 import { insertTableCommand } from './insert/insertTable';
+import { upsertTOCCommand } from './structure/commands/toc';
 import { pasteLinkCommand } from './insert/link';
 import { pasteImageCommand } from './insert/image';
 import {
@@ -95,6 +96,9 @@ export function activate(context: vscode.ExtensionContext): void {
   register('markdownFoundry.demoteHeading',       demoteHeadingCommand);
   register('markdownFoundry.toggleTaskList',      toggleTaskListCommand);
   register('markdownFoundry.insertHorizontalRule', insertHorizontalRuleCommand);
+
+  // Structure
+  register('markdownFoundry.toc', upsertTOCCommand);
 
   // Context key for Tab/Shift-Tab/Enter bindings
   registerInTableContext(context);
