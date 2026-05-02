@@ -126,15 +126,6 @@ README accumulates incrementally; there's no release-time rollover. README alway
 - **No task/PR references in code comments** (`// added for issue #12`, `// fix from PR #34`). Those belong in the commit message and rot in the source.
 - **No backwards-compat shims for code that hasn't shipped yet.** Just change it.
 
-## Out of scope for v1
-
-Don't add these without an issue + plan, even if asked inline:
-
-- Smart lists, TOC generation, heading navigation, reflow (v2 features)
-- Multi-line quoted CSV fields
-- HTML tables or nested tables
-- Switching `visualWidth` to a third-party library (planned for v1.1)
-
 ## Agent-specific notes
 
 - The `agents/` folder defines the issue → PR lifecycle. Never modify those files as part of a feature PR — agent workflow changes go in their own PR.
