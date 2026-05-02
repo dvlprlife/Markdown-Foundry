@@ -55,6 +55,7 @@
       { "command": "markdownFoundry.nextRow",                 "title": "Next Row",                  "category": "Markdown Foundry" },
       { "command": "markdownFoundry.pasteLink",               "title": "Paste Link",                "category": "Markdown Foundry" },
       { "command": "markdownFoundry.pasteImage",              "title": "Paste Image",               "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.insertLinkToFile",        "title": "Insert Link to File",       "category": "Markdown Foundry" },
       { "command": "markdownFoundry.toggleBold",              "title": "Toggle Bold",               "category": "Markdown Foundry" },
       { "command": "markdownFoundry.toggleItalic",            "title": "Toggle Italic",             "category": "Markdown Foundry" },
       { "command": "markdownFoundry.toggleBoldItalic",        "title": "Toggle Bold+Italic",        "category": "Markdown Foundry" },
