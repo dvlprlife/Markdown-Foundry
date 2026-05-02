@@ -19,6 +19,7 @@ import {
 } from './table/commands/navigate';
 import { sortByColumnCommand } from './table/commands/sort';
 import { convertSelectionToTableCommand } from './table/commands/convert';
+import { insertTableCommand } from './insert/insertTable';
 import { pasteLinkCommand } from './insert/link';
 import { pasteImageCommand } from './insert/image';
 import {
@@ -61,6 +62,7 @@ export function activate(context: vscode.ExtensionContext): void {
   register('markdownFoundry.moveColumnRight',         moveColumnRightCommand);
   register('markdownFoundry.sortByColumn',            sortByColumnCommand);
   register('markdownFoundry.convertSelectionToTable', convertSelectionToTableCommand);
+  register('markdownFoundry.insertTable',             insertTableCommand);
 
   // Navigation
   register('markdownFoundry.nextCell',     nextCellCommand);

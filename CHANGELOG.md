@@ -4,6 +4,10 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ## [Unreleased]
 
+### Added
+
+- `Insert Table` command — pick from preset sizes (2×2 through 5×4) or enter custom dimensions to insert a pre-aligned Markdown table at the cursor. Header cells default to `Column 1`, `Column 2`, … with the first cell selected for immediate editing. Palette-only ([#72](https://github.com/dvlprlife/Markdown-Foundry/pull/72)).
+
 ## [0.3.0] - 2026-04-25
 
 ### Added
