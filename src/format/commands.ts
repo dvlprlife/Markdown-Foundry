@@ -5,6 +5,8 @@ import {
   wrapLinePrefix,
   wrapHeading,
   adjustHeading,
+  toggleBulletItem,
+  toggleNumberedItem,
   toggleTaskItem
 } from './toggle';
 
@@ -76,6 +78,14 @@ export async function toggleBlockquoteCommand(): Promise<void> {
 
 export async function toggleBlockCodeCommand(): Promise<void> {
   await applyLineRange((text) => wrapFenced(text));
+}
+
+export async function toggleBulletListCommand(): Promise<void> {
+  await applyLineRange(toggleBulletItem);
+}
+
+export async function toggleNumberedListCommand(): Promise<void> {
+  await applyLineRange(toggleNumberedItem);
 }
 
 /**

@@ -7,6 +7,7 @@ All notable changes to the Markdown Foundry extension will be documented in this
 ### Added
 
 - `Insert Table` command — pick from preset sizes (2×2 through 5×4) or enter custom dimensions to insert a pre-aligned Markdown table at the cursor. Header cells default to `Column 1`, `Column 2`, … with the first cell selected for immediate editing. Palette-only ([#72](https://github.com/dvlprlife/Markdown-Foundry/pull/72)).
+- `Toggle Bullet List` and `Toggle Numbered List` commands — plain lines become `- ` bullets or `1.`, `2.`, `3.`… numbered items; re-invoke to strip the prefixes. Indentation preserved for nested lists. Palette-only ([#78](https://github.com/dvlprlife/Markdown-Foundry/pull/78)).
 
 ## [0.3.0] - 2026-04-25
 

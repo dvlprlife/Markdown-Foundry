@@ -29,6 +29,8 @@ import {
   toggleStrikethroughCommand,
   toggleBlockquoteCommand,
   toggleBlockCodeCommand,
+  toggleBulletListCommand,
+  toggleNumberedListCommand,
   toggleInlineCodeCommand,
   toggleHeading1Command,
   toggleHeading2Command,
@@ -80,6 +82,8 @@ export function activate(context: vscode.ExtensionContext): void {
   register('markdownFoundry.toggleStrikethrough', toggleStrikethroughCommand);
   register('markdownFoundry.toggleBlockquote',    toggleBlockquoteCommand);
   register('markdownFoundry.toggleBlockCode',     toggleBlockCodeCommand);
+  register('markdownFoundry.toggleBulletList',    toggleBulletListCommand);
+  register('markdownFoundry.toggleNumberedList',  toggleNumberedListCommand);
   register('markdownFoundry.toggleInlineCode',    toggleInlineCodeCommand);
   register('markdownFoundry.toggleHeading1',      toggleHeading1Command);
   register('markdownFoundry.toggleHeading2',      toggleHeading2Command);

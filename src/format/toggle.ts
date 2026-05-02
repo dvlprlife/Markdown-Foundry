@@ -83,6 +83,53 @@ export function adjustHeading(line: string, delta: number): string {
  * Preserves leading indentation. A bullet line without a checkbox (`- x`) is
  * promoted to an unchecked task (`- [ ] x`).
  */
+const BULLET_RE = /^(\s*)([-*+])\s+/;
+
+/**
+ * Toggle a bullet list prefix on every non-empty line. If every non-empty
+ * line is already bulleted (with `-`, `*`, or `+`), strips the prefix;
+ * otherwise prepends `- ` to every non-empty line. Leading indentation is
+ * preserved so nested lists round-trip cleanly.
+ */
+export function toggleBulletItem(text: string): string {
+  const lines = text.split(/\r?\n/);
+  const allBulleted = lines.every((l) => l === '' || BULLET_RE.test(l));
+
+  if (allBulleted) {
+    return lines.map((l) => l.replace(BULLET_RE, '$1')).join('\n');
+  }
+  return lines
+    .map((l) => (l === '' ? l : l.replace(/^(\s*)/, '$1- ')))
+    .join('\n');
+}
+
+const NUMBERED_RE = /^(\s*)\d+\.\s+/;
+
+/**
+ * Toggle a numbered list prefix on every non-empty line. If every non-empty
+ * line is already numbered (`N. `), strips the prefix; otherwise prepends
+ * sequential `1. `, `2. `, … starting at 1 (incrementing globally across
+ * the selection, including indented lines).
+ */
+export function toggleNumberedItem(text: string): string {
+  const lines = text.split(/\r?\n/);
+  const allNumbered = lines.every((l) => l === '' || NUMBERED_RE.test(l));
+
+  if (allNumbered) {
+    return lines.map((l) => l.replace(NUMBERED_RE, '$1')).join('\n');
+  }
+  let n = 1;
+  return lines
+    .map((l) => {
+      if (l === '') return l;
+      const m = l.match(/^(\s*)(.*)$/);
+      const indent = m ? m[1] : '';
+      const body = m ? m[2] : l;
+      return `${indent}${n++}. ${body}`;
+    })
+    .join('\n');
+}
+
 export function toggleTaskItem(line: string): string {
   const indentMatch = line.match(/^(\s*)(.*)$/);
   const indent = indentMatch ? indentMatch[1] : '';
