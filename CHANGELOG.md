@@ -4,6 +4,10 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ## [Unreleased]
 
+### Changed
+
+- `Paste Link` now also accepts absolute file paths and `file://` URIs from the clipboard, inserting them as relative-path links. Image extensions (`.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.svg`, `.bmp`, `.ico`) are inserted as `![alt](path)`; everything else as `[text](path)`. Non-existent paths are rejected so typos don't sneak in. ([#84](https://github.com/dvlprlife/Markdown-Foundry/pull/84))
+
 ## [0.4.0] - 2026-05-02
 
 ### Added

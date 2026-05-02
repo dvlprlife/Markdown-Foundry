@@ -29,7 +29,7 @@ Markdown Foundry combines fast table editing with one-keystroke Markdown formatt
 
 ### Insertion commands
 
-- **Paste Link** — If the clipboard contains a URL, wrap the selection (or prompt for text) and insert `[text](url)`.
+- **Paste Link** — Insert a Markdown link from the clipboard. Accepts URLs (`https://...`), absolute file paths, and `file://` URIs. URLs and non-image files become `[text](...)`; image files become `![alt](...)`. With a selection, uses it as the link text; otherwise prompts (default = basename for files, URL for URLs).
 - **Paste Image** — Save the clipboard image to a configurable folder and insert a Markdown image reference. On Linux, requires `xclip` (X11) or `wl-clipboard` (Wayland) to be installed.
 
 ### Formatting
