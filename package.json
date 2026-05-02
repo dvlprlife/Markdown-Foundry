@@ -73,7 +73,8 @@
       { "command": "markdownFoundry.promoteHeading",          "title": "Promote Heading",           "category": "Markdown Foundry" },
       { "command": "markdownFoundry.demoteHeading",           "title": "Demote Heading",            "category": "Markdown Foundry" },
       { "command": "markdownFoundry.toggleTaskList",          "title": "Toggle Task List Item",     "category": "Markdown Foundry" },
-      { "command": "markdownFoundry.insertHorizontalRule",    "title": "Insert Horizontal Rule",    "category": "Markdown Foundry" }
+      { "command": "markdownFoundry.insertHorizontalRule",    "title": "Insert Horizontal Rule",    "category": "Markdown Foundry" },
+      { "command": "markdownFoundry.toc",                     "title": "Insert/Update Table of Contents", "category": "Markdown Foundry" }
     ],
     "keybindings": [
       {
@@ -139,6 +140,31 @@
           "type": "string",
           "default": "image-${timestamp}",
           "description": "Filename template for pasted images. Supported tokens: ${timestamp}, ${filename}, ${date}."
+        },
+        "markdownFoundry.toc.minDepth": {
+          "type": "number",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 6,
+          "description": "Lowest heading level included in the generated table of contents (1 = include H1)."
+        },
+        "markdownFoundry.toc.maxDepth": {
+          "type": "number",
+          "default": 6,
+          "minimum": 1,
+          "maximum": 6,
+          "description": "Highest heading level included in the generated table of contents."
+        },
+        "markdownFoundry.toc.indent": {
+          "type": "number",
+          "default": 2,
+          "minimum": 0,
+          "description": "Spaces of indentation per heading depth level in the generated table of contents."
+        },
+        "markdownFoundry.toc.includeMarkers": {
+          "type": "boolean",
+          "default": true,
+          "description": "Wrap the generated table of contents in <!-- markdownfoundry-toc --> markers so it can be updated in place. If false, the command always inserts at the cursor."
         }
       }
     }

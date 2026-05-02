@@ -51,6 +51,10 @@ Markdown Foundry combines fast table editing with one-keystroke Markdown formatt
   ![Toggle a task list item between plain, unchecked, and checked](images/demo/tasklist.gif)
 - **Insert horizontal rule** — drop a `---` line below the cursor's current line.
 
+### Structure
+
+- **Insert/Update Table of Contents** — Generate a nested Markdown TOC from the document's headings and wrap it in `<!-- markdownfoundry-toc -->` markers so subsequent invocations update in place rather than duplicate. Headings inside fenced code blocks and HTML comments are skipped; duplicate headings get `-1`/`-2`/… slug suffixes. Depth filter and indent are configurable via the `markdownFoundry.toc.*` settings.
+
 ## Keybindings
 
 | Shortcut | Command |
@@ -73,6 +77,10 @@ All other commands are available through the Command Palette (search for "Markdo
 | `markdownFoundry.defaultAlignment` | `"left"` | Alignment for new columns. |
 | `markdownFoundry.imageFolder` | `"images"` | Folder (relative to the file) where pasted images are saved. |
 | `markdownFoundry.imageNameFormat` | `"image-${timestamp}"` | Template for pasted image filenames. Tokens: `${timestamp}`, `${date}`, `${filename}`. |
+| `markdownFoundry.toc.minDepth` | `2` | Lowest heading level included in the table of contents. |
+| `markdownFoundry.toc.maxDepth` | `6` | Highest heading level included in the table of contents. |
+| `markdownFoundry.toc.indent` | `2` | Spaces of indentation per heading depth level. |
+| `markdownFoundry.toc.includeMarkers` | `true` | Wrap the TOC in HTML comment markers so it can be updated in place. |
 
 ## Requirements
 
