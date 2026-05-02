@@ -19,7 +19,7 @@ suite('format: wrapInline', () => {
 
   test('does not falsely unwrap a single asterisk when marker is two', () => {
     // `*` is 1 char; `**` would require at least 4 chars to safely contain both ends.
-    assert.strictEqual(wrapInline('*', '**'), '***');
+    assert.strictEqual(wrapInline('*', '**'), '*****');
   });
 
   test('wraps empty string with doubled markers', () => {

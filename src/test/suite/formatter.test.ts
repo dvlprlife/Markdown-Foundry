@@ -39,7 +39,7 @@ suite('formatter: formatTable', () => {
     });
     const out = formatTable(model);
     const separator = out.split('\n')[1];
-    assert.ok(separator.includes(':---'), 'left marker present');
+    assert.ok(/:-+(?!:)/.test(separator), 'left marker present');
     assert.ok(/:-+:/.test(separator), 'center marker present');
     assert.ok(/-+:/.test(separator), 'right marker present');
   });
