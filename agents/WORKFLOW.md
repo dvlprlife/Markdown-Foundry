@@ -65,7 +65,7 @@ The reviewer finds issues labeled `agent` + `status: in-review`.
 
 1. Locates the open PR referencing the issue (`Closes #{number}`)
 2. Gathers the issue body, the `## Implementation Plan` comment, the PR, and the diff
-3. Reviews against four criteria: Implementation Plan adherence, Acceptance Criteria, code quality, and CLAUDE.md compliance
+3. Reviews against six criteria: Implementation Plan adherence, Acceptance Criteria, code quality, CLAUDE.md compliance, CHANGELOG compliance, and README compliance
 4. Posts a review on the PR (request changes if findings exist, comment review otherwise — agents cannot self-approve)
 5. Posts a summary comment on the issue
 
