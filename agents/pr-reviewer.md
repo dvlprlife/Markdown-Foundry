@@ -74,11 +74,13 @@ gh pr review {pr_number} --repo dvlprlife/Markdown-Foundry --comment --body "...
 ```
 gh pr review {pr_number} --repo dvlprlife/Markdown-Foundry --comment --body "## Automated Review
 
-All four criteria satisfied:
+All six criteria satisfied:
 - Plan adherence: ✓
 - Acceptance criteria: ✓
 - Code quality: ✓
 - CLAUDE.md compliance: ✓
+- CHANGELOG compliance: ✓
+- README compliance: ✓
 
 Ready for human approval."
 ```
