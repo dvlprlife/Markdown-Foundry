@@ -32,3 +32,6 @@ jobs:
       - name: Run tests (macOS/Windows)
         if: runner.os != 'Linux'
         run: npm test
+      - name: Package smoke test
+        if: runner.os == 'Linux'
+        run: npx @vscode/vsce package -o mdfoundry-ci.vsix
