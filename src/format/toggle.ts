@@ -78,11 +78,6 @@ export function adjustHeading(line: string, delta: number): string {
   return '#'.repeat(newLevel) + ' ' + m[2];
 }
 
-/**
- * Cycle a line through: plain → `- [ ] x` → `- [x] x` → `- [ ] x` → ... .
- * Preserves leading indentation. A bullet line without a checkbox (`- x`) is
- * promoted to an unchecked task (`- [ ] x`).
- */
 const BULLET_RE = /^(\s*)([-*+])\s+/;
 
 /**
@@ -130,6 +125,11 @@ export function toggleNumberedItem(text: string): string {
     .join('\n');
 }
 
+/**
+ * Cycle a line through: plain → `- [ ] x` → `- [x] x` → `- [ ] x` → ... .
+ * Preserves leading indentation. A bullet line without a checkbox (`- x`) is
+ * promoted to an unchecked task (`- [ ] x`).
+ */
 export function toggleTaskItem(line: string): string {
   const indentMatch = line.match(/^(\s*)(.*)$/);
   const indent = indentMatch ? indentMatch[1] : '';
