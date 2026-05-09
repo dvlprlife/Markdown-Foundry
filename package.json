@@ -118,6 +118,63 @@
         "when": "editorTextFocus && editorLangId == markdown && !suggestWidgetVisible"
       }
     ],
+    "submenus": [
+      {
+        "id": "markdownFoundry.editorContext",
+        "label": "Markdown Foundry"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "submenu": "markdownFoundry.editorContext",
+          "group": "markdownFoundry@1",
+          "when": "editorLangId == markdown"
+        }
+      ],
+      "markdownFoundry.editorContext": [
+        { "command": "markdownFoundry.toggleBold",          "group": "1_inline@1" },
+        { "command": "markdownFoundry.toggleItalic",        "group": "1_inline@2" },
+        { "command": "markdownFoundry.toggleBoldItalic",    "group": "1_inline@3" },
+        { "command": "markdownFoundry.toggleStrikethrough", "group": "1_inline@4" },
+        { "command": "markdownFoundry.toggleInlineCode",    "group": "1_inline@5" },
+
+        { "command": "markdownFoundry.toggleBlockquote",    "group": "2_block@1" },
+        { "command": "markdownFoundry.toggleBlockCode",     "group": "2_block@2" },
+        { "command": "markdownFoundry.toggleBulletList",    "group": "2_block@3" },
+        { "command": "markdownFoundry.toggleNumberedList",  "group": "2_block@4" },
+        { "command": "markdownFoundry.toggleTaskList",      "group": "2_block@5" },
+
+        { "command": "markdownFoundry.toggleHeading1",      "group": "3_heading@1" },
+        { "command": "markdownFoundry.toggleHeading2",      "group": "3_heading@2" },
+        { "command": "markdownFoundry.toggleHeading3",      "group": "3_heading@3" },
+        { "command": "markdownFoundry.toggleHeading4",      "group": "3_heading@4" },
+        { "command": "markdownFoundry.toggleHeading5",      "group": "3_heading@5" },
+        { "command": "markdownFoundry.toggleHeading6",      "group": "3_heading@6" },
+        { "command": "markdownFoundry.promoteHeading",      "group": "3_heading@7" },
+        { "command": "markdownFoundry.demoteHeading",       "group": "3_heading@8" },
+
+        { "command": "markdownFoundry.insertHorizontalRule","group": "4_insert@1" },
+        { "command": "markdownFoundry.insertLinkToFile",    "group": "4_insert@2" },
+        { "command": "markdownFoundry.pasteLink",           "group": "4_insert@3" },
+        { "command": "markdownFoundry.pasteImage",          "group": "4_insert@4" },
+        { "command": "markdownFoundry.insertTable",         "group": "4_insert@5" },
+        { "command": "markdownFoundry.toc",                 "group": "4_insert@6" },
+
+        { "command": "markdownFoundry.alignTable",          "group": "5_table@1",  "when": "markdownFoundry.inTable" },
+        { "command": "markdownFoundry.insertRowAbove",      "group": "5_table@2",  "when": "markdownFoundry.inTable" },
+        { "command": "markdownFoundry.insertRowBelow",      "group": "5_table@3",  "when": "markdownFoundry.inTable" },
+        { "command": "markdownFoundry.insertColumnLeft",    "group": "5_table@4",  "when": "markdownFoundry.inTable" },
+        { "command": "markdownFoundry.insertColumnRight",   "group": "5_table@5",  "when": "markdownFoundry.inTable" },
+        { "command": "markdownFoundry.deleteRow",           "group": "5_table@6",  "when": "markdownFoundry.inTable" },
+        { "command": "markdownFoundry.deleteColumn",        "group": "5_table@7",  "when": "markdownFoundry.inTable" },
+        { "command": "markdownFoundry.moveRowUp",           "group": "5_table@8",  "when": "markdownFoundry.inTable" },
+        { "command": "markdownFoundry.moveRowDown",         "group": "5_table@9",  "when": "markdownFoundry.inTable" },
+        { "command": "markdownFoundry.moveColumnLeft",      "group": "5_table@10", "when": "markdownFoundry.inTable" },
+        { "command": "markdownFoundry.moveColumnRight",     "group": "5_table@11", "when": "markdownFoundry.inTable" },
+        { "command": "markdownFoundry.sortByColumn",        "group": "5_table@12", "when": "markdownFoundry.inTable" }
+      ]
+    },
     "configuration": {
       "title": "Markdown Foundry",
       "properties": {

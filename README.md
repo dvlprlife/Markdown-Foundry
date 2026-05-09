@@ -68,7 +68,7 @@ Markdown Foundry combines fast table editing with one-keystroke Markdown formatt
 | `Ctrl+B` / `Cmd+B` | Toggle bold (when editing a Markdown file) |
 | `Ctrl+I` / `Cmd+I` | Toggle italic (when editing a Markdown file) |
 
-All other commands are available through the Command Palette (search for "Markdown Foundry").
+All other commands are available through the Command Palette (search for "Markdown Foundry") or by right-clicking inside a Markdown file — every command lives under a `Markdown Foundry` submenu, grouped into Inline, Block, Heading, Insert, and (when the cursor is in a table) Table sections.
 
 ## Settings
 

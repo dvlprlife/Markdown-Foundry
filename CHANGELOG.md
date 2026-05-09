@@ -6,6 +6,7 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ### Added
 
+- Editor context submenu listing all Markdown Foundry commands, grouped by Inline / Block / Heading / Insert / Table; the Table group only appears when the cursor is inside a table ([#100](https://github.com/dvlprlife/Markdown-Foundry/pull/100)).
 - `Insert Link to File` command — pick any workspace file from a quick-pick (current-folder-first, alphabetical) and insert a relative-path link at the cursor. Image files become `![alt](path)`, everything else `[text](path)`; selection (when present) is used as the link text. Palette-only ([#85](https://github.com/dvlprlife/Markdown-Foundry/pull/85)).
 
 ### Changed
