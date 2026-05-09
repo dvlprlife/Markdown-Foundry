@@ -126,11 +126,18 @@ export function toggleNumberedItem(text: string): string {
 }
 
 /**
- * Cycle a line through: plain → `- [ ] x` → `- [x] x` → `- [ ] x` → ... .
- * Preserves leading indentation. A bullet line without a checkbox (`- x`) is
- * promoted to an unchecked task (`- [ ] x`).
+ * Cycle each non-empty line through: plain → `- [ ] x` → `- [x] x` → `- [ ] x`
+ * → ... . Preserves leading indentation. A bullet line without a checkbox
+ * (`- x`) is promoted to an unchecked task (`- [ ] x`). Empty lines pass
+ * through unchanged.
  */
-export function toggleTaskItem(line: string): string {
+export function toggleTaskItem(text: string): string {
+  return text.split(/\r?\n/).map(toggleTaskLine).join('\n');
+}
+
+function toggleTaskLine(line: string): string {
+  if (line === '') return line;
+
   const indentMatch = line.match(/^(\s*)(.*)$/);
   const indent = indentMatch ? indentMatch[1] : '';
   const body = indentMatch ? indentMatch[2] : line;
@@ -142,6 +149,6 @@ export function toggleTaskItem(line: string): string {
   if (unchecked) return `${indent}- [x] ${unchecked[1]}`;
 
   const bullet = body.match(/^-\s+(.*)$/);
-  const text = bullet ? bullet[1] : body;
-  return `${indent}- [ ] ${text}`;
+  const bodyText = bullet ? bullet[1] : body;
+  return `${indent}- [ ] ${bodyText}`;
 }

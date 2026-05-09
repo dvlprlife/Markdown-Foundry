@@ -10,6 +10,7 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ### Changed
 
+- `Toggle Task List Item` now applies to every non-empty line in a multi-line selection, matching the behavior of `Toggle Bullet List` and `Toggle Numbered List`. With no selection, behavior is unchanged — the cursor's line is cycled. ([#99](https://github.com/dvlprlife/Markdown-Foundry/pull/99))
 - `Paste Link` now also accepts absolute file paths and `file://` URIs from the clipboard, inserting them as relative-path links. Image extensions (`.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.svg`, `.bmp`, `.ico`) are inserted as `![alt](path)`; everything else as `[text](path)`. Non-existent paths are rejected so typos don't sneak in. ([#84](https://github.com/dvlprlife/Markdown-Foundry/pull/84))
 
 ## [0.4.0] - 2026-05-02
