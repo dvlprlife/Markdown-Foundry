@@ -4,6 +4,8 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-05-09
+
 ### Added
 
 - Editor context submenu listing all Markdown Foundry commands, grouped by Inline / Block / Heading / Insert / Table; the Table group only appears when the cursor is inside a table ([#100](https://github.com/dvlprlife/Markdown-Foundry/pull/100)).
