@@ -141,7 +141,7 @@ export async function demoteHeadingCommand(): Promise<void> {
 }
 
 export async function toggleTaskListCommand(): Promise<void> {
-  await applyCurrentLine(toggleTaskItem);
+  await applyLineRange(toggleTaskItem);
 }
 
 export async function insertHorizontalRuleCommand(): Promise<void> {

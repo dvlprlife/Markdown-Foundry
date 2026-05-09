@@ -47,7 +47,7 @@ Markdown Foundry combines fast table editing with one-keystroke Markdown formatt
 
   ![Toggle, promote, and demote headings](images/demo/heading.gif)
 
-- **Toggle task list item** — cycle the current line through plain → `- [ ] todo` → `- [x] done` → `- [ ] todo` …, preserving leading indentation.
+- **Toggle task list item** — cycle every line in the selection (or the current line if none) through plain → `- [ ] todo` → `- [x] done` → `- [ ] todo` …, preserving leading indentation.
 
   ![Toggle a task list item between plain, unchecked, and checked](images/demo/tasklist.gif)
 - **Insert horizontal rule** — drop a `---` line below the cursor's current line.

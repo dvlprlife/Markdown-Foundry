@@ -189,6 +189,27 @@ suite('format: toggleTaskItem', () => {
     assert.strictEqual(toggleTaskItem('  - [ ] do laundry'), '  - [x] do laundry');
     assert.strictEqual(toggleTaskItem('  - [x] do laundry'), '  - [ ] do laundry');
   });
+
+  test('multi-line plain → all become unchecked tasks', () => {
+    assert.strictEqual(
+      toggleTaskItem('one\ntwo\nthree'),
+      '- [ ] one\n- [ ] two\n- [ ] three'
+    );
+  });
+
+  test('multi-line mixed (plain / unchecked / checked) → each line cycles independently', () => {
+    assert.strictEqual(
+      toggleTaskItem('plain\n- [ ] todo\n- [x] done'),
+      '- [ ] plain\n- [x] todo\n- [ ] done'
+    );
+  });
+
+  test('empty lines inside a multi-line block pass through unchanged', () => {
+    assert.strictEqual(
+      toggleTaskItem('first\n\nthird'),
+      '- [ ] first\n\n- [ ] third'
+    );
+  });
 });
 
 suite('format: toggleBulletItem', () => {
