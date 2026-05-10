@@ -6,7 +6,7 @@ Markdown Foundry combines fast table editing with one-keystroke Markdown formatt
 
 ## Demo
 
-![Browse Markdown Foundry commands in the Command Palette](images/demo/menu.gif)
+![Right-click a Markdown file to open the Markdown Foundry submenu](images/demo/contextmenu.gif)
 
 ![Align a Markdown table with one command](images/demo/align.gif)
 
