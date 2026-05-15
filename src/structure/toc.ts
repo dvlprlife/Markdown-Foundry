@@ -35,7 +35,7 @@ export function extractHeadings(text: string): Heading[] {
     let line = raw;
     if (inHtmlComment) {
       const closeIdx = line.indexOf('-->');
-      if (closeIdx < 0) continue;
+      if (closeIdx < 0) {continue;}
       line = line.slice(closeIdx + 3);
       inHtmlComment = false;
     }
@@ -55,7 +55,7 @@ export function extractHeadings(text: string): Heading[] {
     }
 
     const m = lineToScan.match(HEADING_RE);
-    if (!m) continue;
+    if (!m) {continue;}
     const level = m[1].length;
     const text = m[2];
     const slug = slugify(text);
@@ -96,10 +96,10 @@ export function slugify(text: string): string {
 export function dedupeSlugs(headings: Heading[]): Heading[] {
   const seen = new Map<string, number>();
   return headings.map((h) => {
-    if (h.slug === '') return h;
+    if (h.slug === '') {return h;}
     const count = seen.get(h.slug) ?? 0;
     seen.set(h.slug, count + 1);
-    if (count === 0) return h;
+    if (count === 0) {return h;}
     return { ...h, slug: `${h.slug}-${count}` };
   });
 }
@@ -119,7 +119,7 @@ export function generateTOC(headings: Heading[], options: TOCOptions): string {
     return `${indent.repeat(depth)}- [${h.text}](#${h.slug})`;
   });
   const body = lines.join('\n');
-  if (!options.includeMarkers) return body;
+  if (!options.includeMarkers) {return body;}
   return `${TOC_OPEN_MARKER}\n${body}\n${TOC_CLOSE_MARKER}`;
 }
 
@@ -130,9 +130,9 @@ export interface TOCRange {
 
 export function locateExistingTOC(text: string): TOCRange | undefined {
   const startOffset = text.indexOf(TOC_OPEN_MARKER);
-  if (startOffset < 0) return undefined;
+  if (startOffset < 0) {return undefined;}
   const endSearchFrom = startOffset + TOC_OPEN_MARKER.length;
   const endOffset = text.indexOf(TOC_CLOSE_MARKER, endSearchFrom);
-  if (endOffset < 0) return undefined;
+  if (endOffset < 0) {return undefined;}
   return { startOffset, endOffset: endOffset + TOC_CLOSE_MARKER.length };
 }

@@ -16,7 +16,7 @@ import {
  */
 async function applyInline(marker: string): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
   const selection = editor.selection;
 
   if (selection.isEmpty) {
@@ -58,7 +58,7 @@ async function applyLineRange(
   transform: (text: string) => string
 ): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
   const selection = editor.selection;
 
   const startLine = selection.start.line;
@@ -97,7 +97,7 @@ async function applyCurrentLine(
   transform: (line: string) => string
 ): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
   const cursorLine = editor.selection.active.line;
   const line = editor.document.lineAt(cursorLine);
   const replaced = transform(line.text);
@@ -146,7 +146,7 @@ export async function toggleTaskListCommand(): Promise<void> {
 
 export async function insertHorizontalRuleCommand(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
   const cursorLine = editor.selection.active.line;
   const line = editor.document.lineAt(cursorLine);
   const insertPos = new vscode.Position(cursorLine, line.text.length);

@@ -53,11 +53,11 @@ export function validateDimension(
   max: number
 ): string | undefined {
   const trimmed = input.trim();
-  if (trimmed.length === 0) return `${label} is required`;
-  if (!/^-?\d+$/.test(trimmed)) return `${label} must be a whole number`;
+  if (trimmed.length === 0) {return `${label} is required`;}
+  if (!/^-?\d+$/.test(trimmed)) {return `${label} must be a whole number`;}
   const n = Number(trimmed);
-  if (n < min) return `${label} must be at least ${min}`;
-  if (n > max) return `${label} must be at most ${max}`;
+  if (n < min) {return `${label} must be at least ${min}`;}
+  if (n > max) {return `${label} must be at most ${max}`;}
   return undefined;
 }
 
@@ -73,27 +73,27 @@ export function computePadding(
 }
 
 function leadingPadding(textBefore: string, eol: string): string {
-  if (textBefore.length === 0) return '';
-  if (!textBefore.endsWith(eol)) return eol + eol;
+  if (textBefore.length === 0) {return '';}
+  if (!textBefore.endsWith(eol)) {return eol + eol;}
   const beforeNewline = textBefore.slice(0, -eol.length);
-  if (beforeNewline.length === 0 || beforeNewline.endsWith(eol)) return '';
+  if (beforeNewline.length === 0 || beforeNewline.endsWith(eol)) {return '';}
   return eol;
 }
 
 function trailingPadding(textAfter: string, eol: string): string {
-  if (textAfter.length === 0) return '';
-  if (!textAfter.startsWith(eol)) return eol + eol;
+  if (textAfter.length === 0) {return '';}
+  if (!textAfter.startsWith(eol)) {return eol + eol;}
   const afterNewline = textAfter.slice(eol.length);
-  if (afterNewline.length === 0 || afterNewline.startsWith(eol)) return '';
+  if (afterNewline.length === 0 || afterNewline.startsWith(eol)) {return '';}
   return eol;
 }
 
 export async function insertTableCommand(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
 
   const dims = await pickDimensions();
-  if (!dims) return;
+  if (!dims) {return;}
 
   const config = vscode.workspace.getConfiguration('markdownFoundry');
   const alignment = config.get<Alignment>('defaultAlignment') ?? 'left';
@@ -112,10 +112,10 @@ export async function insertTableCommand(): Promise<void> {
   const replacement = leading + body + trailing;
 
   const ok = await editor.edit((edit) => edit.replace(selection, replacement));
-  if (!ok) return;
+  if (!ok) {return;}
 
   const headerOffsetWithinBody = body.indexOf(FIRST_HEADER_LABEL);
-  if (headerOffsetWithinBody < 0) return;
+  if (headerOffsetWithinBody < 0) {return;}
   const headerStartOffset = startOffset + leading.length + headerOffsetWithinBody;
   const headerEndOffset = headerStartOffset + FIRST_HEADER_LABEL.length;
   const start = document.positionAt(headerStartOffset);
@@ -136,7 +136,7 @@ async function pickDimensions(): Promise<PresetSize | undefined> {
   const picked = await vscode.window.showQuickPick(items, {
     placeHolder: 'Table size'
   });
-  if (!picked) return undefined;
+  if (!picked) {return undefined;}
 
   if (picked.label !== customLabel) {
     const preset = PRESETS.find((p) => `${p.rows}×${p.cols}` === picked.label);
@@ -148,14 +148,14 @@ async function pickDimensions(): Promise<PresetSize | undefined> {
     value: '3',
     validateInput: (v) => validateDimension(v, 'Rows', ROW_MIN, ROW_MAX)
   });
-  if (rowsInput === undefined) return undefined;
+  if (rowsInput === undefined) {return undefined;}
 
   const colsInput = await vscode.window.showInputBox({
     prompt: `Columns (${COL_MIN}-${COL_MAX})`,
     value: '3',
     validateInput: (v) => validateDimension(v, 'Columns', COL_MIN, COL_MAX)
   });
-  if (colsInput === undefined) return undefined;
+  if (colsInput === undefined) {return undefined;}
 
   return { rows: Number(rowsInput.trim()), cols: Number(colsInput.trim()) };
 }

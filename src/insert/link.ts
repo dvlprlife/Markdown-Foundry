@@ -20,7 +20,7 @@ export function classifyClipboard(raw: string, options: ClassifyOptions = {}): C
   const platform = options.platform ?? process.platform;
   const exists = options.existsSync ?? fs.existsSync;
   const trimmed = raw.trim();
-  if (trimmed.length === 0) return { kind: 'none' };
+  if (trimmed.length === 0) {return { kind: 'none' };}
 
   if (URL_RE.test(trimmed)) {
     return { kind: 'url', value: trimmed };
@@ -29,12 +29,12 @@ export function classifyClipboard(raw: string, options: ClassifyOptions = {}): C
   if (/^file:\/\//i.test(trimmed)) {
     try {
       const url = new NodeURL(trimmed);
-      if (url.pathname === '' || url.pathname === '/') return { kind: 'none' };
+      if (url.pathname === '' || url.pathname === '/') {return { kind: 'none' };}
       let p = decodeURIComponent(url.pathname);
       if (platform === 'win32' && /^\/[A-Za-z]:/.test(p)) {
         p = p.slice(1);
       }
-      if (platform === 'win32') p = p.replace(/\//g, '\\');
+      if (platform === 'win32') {p = p.replace(/\//g, '\\');}
       if (isAbsoluteAcross(p, platform) && exists(p)) {
         return { kind: 'path', absPath: p, isImage: isImageExtension(p) };
       }
@@ -57,7 +57,7 @@ function isAbsoluteAcross(p: string, platform: NodeJS.Platform): boolean {
 
 export async function pasteLinkCommand(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
 
   const document = editor.document;
   const raw = await vscode.env.clipboard.readText();
@@ -80,7 +80,7 @@ export async function pasteLinkCommand(): Promise<void> {
       url,
       'Link text (leave empty to use the URL)'
     );
-    if (text === undefined) return;
+    if (text === undefined) {return;}
     await applyEdit(editor, selection, `[${text}](${url})`);
     return;
   }
@@ -101,7 +101,7 @@ export async function pasteLinkCommand(): Promise<void> {
     fallback,
     `Link text (leave empty to use ${fallback})`
   );
-  if (text === undefined) return;
+  if (text === undefined) {return;}
 
   const markdown = result.isImage ? `![${text}](${rel})` : `[${text}](${rel})`;
   await applyEdit(editor, selection, markdown);
@@ -112,9 +112,9 @@ async function resolveLinkText(
   fallback: string,
   prompt: string
 ): Promise<string | undefined> {
-  if (selectedText.length > 0) return selectedText;
+  if (selectedText.length > 0) {return selectedText;}
   const input = await vscode.window.showInputBox({ prompt, placeHolder: fallback });
-  if (input === undefined) return undefined;
+  if (input === undefined) {return undefined;}
   return input.length > 0 ? input : fallback;
 }
 

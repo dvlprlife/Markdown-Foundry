@@ -8,7 +8,7 @@ import {
 
 export async function upsertTOCCommand(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
 
   const document = editor.document;
   const text = document.getText();

@@ -106,9 +106,9 @@ function cellToAlignment(cell: string): Alignment {
   const startsWithColon = trimmed.startsWith(':');
   const endsWithColon = trimmed.endsWith(':');
 
-  if (startsWithColon && endsWithColon) return 'center';
-  if (endsWithColon) return 'right';
-  if (startsWithColon) return 'left';
+  if (startsWithColon && endsWithColon) {return 'center';}
+  if (endsWithColon) {return 'right';}
+  if (startsWithColon) {return 'left';}
   return 'none';
 }
 
@@ -117,7 +117,7 @@ function cellToAlignment(cell: string): Alignment {
  * Pads with empty strings, truncates extras.
  */
 function normalizeRowWidth(row: string[], width: number): string[] {
-  if (row.length === width) return row;
+  if (row.length === width) {return row;}
   if (row.length < width) {
     return [...row, ...Array(width - row.length).fill('')];
   }

@@ -60,11 +60,11 @@ suite('pasteLink: classifyClipboard', () => {
   });
 
   test('file:// URI on POSIX resolves to a path that exists', () => {
-    if (process.platform === 'win32') return;
+    if (process.platform === 'win32') {return;}
     const uri = 'file://' + txtFile;
     const r = classifyClipboard(uri, { platform: 'linux' });
     assert.strictEqual(r.kind, 'path');
-    if (r.kind === 'path') assert.strictEqual(r.absPath, txtFile);
+    if (r.kind === 'path') {assert.strictEqual(r.absPath, txtFile);}
   });
 
   test('file:// URI on Windows strips the leading slash before the drive letter', () => {
@@ -92,7 +92,7 @@ suite('pasteLink: classifyClipboard', () => {
         : 'file://' + target.replace(/ /g, '%20');
       const r = classifyClipboard(uri);
       assert.strictEqual(r.kind, 'path');
-      if (r.kind === 'path') assert.strictEqual(r.absPath, target);
+      if (r.kind === 'path') {assert.strictEqual(r.absPath, target);}
     } finally {
       fs.rmSync(target, { force: true });
     }
