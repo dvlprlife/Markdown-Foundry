@@ -72,9 +72,9 @@ export function wrapHeading(line: string, level: number): string {
  */
 export function adjustHeading(line: string, delta: number): string {
   const m = line.match(/^(#{1,6})\s+(.*)$/);
-  if (!m) return line;
+  if (!m) {return line;}
   const newLevel = m[1].length + delta;
-  if (newLevel < 1 || newLevel > 6) return line;
+  if (newLevel < 1 || newLevel > 6) {return line;}
   return '#'.repeat(newLevel) + ' ' + m[2];
 }
 
@@ -116,7 +116,7 @@ export function toggleNumberedItem(text: string): string {
   let n = 1;
   return lines
     .map((l) => {
-      if (l === '') return l;
+      if (l === '') {return l;}
       const m = l.match(/^(\s*)(.*)$/);
       const indent = m ? m[1] : '';
       const body = m ? m[2] : l;
@@ -136,17 +136,17 @@ export function toggleTaskItem(text: string): string {
 }
 
 function toggleTaskLine(line: string): string {
-  if (line === '') return line;
+  if (line === '') {return line;}
 
   const indentMatch = line.match(/^(\s*)(.*)$/);
   const indent = indentMatch ? indentMatch[1] : '';
   const body = indentMatch ? indentMatch[2] : line;
 
   const checked = body.match(/^-\s+\[x\]\s+(.*)$/i);
-  if (checked) return `${indent}- [ ] ${checked[1]}`;
+  if (checked) {return `${indent}- [ ] ${checked[1]}`;}
 
   const unchecked = body.match(/^-\s+\[ \]\s+(.*)$/);
-  if (unchecked) return `${indent}- [x] ${unchecked[1]}`;
+  if (unchecked) {return `${indent}- [x] ${unchecked[1]}`;}
 
   const bullet = body.match(/^-\s+(.*)$/);
   const bodyText = bullet ? bullet[1] : body;

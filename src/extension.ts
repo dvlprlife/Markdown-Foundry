@@ -108,9 +108,9 @@ export function activate(context: vscode.ExtensionContext): void {
   // Align on save (opt-in via config)
   context.subscriptions.push(
     vscode.workspace.onWillSaveTextDocument((event) => {
-      if (event.document.languageId !== 'markdown') return;
+      if (event.document.languageId !== 'markdown') {return;}
       const config = vscode.workspace.getConfiguration('markdownFoundry');
-      if (!config.get<boolean>('alignOnSave')) return;
+      if (!config.get<boolean>('alignOnSave')) {return;}
       event.waitUntil(Promise.resolve(alignAllTablesInDocument(event.document)));
     })
   );

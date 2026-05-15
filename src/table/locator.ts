@@ -149,8 +149,8 @@ function characterOffsetToColumnIndex(lineText: string, charOffset: number): num
   let column = 0;
   let i = 0;
   // Skip leading indent and the first |
-  while (i < lineText.length && lineText[i] !== '|') i++;
-  if (i < lineText.length) i++; // consume opening |
+  while (i < lineText.length && lineText[i] !== '|') {i++;}
+  if (i < lineText.length) {i++;} // consume opening |
 
   while (i < charOffset && i < lineText.length) {
     if (lineText[i] === '\\' && i + 1 < lineText.length && lineText[i + 1] === '|') {

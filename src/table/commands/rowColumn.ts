@@ -12,7 +12,7 @@ async function transformTable(
   transform: (model: TableModel, coords: { rowIndex: number; columnIndex: number }) => TableModel | null
 ): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
 
   const document = editor.document;
   const cursorLine = editor.selection.active.line;
@@ -30,7 +30,7 @@ async function transformTable(
 
   const model = parseTable(document, location);
   const newModel = transform(model, coords);
-  if (!newModel) return;
+  if (!newModel) {return;}
 
   const formatted = formatTable(newModel);
   await editor.edit((edit) => {
@@ -96,7 +96,7 @@ export async function deleteRowCommand(): Promise<void> {
       vscode.window.showInformationMessage('Markdown Foundry: cannot delete the header row.');
       return null;
     }
-    if (model.rows.length === 0) return null;
+    if (model.rows.length === 0) {return null;}
     const rows = [...model.rows];
     rows.splice(rowIndex, 1);
     return { ...model, rows };
@@ -124,7 +124,7 @@ export async function deleteColumnCommand(): Promise<void> {
 
 export async function moveRowUpCommand(): Promise<void> {
   await transformTable((model, { rowIndex }) => {
-    if (rowIndex <= 0) return null;
+    if (rowIndex <= 0) {return null;}
     const rows = [...model.rows];
     [rows[rowIndex - 1], rows[rowIndex]] = [rows[rowIndex], rows[rowIndex - 1]];
     return { ...model, rows };
@@ -133,7 +133,7 @@ export async function moveRowUpCommand(): Promise<void> {
 
 export async function moveRowDownCommand(): Promise<void> {
   await transformTable((model, { rowIndex }) => {
-    if (rowIndex < 0 || rowIndex >= model.rows.length - 1) return null;
+    if (rowIndex < 0 || rowIndex >= model.rows.length - 1) {return null;}
     const rows = [...model.rows];
     [rows[rowIndex + 1], rows[rowIndex]] = [rows[rowIndex], rows[rowIndex + 1]];
     return { ...model, rows };
@@ -142,14 +142,14 @@ export async function moveRowDownCommand(): Promise<void> {
 
 export async function moveColumnLeftCommand(): Promise<void> {
   await transformTable((model, { columnIndex }) => {
-    if (columnIndex <= 0) return null;
+    if (columnIndex <= 0) {return null;}
     return swapColumns(model, columnIndex, columnIndex - 1);
   });
 }
 
 export async function moveColumnRightCommand(): Promise<void> {
   await transformTable((model, { columnIndex }) => {
-    if (columnIndex >= model.headers.length - 1) return null;
+    if (columnIndex >= model.headers.length - 1) {return null;}
     return swapColumns(model, columnIndex, columnIndex + 1);
   });
 }

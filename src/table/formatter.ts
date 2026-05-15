@@ -67,7 +67,7 @@ function formatSeparator(alignments: Alignment[], widths: number[]): string {
 
 function padCell(cell: string, width: number, alignment: Alignment): string {
   const diff = width - visualWidth(cell);
-  if (diff <= 0) return cell;
+  if (diff <= 0) {return cell;}
 
   switch (alignment) {
     case 'right':

@@ -15,7 +15,7 @@ import { formatTable } from '../formatter';
  */
 export async function convertSelectionToTableCommand(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
 
   const selection = editor.selection;
   if (selection.isEmpty) {
@@ -33,7 +33,7 @@ export async function convertSelectionToTableCommand(): Promise<void> {
     const lines = text.split(/\r?\n/).filter((line) => line.trim().length > 0);
     grid = lines.map((line) => splitLine(line, delimiter));
   }
-  if (grid.length === 0) return;
+  if (grid.length === 0) {return;}
   const columnCount = Math.max(...grid.map((row) => row.length));
   const normalized = grid.map((row) =>
     row.length === columnCount ? row : [...row, ...Array(columnCount - row.length).fill('')]
@@ -64,8 +64,8 @@ export async function convertSelectionToTableCommand(): Promise<void> {
 type Delimiter = 'tab' | 'comma' | 'whitespace';
 
 function detectDelimiter(text: string): Delimiter {
-  if (text.includes('\t')) return 'tab';
-  if (text.includes(',')) return 'comma';
+  if (text.includes('\t')) {return 'tab';}
+  if (text.includes(',')) {return 'comma';}
   return 'whitespace';
 }
 

@@ -10,7 +10,7 @@ const execFileAsync = promisify(execFile);
 // out to a platform-specific helper.
 export async function pasteImageCommand(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
 
   const document = editor.document;
   if (document.uri.scheme !== 'file') {
@@ -196,8 +196,8 @@ async function runAndCapture(
 function readStderr(err: unknown): string {
   if (typeof err === 'object' && err !== null && 'stderr' in err) {
     const stderr = (err as { stderr: unknown }).stderr;
-    if (typeof stderr === 'string') return stderr;
-    if (Buffer.isBuffer(stderr)) return stderr.toString();
+    if (typeof stderr === 'string') {return stderr;}
+    if (Buffer.isBuffer(stderr)) {return stderr.toString();}
   }
   return '';
 }

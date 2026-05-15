@@ -29,9 +29,9 @@ export function sortFileItems<T extends SortableItem>(items: T[], currentDir: st
     sameFolder: path.dirname(item.fsPath) === currentDir
   }));
   decorated.sort((a, b) => {
-    if (a.sameFolder !== b.sameFolder) return a.sameFolder ? -1 : 1;
+    if (a.sameFolder !== b.sameFolder) {return a.sameFolder ? -1 : 1;}
     const cmp = a.item.relPath.localeCompare(b.item.relPath, undefined, { sensitivity: 'base' });
-    if (cmp !== 0) return cmp;
+    if (cmp !== 0) {return cmp;}
     return a.idx - b.idx;
   });
   return decorated.map((d) => d.item);
@@ -48,7 +48,7 @@ interface FileQuickPickItem extends vscode.QuickPickItem {
 
 export async function insertLinkToFileCommand(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
 
   const document = editor.document;
   if (document.isUntitled || document.uri.scheme !== 'file') {
@@ -89,7 +89,7 @@ export async function insertLinkToFileCommand(): Promise<void> {
     matchOnDescription: true,
     placeHolder
   });
-  if (!picked) return;
+  if (!picked) {return;}
 
   const rel = toRelativeForwardSlash(docPath, picked.fsPath);
   const selection = editor.selection;

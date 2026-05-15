@@ -11,7 +11,7 @@ import { formatTable } from '../formatter';
  */
 export async function sortByColumnCommand(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
   const document = editor.document;
   const cursorLine = editor.selection.active.line;
   const location = locateTable(document, cursorLine);
@@ -21,7 +21,7 @@ export async function sortByColumnCommand(): Promise<void> {
   }
 
   const coords = cursorToTableCoords(document, location, editor.selection.active);
-  if (!coords) return;
+  if (!coords) {return;}
 
   const direction = await vscode.window.showQuickPick(
     [
@@ -30,14 +30,14 @@ export async function sortByColumnCommand(): Promise<void> {
     ],
     { placeHolder: `Sort direction for column ${coords.columnIndex + 1}` }
   );
-  if (!direction) return;
+  if (!direction) {return;}
 
   const model = parseTable(document, location);
   const col = coords.columnIndex;
 
   const isNumeric = model.rows.every((row) => {
     const value = (row[col] ?? '').trim();
-    if (value === '') return true;
+    if (value === '') {return true;}
     return !isNaN(Number(value));
   });
 

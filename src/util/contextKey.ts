@@ -34,8 +34,8 @@ export function registerInTableContext(context: vscode.ExtensionContext): void {
 }
 
 function isInTable(editor: vscode.TextEditor | undefined): boolean {
-  if (!editor) return false;
-  if (editor.document.languageId !== 'markdown') return false;
+  if (!editor) {return false;}
+  if (editor.document.languageId !== 'markdown') {return false;}
   const line = editor.selection.active.line;
   return locateTable(editor.document, line) !== null;
 }

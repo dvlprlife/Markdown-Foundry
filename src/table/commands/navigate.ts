@@ -9,14 +9,14 @@ import { formatTable } from '../formatter';
  */
 export async function nextCellCommand(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
   const document = editor.document;
   const cursorLine = editor.selection.active.line;
   const location = locateTable(document, cursorLine);
-  if (!location) return;
+  if (!location) {return;}
 
   const coords = cursorToTableCoords(document, location, editor.selection.active);
-  if (!coords) return;
+  if (!coords) {return;}
 
   const model = parseTable(document, location);
   const columnCount = model.headers.length;
@@ -43,14 +43,14 @@ export async function nextCellCommand(): Promise<void> {
 
 export async function previousCellCommand(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
   const document = editor.document;
   const cursorLine = editor.selection.active.line;
   const location = locateTable(document, cursorLine);
-  if (!location) return;
+  if (!location) {return;}
 
   const coords = cursorToTableCoords(document, location, editor.selection.active);
-  if (!coords) return;
+  if (!coords) {return;}
 
   const model = parseTable(document, location);
 
@@ -60,7 +60,7 @@ export async function previousCellCommand(): Promise<void> {
   if (targetCol < 0) {
     targetCol = model.headers.length - 1;
     targetRow = targetRow - 1;
-    if (targetRow < -1) return;
+    if (targetRow < -1) {return;}
   }
 
   await moveCursorToCell(location.headerLine, targetRow, targetCol);
@@ -72,14 +72,14 @@ export async function previousCellCommand(): Promise<void> {
  */
 export async function nextRowCommand(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
   const document = editor.document;
   const cursorLine = editor.selection.active.line;
   const location = locateTable(document, cursorLine);
-  if (!location) return;
+  if (!location) {return;}
 
   const coords = cursorToTableCoords(document, location, editor.selection.active);
-  if (!coords) return;
+  if (!coords) {return;}
 
   const model = parseTable(document, location);
   const columnCount = model.headers.length;
@@ -106,18 +106,18 @@ async function moveCursorToCell(
   columnIndex: number
 ): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) return;
+  if (!editor) {return;}
   const document = editor.document;
 
   // rowIndex: -1 = header, 0+ = body (offset by 2 to skip separator)
   const lineNumber =
     rowIndex === -1 ? headerLine : headerLine + 2 + rowIndex;
 
-  if (lineNumber >= document.lineCount) return;
+  if (lineNumber >= document.lineCount) {return;}
   const lineText = document.lineAt(lineNumber).text;
 
   const range = computeCellRange(lineText, columnIndex);
-  if (!range) return;
+  if (!range) {return;}
 
   const anchor = new vscode.Position(lineNumber, range.start);
   const active = new vscode.Position(lineNumber, range.end);
@@ -156,11 +156,11 @@ export function computeCellRange(
     }
   }
 
-  if (startPos === -1) return undefined;
-  if (endPos === -1) endPos = lineText.length;
+  if (startPos === -1) {return undefined;}
+  if (endPos === -1) {endPos = lineText.length;}
 
   // Skip the single pad space that formatTable inserts after the opening pipe.
-  if (lineText[startPos] === ' ') startPos++;
+  if (lineText[startPos] === ' ') {startPos++;}
 
   let trimmedEnd = endPos;
   while (trimmedEnd > startPos && /\s/.test(lineText[trimmedEnd - 1])) {
