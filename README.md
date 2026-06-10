@@ -91,6 +91,10 @@ All other commands are available through the Command Palette (search for "Markdo
 
 Please file issues and feature requests on [GitHub](https://github.com/dvlprlife/Markdown-Foundry).
 
+## Contributing
+
+Contributions are welcome — see [CONTRIBUTING.md](https://github.com/dvlprlife/Markdown-Foundry/blob/main/CONTRIBUTING.md) for setup, build/test commands, and the issue → PR workflow.
+
 ## License
 
 MIT

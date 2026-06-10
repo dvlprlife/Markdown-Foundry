@@ -1,0 +1,36 @@
+name: Feature request
+description: Suggest a new command, setting, or improvement
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What
+      description: What should change or be added? Be concrete — e.g. a new command, a new setting, a behavior change to an existing command.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: The motivation and any relevant context. What problem does this solve in your Markdown workflow?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: A checklist of observable outcomes that would make this issue "done". Detailed criteria let the issue be worked independently.
+      placeholder: |
+        - [ ] Running "Markdown Foundry: ..." does ...
+        - [ ] With no selection, ...
+        - [ ] Existing behavior X is unchanged
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches or existing commands/extensions you tried, and why they don't fit.
+    validations:
+      required: false
