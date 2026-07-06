@@ -4,6 +4,10 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ## [Unreleased]
 
+### Fixed
+
+- Tab-selecting a cell in a right- or center-aligned column now selects only the cell's content, not the surrounding alignment padding — so typing over the selection no longer eats the padding and misaligns the table ([#106](https://github.com/dvlprlife/Markdown-Foundry/pull/106)).
+
 ## [0.5.0] - 2026-05-09
 
 ### Added
