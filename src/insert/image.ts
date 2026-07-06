@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { createWriteStream, promises as fs } from 'fs';
+import { createWriteStream, existsSync, promises as fs } from 'fs';
 import { execFile, spawn } from 'child_process';
 import { promisify } from 'util';
 
@@ -26,8 +26,8 @@ export async function pasteImageCommand(): Promise<void> {
   const imageDir = path.join(docDir, folderName);
   await fs.mkdir(imageDir, { recursive: true });
 
-  const filename = expandNameFormat(nameFormat, document.uri.fsPath) + '.png';
-  const targetPath = path.join(imageDir, filename);
+  const baseName = expandNameFormat(nameFormat, document.uri.fsPath);
+  const targetPath = uniqueTargetPath(imageDir, baseName, '.png');
 
   try {
     await saveClipboardImage(targetPath);
@@ -41,6 +41,26 @@ export async function pasteImageCommand(): Promise<void> {
   const relative = path.relative(docDir, targetPath).split(path.sep).join('/');
   const markdown = `![](${relative})`;
   await editor.edit((edit) => edit.insert(editor.selection.active, markdown));
+}
+
+/**
+ * Return a path under `dir` for `baseName + ext` that does not already exist.
+ * If the plain name is taken, appends `-1`, `-2`, … before the extension until
+ * a free name is found, so a paste never silently overwrites an earlier image.
+ */
+export function uniqueTargetPath(
+  dir: string,
+  baseName: string,
+  ext: string,
+  exists: (p: string) => boolean = existsSync
+): string {
+  let candidate = path.join(dir, baseName + ext);
+  let n = 1;
+  while (exists(candidate)) {
+    candidate = path.join(dir, `${baseName}-${n}${ext}`);
+    n++;
+  }
+  return candidate;
 }
 
 function expandNameFormat(template: string, documentPath: string): string {

@@ -4,6 +4,10 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ## [Unreleased]
 
+### Fixed
+
+- `Paste Image` no longer silently overwrites an existing image when the generated filename collides (e.g. two pastes within the same second) — it now appends `-1`, `-2`, … until the name is free ([#108](https://github.com/dvlprlife/Markdown-Foundry/pull/108)).
+
 ## [0.5.0] - 2026-05-09
 
 ### Added
