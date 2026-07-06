@@ -4,6 +4,10 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ## [Unreleased]
 
+### Fixed
+
+- Table-cell `Tab` navigation no longer overrides accepting an inline suggestion (e.g. Copilot ghost text) — the keybinding now also requires `!inlineSuggestionVisible` ([#105](https://github.com/dvlprlife/Markdown-Foundry/pull/105)).
+
 ## [0.5.0] - 2026-05-09
 
 ### Added
