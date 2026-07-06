@@ -4,6 +4,10 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ## [Unreleased]
 
+### Fixed
+
+- `Insert Link to File`, `Paste Link`, and `Paste Image` now wrap link destinations containing spaces or parentheses in angle brackets (`[text](<my file.docx>)`), so links to such paths render correctly instead of producing broken Markdown ([#109](https://github.com/dvlprlife/Markdown-Foundry/pull/109)).
+
 ## [0.5.0] - 2026-05-09
 
 ### Added

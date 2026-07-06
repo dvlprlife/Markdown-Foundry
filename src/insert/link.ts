@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { URL as NodeURL } from 'url';
 import { isImageExtension } from './imageExtensions';
+import { formatLinkDestination } from './markdownLink';
 
 export type ClipboardKind =
   | { kind: 'url'; value: string }
@@ -81,7 +82,7 @@ export async function pasteLinkCommand(): Promise<void> {
       'Link text (leave empty to use the URL)'
     );
     if (text === undefined) {return;}
-    await applyEdit(editor, selection, `[${text}](${url})`);
+    await applyEdit(editor, selection, `[${text}](${formatLinkDestination(url)})`);
     return;
   }
 
@@ -103,7 +104,8 @@ export async function pasteLinkCommand(): Promise<void> {
   );
   if (text === undefined) {return;}
 
-  const markdown = result.isImage ? `![${text}](${rel})` : `[${text}](${rel})`;
+  const dest = formatLinkDestination(rel);
+  const markdown = result.isImage ? `![${text}](${dest})` : `[${text}](${dest})`;
   await applyEdit(editor, selection, markdown);
 }
 

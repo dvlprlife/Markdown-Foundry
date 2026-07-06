@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { isImageExtension } from './imageExtensions';
+import { formatLinkDestination } from './markdownLink';
 
 const MAX_RESULTS = 5000;
 
@@ -38,7 +39,8 @@ export function sortFileItems<T extends SortableItem>(items: T[], currentDir: st
 }
 
 export function formatInsertion(text: string, relPath: string, isImage: boolean): string {
-  return isImage ? `![${text}](${relPath})` : `[${text}](${relPath})`;
+  const dest = formatLinkDestination(relPath);
+  return isImage ? `![${text}](${dest})` : `[${text}](${dest})`;
 }
 
 interface FileQuickPickItem extends vscode.QuickPickItem {
