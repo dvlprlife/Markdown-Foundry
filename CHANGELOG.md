@@ -4,6 +4,10 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ## [Unreleased]
 
+### Fixed
+
+- `Sort Table by Column` now shows an explanatory message when invoked with the cursor on the separator row, instead of doing nothing silently ([#104](https://github.com/dvlprlife/Markdown-Foundry/pull/104)).
+
 ## [0.5.0] - 2026-05-09
 
 ### Added
