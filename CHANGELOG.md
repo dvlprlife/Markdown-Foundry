@@ -15,6 +15,7 @@ All notable changes to the Markdown Foundry extension will be documented in this
 - Heading toggle and promote/demote now recognize headings indented by 1–3 spaces (valid CommonMark) — toggling `  ## Title` removes or swaps the heading instead of producing `## ## Title`, and promote/demote no longer silently no-op on indented headings. Lines indented 4+ spaces are still treated as code, not headings ([#127](https://github.com/dvlprlife/Markdown-Foundry/pull/127)).
 - `Insert Horizontal Rule` no longer turns the current line into a setext heading — a blank line now separates the text from the inserted `---`, and the insertion respects the document's line endings (CRLF documents get `\r\n`) ([#128](https://github.com/dvlprlife/Markdown-Foundry/pull/128)).
 - Multi-line formatting toggles (blockquote, block code, bullet/numbered/task list) no longer rewrite CRLF line endings to LF — the replaced lines now keep the document's line endings ([#129](https://github.com/dvlprlife/Markdown-Foundry/pull/129)).
+- Table row/column commands now reposition the cursor to follow the edit: `Move Row/Column` keeps the caret on the moved row or column (so repeated invocations keep moving the same content instead of ping-ponging), `Insert Row/Column` places it in the new row or column, and `Delete Row/Column` clamps it to what remains ([#130](https://github.com/dvlprlife/Markdown-Foundry/pull/130)).
 
 ## [0.5.0] - 2026-05-09
 
