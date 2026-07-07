@@ -128,6 +128,22 @@ suite('format: wrapHeading', () => {
     assert.strictEqual(wrapHeading('### Demoted', 0), 'Demoted');
   });
 
+  test('toggles off an indented heading at the same level', () => {
+    assert.strictEqual(wrapHeading('  ## Title', 2), 'Title');
+  });
+
+  test('changes level of an indented heading without double-hashing', () => {
+    assert.strictEqual(wrapHeading('  ## Title', 3), '### Title');
+  });
+
+  test('three-space-indented heading is still recognized', () => {
+    assert.strictEqual(wrapHeading('   ## Title', 2), 'Title');
+  });
+
+  test('four-space-indented hash line is body text, not a heading', () => {
+    assert.strictEqual(wrapHeading('    # code', 2), '## # code');
+  });
+
   test('level 0 on a non-heading line is effectively a leading-trim', () => {
     assert.strictEqual(wrapHeading('plain', 0), 'plain');
   });
@@ -157,6 +173,19 @@ suite('format: adjustHeading', () => {
   test('non-heading line is no-op', () => {
     assert.strictEqual(adjustHeading('plain text', -1), 'plain text');
     assert.strictEqual(adjustHeading('plain text', 1), 'plain text');
+  });
+
+  test('promotes an indented heading and drops the indent', () => {
+    assert.strictEqual(adjustHeading('   ## Title', -1), '# Title');
+  });
+
+  test('demotes an indented heading and drops the indent', () => {
+    assert.strictEqual(adjustHeading('   ## Title', 1), '### Title');
+  });
+
+  test('four-space-indented hash line is no-op (indented code block)', () => {
+    assert.strictEqual(adjustHeading('    # code', 1), '    # code');
+    assert.strictEqual(adjustHeading('    # code', -1), '    # code');
   });
 
   test('empty input is no-op', () => {

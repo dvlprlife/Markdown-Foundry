@@ -52,10 +52,12 @@ export function wrapLinePrefix(text: string, prefix: string): string {
 /**
  * Set the heading level of a line. `level === 0` removes the heading. If the
  * line is already at the target level, also removes the heading (toggle off).
- * Strips leading whitespace from the body when adding a heading.
+ * Strips leading whitespace from the body when adding a heading. Headings
+ * indented up to three spaces are recognized (CommonMark); four or more is
+ * an indented code block and is treated as body text.
  */
 export function wrapHeading(line: string, level: number): string {
-  const existing = line.match(/^(#{1,6})\s+(.*)$/);
+  const existing = line.match(/^ {0,3}(#{1,6})\s+(.*)$/);
   const body = existing ? existing[2] : line.replace(/^\s+/, '');
   const existingLevel = existing ? existing[1].length : 0;
 
@@ -68,10 +70,11 @@ export function wrapHeading(line: string, level: number): string {
 /**
  * Adjust an existing heading by `delta` (negative = promote toward H1,
  * positive = demote toward H6). No-op on non-heading lines or if the
- * adjustment would push the level outside [1, 6].
+ * adjustment would push the level outside [1, 6]. Headings indented up to
+ * three spaces are recognized (CommonMark) and re-emitted without the indent.
  */
 export function adjustHeading(line: string, delta: number): string {
-  const m = line.match(/^(#{1,6})\s+(.*)$/);
+  const m = line.match(/^ {0,3}(#{1,6})\s+(.*)$/);
   if (!m) {return line;}
   const newLevel = m[1].length + delta;
   if (newLevel < 1 || newLevel > 6) {return line;}
