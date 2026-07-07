@@ -6,6 +6,9 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ### Fixed
 
+- `Sort Table by Column` now shows an explanatory message when invoked with the cursor on the separator row, instead of doing nothing silently ([#104](https://github.com/dvlprlife/Markdown-Foundry/pull/104)).
+- Table-cell `Tab` navigation no longer overrides accepting an inline suggestion (e.g. Copilot ghost text) — the keybinding now also requires `!inlineSuggestionVisible` ([#105](https://github.com/dvlprlife/Markdown-Foundry/pull/105)).
+- Tab-selecting a cell in a right- or center-aligned column now selects only the cell's content, not the surrounding alignment padding — so typing over the selection no longer eats the padding and misaligns the table ([#106](https://github.com/dvlprlife/Markdown-Foundry/pull/106)).
 - `Paste Image` no longer silently overwrites an existing image when the generated filename collides (e.g. two pastes within the same second) — it now appends `-1`, `-2`, … until the name is free ([#108](https://github.com/dvlprlife/Markdown-Foundry/pull/108)).
 
 ## [0.5.0] - 2026-05-09
