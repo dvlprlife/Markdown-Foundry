@@ -81,7 +81,7 @@
       {
         "command": "markdownFoundry.nextCell",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId == markdown && markdownFoundry.inTable && !suggestWidgetVisible"
+        "when": "editorTextFocus && editorLangId == markdown && markdownFoundry.inTable && !suggestWidgetVisible && !inlineSuggestionVisible"
       },
       {
         "command": "markdownFoundry.previousCell",
