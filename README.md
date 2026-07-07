@@ -63,7 +63,7 @@ Markdown Foundry combines fast table editing with one-keystroke Markdown formatt
 | `Tab` | Next cell (when inside a table) |
 | `Shift+Tab` | Previous cell (when inside a table) |
 | `Enter` | Next row (when inside a table) |
-| `Ctrl+Shift+T` / `Cmd+Shift+T` | Align table |
+| `Shift+Alt+T` | Align table |
 | `Ctrl+Alt+V` / `Cmd+Alt+V` | Paste image |
 | `Ctrl+B` / `Cmd+B` | Toggle bold (when editing a Markdown file) |
 | `Ctrl+I` / `Cmd+I` | Toggle italic (when editing a Markdown file) |
