@@ -52,10 +52,12 @@ export function wrapLinePrefix(text: string, prefix: string): string {
 /**
  * Set the heading level of a line. `level === 0` removes the heading. If the
  * line is already at the target level, also removes the heading (toggle off).
- * Strips leading whitespace from the body when adding a heading.
+ * Strips leading whitespace from the body when adding a heading. Headings
+ * indented up to three spaces are recognized (CommonMark); four or more is
+ * an indented code block and is treated as body text.
  */
 export function wrapHeading(line: string, level: number): string {
-  const existing = line.match(/^(#{1,6})\s+(.*)$/);
+  const existing = line.match(/^ {0,3}(#{1,6})\s+(.*)$/);
   const body = existing ? existing[2] : line.replace(/^\s+/, '');
   const existingLevel = existing ? existing[1].length : 0;
 
@@ -68,10 +70,11 @@ export function wrapHeading(line: string, level: number): string {
 /**
  * Adjust an existing heading by `delta` (negative = promote toward H1,
  * positive = demote toward H6). No-op on non-heading lines or if the
- * adjustment would push the level outside [1, 6].
+ * adjustment would push the level outside [1, 6]. Headings indented up to
+ * three spaces are recognized (CommonMark) and re-emitted without the indent.
  */
 export function adjustHeading(line: string, delta: number): string {
-  const m = line.match(/^(#{1,6})\s+(.*)$/);
+  const m = line.match(/^ {0,3}(#{1,6})\s+(.*)$/);
   if (!m) {return line;}
   const newLevel = m[1].length + delta;
   if (newLevel < 1 || newLevel > 6) {return line;}
@@ -128,8 +131,8 @@ export function toggleNumberedItem(text: string): string {
 /**
  * Cycle each non-empty line through: plain → `- [ ] x` → `- [x] x` → `- [ ] x`
  * → ... . Preserves leading indentation. A bullet line without a checkbox
- * (`- x`) is promoted to an unchecked task (`- [ ] x`). Empty lines pass
- * through unchanged.
+ * (`- x`, `* x`, or `+ x`) is promoted to an unchecked task keeping its
+ * bullet marker. Empty lines pass through unchanged.
  */
 export function toggleTaskItem(text: string): string {
   return text.split(/\r?\n/).map(toggleTaskLine).join('\n');
@@ -142,13 +145,14 @@ function toggleTaskLine(line: string): string {
   const indent = indentMatch ? indentMatch[1] : '';
   const body = indentMatch ? indentMatch[2] : line;
 
-  const checked = body.match(/^-\s+\[x\]\s+(.*)$/i);
-  if (checked) {return `${indent}- [ ] ${checked[1]}`;}
+  const checked = body.match(/^([-*+])\s+\[x\]\s+(.*)$/i);
+  if (checked) {return `${indent}${checked[1]} [ ] ${checked[2]}`;}
 
-  const unchecked = body.match(/^-\s+\[ \]\s+(.*)$/);
-  if (unchecked) {return `${indent}- [x] ${unchecked[1]}`;}
+  const unchecked = body.match(/^([-*+])\s+\[ \]\s+(.*)$/);
+  if (unchecked) {return `${indent}${unchecked[1]} [x] ${unchecked[2]}`;}
 
-  const bullet = body.match(/^-\s+(.*)$/);
-  const bodyText = bullet ? bullet[1] : body;
-  return `${indent}- [ ] ${bodyText}`;
+  const bullet = body.match(/^([-*+])\s+(.*)$/);
+  if (bullet) {return `${indent}${bullet[1]} [ ] ${bullet[2]}`;}
+
+  return `${indent}- [ ] ${body}`;
 }
