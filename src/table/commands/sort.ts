@@ -21,7 +21,10 @@ export async function sortByColumnCommand(): Promise<void> {
   }
 
   const coords = cursorToTableCoords(document, location, editor.selection.active);
-  if (!coords) {return;}
+  if (!coords) {
+    vscode.window.showInformationMessage('Markdown Foundry: cursor is on the separator row.');
+    return;
+  }
 
   const direction = await vscode.window.showQuickPick(
     [
