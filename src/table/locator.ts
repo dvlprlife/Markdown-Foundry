@@ -2,11 +2,11 @@ import * as vscode from 'vscode';
 import { TableCursor } from './types';
 
 /**
- * Matches a line that looks like a table row: starts with optional whitespace,
- * contains at least one unescaped pipe, and ends with optional whitespace.
- * Handles escaped pipes (\|) which should NOT count as row separators.
+ * Matches an unescaped pipe anywhere in a line. GFM does not require rows to
+ * have leading/trailing pipes (`a | b` is a valid row), so any unescaped pipe
+ * makes a line row-like. Escaped pipes (\|) do not count.
  */
-const TABLE_LINE_RE = /^\s*\|.*\|\s*$/;
+const UNESCAPED_PIPE_RE = /(?<!\\)\|/;
 
 /**
  * Matches a separator row: pipes plus dashes, colons for alignment, whitespace.
@@ -30,10 +30,10 @@ export interface TableLocation {
 
 /**
  * Return the table containing the given line, or null if the line is not
- * inside a table. A table is defined as:
- *   - a header line (pipe row)
- *   - followed immediately by a separator line
- *   - followed by zero or more body lines (pipe rows)
+ * inside a table. A table is the contiguous block of row-like lines around
+ * the cursor, provided some line in the block is immediately followed by a
+ * separator row: the topmost such pair is the header/separator, and the
+ * block's last line is the last body row.
  */
 export function locateTable(
   document: vscode.TextDocument,
@@ -42,48 +42,41 @@ export function locateTable(
   if (line < 0 || line >= document.lineCount) {
     return null;
   }
+  if (!isRowLike(document.lineAt(line).text)) {
+    return null;
+  }
 
-  // Walk upward to find the header row.
-  // The line the cursor is on could be header, separator, or a body row.
+  // Walk up and down from the cursor to the edges of the contiguous block
+  // of row-like lines.
+  let firstTableLine = line;
+  while (firstTableLine > 0 && isRowLike(document.lineAt(firstTableLine - 1).text)) {
+    firstTableLine--;
+  }
+  let lastBodyLine = line;
+  while (
+    lastBodyLine + 1 < document.lineCount &&
+    isRowLike(document.lineAt(lastBodyLine + 1).text)
+  ) {
+    lastBodyLine++;
+  }
+
+  // The block's top line is not necessarily the header — prose containing a
+  // pipe can sit directly above the table. The header is the topmost row
+  // immediately followed by a separator.
   let headerLine = -1;
-  let separatorLine = -1;
-
-  // Scan upward until we find a non-table line.
-  let start = line;
-  while (start >= 0 && isTableLike(document.lineAt(start).text)) {
-    start--;
-  }
-  const firstTableLine = start + 1;
-
-  // From firstTableLine, the first line is the header, the next must be the separator.
-  if (firstTableLine >= document.lineCount) {
-    return null;
-  }
-  const potentialHeader = document.lineAt(firstTableLine).text;
-  if (!TABLE_LINE_RE.test(potentialHeader)) {
-    return null;
-  }
-  if (firstTableLine + 1 >= document.lineCount) {
-    return null;
-  }
-  const potentialSeparator = document.lineAt(firstTableLine + 1).text;
-  if (!SEPARATOR_RE.test(potentialSeparator)) {
-    return null;
-  }
-  headerLine = firstTableLine;
-  separatorLine = firstTableLine + 1;
-
-  // Walk downward from separator to find the last body line.
-  let lastBodyLine = separatorLine;
-  for (let i = separatorLine + 1; i < document.lineCount; i++) {
-    if (isTableLike(document.lineAt(i).text)) {
-      lastBodyLine = i;
-    } else {
+  for (let i = firstTableLine; i < lastBodyLine; i++) {
+    if (SEPARATOR_RE.test(document.lineAt(i + 1).text)) {
+      headerLine = i;
       break;
     }
   }
+  if (headerLine === -1) {
+    return null;
+  }
+  const separatorLine = headerLine + 1;
 
-  // Sanity: the cursor line must fall within [headerLine, lastBodyLine].
+  // A cursor above the header (e.g. on prose-with-pipe stuck to the table)
+  // is not inside the table.
   if (line < headerLine || line > lastBodyLine) {
     return null;
   }
@@ -102,10 +95,10 @@ export function locateTable(
 
 /**
  * Loose check: line looks like it could be part of a table.
- * Accepts both pipe rows and separator rows.
+ * Separator rows always contain a pipe, so this covers them too.
  */
-function isTableLike(text: string): boolean {
-  return TABLE_LINE_RE.test(text) || SEPARATOR_RE.test(text);
+function isRowLike(text: string): boolean {
+  return UNESCAPED_PIPE_RE.test(text);
 }
 
 /**
@@ -148,9 +141,11 @@ export function cursorToTableCoords(
 function characterOffsetToColumnIndex(lineText: string, charOffset: number): number {
   let column = 0;
   let i = 0;
-  // Skip leading indent and the first |
-  while (i < lineText.length && lineText[i] !== '|') {i++;}
-  if (i < lineText.length) {i++;} // consume opening |
+  // Skip leading indent, then consume a leading | if present. On pipeless
+  // rows (`a | b`) the first pipe is a cell separator, not an opening
+  // delimiter, so it must be counted below.
+  while (i < lineText.length && /\s/.test(lineText[i])) {i++;}
+  if (i < lineText.length && lineText[i] === '|') {i++;}
 
   while (i < charOffset && i < lineText.length) {
     if (lineText[i] === '\\' && i + 1 < lineText.length && lineText[i + 1] === '|') {

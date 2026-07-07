@@ -17,6 +17,7 @@ All notable changes to the Markdown Foundry extension will be documented in this
 - Multi-line formatting toggles (blockquote, block code, bullet/numbered/task list) no longer rewrite CRLF line endings to LF — the replaced lines now keep the document's line endings ([#129](https://github.com/dvlprlife/Markdown-Foundry/pull/129)).
 - Table row/column commands now reposition the cursor to follow the edit: `Move Row/Column` keeps the caret on the moved row or column (so repeated invocations keep moving the same content instead of ping-ponging), `Insert Row/Column` places it in the new row or column, and `Delete Row/Column` clamps it to what remains ([#130](https://github.com/dvlprlife/Markdown-Foundry/pull/130)).
 - `Insert/Update Table of Contents` no longer drops or mis-anchors non-ASCII headings — Unicode letters and numbers (e.g. `Überblick`, `概要`) are now kept in slugs, matching GitHub's anchor algorithm ([#131](https://github.com/dvlprlife/Markdown-Foundry/pull/131)).
+- Table commands now recognize GFM rows without leading/trailing pipes (`a | b`) — previously such a row ended the table, so Align, Tab navigation, and the in-table context stopped working partway down the table ([#132](https://github.com/dvlprlife/Markdown-Foundry/pull/132)).
 
 ## [0.5.0] - 2026-05-09
 

@@ -133,6 +133,71 @@ suite('locator: locateTable', () => {
     assert.strictEqual(locateTable(doc, -1), null);
     assert.strictEqual(locateTable(doc, 999), null);
   });
+
+  test('pipeless body row between piped rows stays inside the table', async () => {
+    const doc = await open(
+      ['| A | B |', '| --- | --- |', 'a | b', '| 3 | 4 |'].join('\n')
+    );
+    const loc = locateTable(doc, 2);
+    assert.ok(loc);
+    assert.strictEqual(loc.headerLine, 0);
+    assert.strictEqual(loc.separatorLine, 1);
+    assert.strictEqual(loc.lastBodyLine, 3);
+  });
+
+  test('pipeless row after the last piped row extends the range', async () => {
+    const doc = await open(
+      ['| A | B |', '| --- | --- |', '| 1 | 2 |', 'a | b'].join('\n')
+    );
+    const loc = locateTable(doc, 1);
+    assert.ok(loc);
+    assert.strictEqual(loc.lastBodyLine, 3);
+    assert.strictEqual(loc.range.end.line, 3);
+    assert.strictEqual(loc.range.end.character, doc.lineAt(3).text.length);
+  });
+
+  test('a line with no pipes still terminates the table', async () => {
+    const doc = await open(
+      ['| A | B |', '| --- | --- |', 'a | b', 'plain text', '| x | y |'].join('\n')
+    );
+    const loc = locateTable(doc, 2);
+    assert.ok(loc);
+    assert.strictEqual(loc.lastBodyLine, 2);
+    assert.strictEqual(locateTable(doc, 3), null);
+  });
+
+  test('a line whose only pipe is escaped terminates the table', async () => {
+    const doc = await open(
+      ['| A | B |', '| --- | --- |', '| 1 | 2 |', 'a \\| b'].join('\n')
+    );
+    const loc = locateTable(doc, 2);
+    assert.ok(loc);
+    assert.strictEqual(loc.lastBodyLine, 2);
+    assert.strictEqual(locateTable(doc, 3), null);
+  });
+
+  test('prose containing a pipe directly above the header is not part of the table', async () => {
+    const doc = await open(
+      ['see a | b for details', '| A | B |', '| --- | --- |', '| 1 | 2 |'].join('\n')
+    );
+    const loc = locateTable(doc, 3);
+    assert.ok(loc);
+    assert.strictEqual(loc.headerLine, 1);
+    assert.strictEqual(loc.separatorLine, 2);
+    assert.strictEqual(loc.lastBodyLine, 3);
+    assert.strictEqual(locateTable(doc, 0), null);
+  });
+
+  test('a dashes-only body row does not start a new table; topmost header/separator pair wins', async () => {
+    const doc = await open(
+      ['| A | B |', '| --- | --- |', '| x | y |', '| --- | --- |', '| 1 | 2 |'].join('\n')
+    );
+    const loc = locateTable(doc, 4);
+    assert.ok(loc);
+    assert.strictEqual(loc.headerLine, 0);
+    assert.strictEqual(loc.separatorLine, 1);
+    assert.strictEqual(loc.lastBodyLine, 4);
+  });
 });
 
 suite('locator: cursorToTableCoords', () => {
@@ -177,6 +242,17 @@ suite('locator: cursorToTableCoords', () => {
     // have advanced the column count.
     const coords = cursorToTableCoords(doc, loc, new vscode.Position(0, 11));
     assert.deepStrictEqual(coords, { rowIndex: -1, columnIndex: 1 });
+  });
+
+  test('pipeless body row yields correct row and column', async () => {
+    const doc = await open(['| A | B |', '| --- | --- |', 'a | b'].join('\n'));
+    const loc = locateTable(doc, 2)!;
+    // Line "a | b": the first pipe is a cell separator, not an opening
+    // delimiter — 'a' (char 0) is column 0 and 'b' (char 4) is column 1.
+    const first = cursorToTableCoords(doc, loc, new vscode.Position(2, 0));
+    assert.deepStrictEqual(first, { rowIndex: 0, columnIndex: 0 });
+    const second = cursorToTableCoords(doc, loc, new vscode.Position(2, 4));
+    assert.deepStrictEqual(second, { rowIndex: 0, columnIndex: 1 });
   });
 
   test('cursor past the trailing pipe yields a column index past the last cell', async () => {
