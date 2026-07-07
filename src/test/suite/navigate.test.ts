@@ -57,4 +57,39 @@ suite('navigate: computeCellRange', () => {
     // Content "a \| b" starts after the padding; escape stays inside the cell.
     assert.deepStrictEqual(result, { start: 4, end: 10 });
   });
+
+  test('pipeless row: column 0 starts at the line start', () => {
+    const line = 'a | b';
+    const result = computeCellRange(line, 0);
+    assert.deepStrictEqual(result, { start: 0, end: 1 });
+  });
+
+  test('pipeless row: the first pipe is a separator, not an opening delimiter', () => {
+    const line = 'a | b';
+    const result = computeCellRange(line, 1);
+    assert.deepStrictEqual(result, { start: 4, end: 5 });
+  });
+
+  test('pipeless row: columnIndex past the last cell returns undefined', () => {
+    const line = 'a | b';
+    assert.strictEqual(computeCellRange(line, 2), undefined);
+  });
+
+  test('indented pipeless row: column 0 starts after the indent', () => {
+    const line = '  a | b';
+    const result = computeCellRange(line, 0);
+    assert.deepStrictEqual(result, { start: 2, end: 3 });
+  });
+
+  test('pipeless row with an escaped pipe keeps it inside the cell', () => {
+    const line = 'a \\| b | c';
+    assert.deepStrictEqual(computeCellRange(line, 0), { start: 0, end: 6 });
+    assert.deepStrictEqual(computeCellRange(line, 1), { start: 9, end: 10 });
+  });
+
+  test('row with only a trailing pipe is a single cell', () => {
+    const line = 'a b |';
+    const result = computeCellRange(line, 0);
+    assert.deepStrictEqual(result, { start: 0, end: 3 });
+  });
 });
