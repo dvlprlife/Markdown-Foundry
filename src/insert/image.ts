@@ -3,6 +3,7 @@ import * as path from 'path';
 import { createWriteStream, existsSync, promises as fs } from 'fs';
 import { execFile, spawn } from 'child_process';
 import { promisify } from 'util';
+import { formatLinkDestination } from './markdownLink';
 
 const execFileAsync = promisify(execFile);
 
@@ -39,7 +40,7 @@ export async function pasteImageCommand(): Promise<void> {
   }
 
   const relative = path.relative(docDir, targetPath).split(path.sep).join('/');
-  const markdown = `![](${relative})`;
+  const markdown = `![](${formatLinkDestination(relative)})`;
   await editor.edit((edit) => edit.insert(editor.selection.active, markdown));
 }
 

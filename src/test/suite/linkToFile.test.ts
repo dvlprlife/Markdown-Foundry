@@ -110,4 +110,11 @@ suite('linkToFile: formatInsertion', () => {
   test('image renders as ![text](rel)', () => {
     assert.strictEqual(formatInsertion('hero', 'images/hero.png', true), '![hero](images/hero.png)');
   });
+
+  test('wraps a destination containing spaces in angle brackets', () => {
+    assert.strictEqual(
+      formatInsertion('report', 'My Docs/report.pdf', false),
+      '[report](<My Docs/report.pdf>)'
+    );
+  });
 });
