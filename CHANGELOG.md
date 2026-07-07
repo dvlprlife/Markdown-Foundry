@@ -6,6 +6,7 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ### Fixed
 
+- Table row/column commands now reposition the cursor to follow the edit: `Move Row/Column` keeps the caret on the moved row or column (so repeated invocations keep moving the same content instead of ping-ponging), `Insert Row/Column` places it in the new row or column, and `Delete Row/Column` clamps it to what remains ([#130](https://github.com/dvlprlife/Markdown-Foundry/pull/130)).
 - `Sort Table by Column` now shows an explanatory message when invoked with the cursor on the separator row, instead of doing nothing silently ([#104](https://github.com/dvlprlife/Markdown-Foundry/pull/104)).
 - Table-cell `Tab` navigation no longer overrides accepting an inline suggestion (e.g. Copilot ghost text) — the keybinding now also requires `!inlineSuggestionVisible` ([#105](https://github.com/dvlprlife/Markdown-Foundry/pull/105)).
 - Tab-selecting a cell in a right- or center-aligned column now selects only the cell's content, not the surrounding alignment padding — so typing over the selection no longer eats the padding and misaligns the table ([#106](https://github.com/dvlprlife/Markdown-Foundry/pull/106)).
