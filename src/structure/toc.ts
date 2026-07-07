@@ -90,7 +90,7 @@ export function slugify(text: string): string {
     .toLowerCase()
     .trim()
     .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9\-_]/g, '');
+    .replace(/[^\p{L}\p{N}\-_]/gu, '');
 }
 
 export function dedupeSlugs(headings: Heading[]): Heading[] {
