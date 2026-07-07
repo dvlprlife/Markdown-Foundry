@@ -36,4 +36,25 @@ suite('navigate: computeCellRange', () => {
     const result = computeCellRange(line, 5);
     assert.strictEqual(result, undefined);
   });
+
+  test('excludes leading padding in a right-aligned cell', () => {
+    const line = '|   42 | x |';
+    const result = computeCellRange(line, 0);
+    // "42" sits at chars 4-6; the leading pad spaces are not selected.
+    assert.deepStrictEqual(result, { start: 4, end: 6 });
+  });
+
+  test('excludes surrounding padding in a center-aligned cell', () => {
+    const line = '|  mid  | x |';
+    const result = computeCellRange(line, 0);
+    // "mid" sits at chars 3-6, padding on both sides excluded.
+    assert.deepStrictEqual(result, { start: 3, end: 6 });
+  });
+
+  test('escaped-pipe cell with leading padding still selects content only', () => {
+    const line = '|   a \\| b | x |';
+    const result = computeCellRange(line, 0);
+    // Content "a \| b" starts after the padding; escape stays inside the cell.
+    assert.deepStrictEqual(result, { start: 4, end: 10 });
+  });
 });

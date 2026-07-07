@@ -159,13 +159,24 @@ export function computeCellRange(
   if (startPos === -1) {return undefined;}
   if (endPos === -1) {endPos = lineText.length;}
 
-  // Skip the single pad space that formatTable inserts after the opening pipe.
-  if (lineText[startPos] === ' ') {startPos++;}
+  // Skip all leading whitespace so right/center-aligned cells select their
+  // content only, not the alignment padding formatTable inserts.
+  let contentStart = startPos;
+  while (contentStart < endPos && /\s/.test(lineText[contentStart])) {
+    contentStart++;
+  }
+
+  // Whitespace-only cell: collapse to a cursor one space after the opening
+  // pipe (the position formatTable pads to), matching prior behavior.
+  if (contentStart === endPos) {
+    const caret = lineText[startPos] === ' ' ? startPos + 1 : startPos;
+    return { start: caret, end: caret };
+  }
 
   let trimmedEnd = endPos;
-  while (trimmedEnd > startPos && /\s/.test(lineText[trimmedEnd - 1])) {
+  while (trimmedEnd > contentStart && /\s/.test(lineText[trimmedEnd - 1])) {
     trimmedEnd--;
   }
 
-  return { start: startPos, end: trimmedEnd };
+  return { start: contentStart, end: trimmedEnd };
 }
