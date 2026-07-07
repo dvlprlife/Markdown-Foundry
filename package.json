@@ -95,8 +95,7 @@
       },
       {
         "command": "markdownFoundry.alignTable",
-        "key": "ctrl+shift+t",
-        "mac": "cmd+shift+t",
+        "key": "shift+alt+t",
         "when": "editorTextFocus && editorLangId == markdown"
       },
       {

@@ -4,6 +4,10 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ## [Unreleased]
 
+### Changed
+
+- Align Table moved from `Ctrl/Cmd+Shift+T` to `Shift+Alt+T` so it no longer shadows VS Code's Reopen Closed Editor in Markdown files ([#133](https://github.com/dvlprlife/Markdown-Foundry/pull/133)).
+
 ### Fixed
 
 - `Sort Table by Column` now shows an explanatory message when invoked with the cursor on the separator row, instead of doing nothing silently ([#104](https://github.com/dvlprlife/Markdown-Foundry/pull/104)).
