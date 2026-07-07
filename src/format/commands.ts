@@ -68,7 +68,10 @@ async function applyLineRange(
     new vscode.Position(endLine, editor.document.lineAt(endLine).text.length)
   );
   const text = editor.document.getText(lineRange);
-  const replaced = transform(text);
+  const eol = editor.document.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n';
+  // Split on /\r?\n/, not '\n': wrapFenced's wrap branch passes the raw
+  // selection through, so in a CRLF document its output already contains \r\n.
+  const replaced = transform(text).split(/\r?\n/).join(eol);
   await editor.edit((edit) => edit.replace(lineRange, replaced));
 }
 
