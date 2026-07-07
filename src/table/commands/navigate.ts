@@ -130,29 +130,37 @@ async function moveCursorToCell(
  * character offsets that cover the cell's non-whitespace content. Collapses
  * (start === end) for empty or whitespace-only cells. Returns undefined if
  * columnIndex exceeds the line's column count. Handles escaped pipes (\|)
- * as cell content, not as column separators.
+ * as cell content, not as column separators, and rows without leading or
+ * trailing pipes (`a | b`).
  */
 export function computeCellRange(
   lineText: string,
   columnIndex: number
 ): { start: number; end: number } | undefined {
-  let startPos = -1;
+  let i = 0;
+  // Mirrors characterOffsetToColumnIndex in locator.ts: skip leading indent,
+  // then consume a leading | only if present — on pipeless rows the first
+  // pipe is a cell separator, so column 0 starts at the first content.
+  while (i < lineText.length && /\s/.test(lineText[i])) {i++;}
+  if (i < lineText.length && lineText[i] === '|') {i++;}
+
+  let startPos = columnIndex === 0 ? i : -1;
   let endPos = -1;
   let pipesSeen = 0;
 
-  for (let i = 0; i < lineText.length; i++) {
+  for (; i < lineText.length; i++) {
     if (lineText[i] === '\\' && lineText[i + 1] === '|') {
       i++;
       continue;
     }
     if (lineText[i] === '|') {
+      pipesSeen++;
       if (pipesSeen === columnIndex) {
         startPos = i + 1;
       } else if (pipesSeen === columnIndex + 1) {
         endPos = i;
         break;
       }
-      pipesSeen++;
     }
   }
 

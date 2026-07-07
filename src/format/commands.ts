@@ -68,7 +68,10 @@ async function applyLineRange(
     new vscode.Position(endLine, editor.document.lineAt(endLine).text.length)
   );
   const text = editor.document.getText(lineRange);
-  const replaced = transform(text);
+  const eol = editor.document.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n';
+  // Split on /\r?\n/, not '\n': wrapFenced's wrap branch passes the raw
+  // selection through, so in a CRLF document its output already contains \r\n.
+  const replaced = transform(text).split(/\r?\n/).join(eol);
   await editor.edit((edit) => edit.replace(lineRange, replaced));
 }
 
@@ -147,8 +150,22 @@ export async function toggleTaskListCommand(): Promise<void> {
 export async function insertHorizontalRuleCommand(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {return;}
+  const document = editor.document;
+  const eol = document.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n';
   const cursorLine = editor.selection.active.line;
-  const line = editor.document.lineAt(cursorLine);
+  const line = document.lineAt(cursorLine);
   const insertPos = new vscode.Position(cursorLine, line.text.length);
-  await editor.edit((edit) => edit.insert(insertPos, '\n---'));
+
+  // The line immediately above the inserted --- must be blank (or the rule
+  // must sit at document start); otherwise CommonMark parses it as a setext
+  // heading underline for the text above.
+  let inserted: string;
+  if (!line.isEmptyOrWhitespace) {
+    inserted = eol + eol + '---';
+  } else if (cursorLine > 0 && !document.lineAt(cursorLine - 1).isEmptyOrWhitespace) {
+    inserted = eol + '---';
+  } else {
+    inserted = '---';
+  }
+  await editor.edit((edit) => edit.insert(insertPos, inserted));
 }
