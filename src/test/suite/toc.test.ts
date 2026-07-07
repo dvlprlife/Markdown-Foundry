@@ -41,6 +41,26 @@ suite('toc: slugify', () => {
   test('trims surrounding whitespace', () => {
     assert.strictEqual(slugify('  hello  '), 'hello');
   });
+
+  test('preserves Latin letters with diacritics', () => {
+    assert.strictEqual(slugify('Überblick'), 'überblick');
+  });
+
+  test('preserves CJK characters', () => {
+    assert.strictEqual(slugify('概要'), '概要');
+  });
+
+  test('mixed Unicode and ASCII with punctuation', () => {
+    assert.strictEqual(slugify('Résumé & CV'), 'résumé--cv');
+  });
+
+  test('emoji-only input yields empty string', () => {
+    assert.strictEqual(slugify('🎉🎉'), '');
+  });
+
+  test('strips emoji from mixed heading', () => {
+    assert.strictEqual(slugify('Setup 🎉'), 'setup-');
+  });
 });
 
 suite('toc: dedupeSlugs', () => {
@@ -147,6 +167,22 @@ suite('toc: extractHeadings', () => {
     assert.strictEqual(result.length, 1);
     assert.strictEqual(result[0].text, 'Real');
   });
+
+  test('extracts non-ASCII headings with Unicode slugs', () => {
+    const result = extractHeadings('## Überblick\n## 概要');
+    assert.deepStrictEqual(
+      result.map((h) => h.slug),
+      ['überblick', '概要']
+    );
+  });
+
+  test('deduplicates repeated Unicode heading text via slug suffix', () => {
+    const result = extractHeadings('## 概要\n## 概要\n## 概要');
+    assert.deepStrictEqual(
+      result.map((h) => h.slug),
+      ['概要', '概要-1', '概要-2']
+    );
+  });
 });
 
 suite('toc: generateTOC', () => {
@@ -199,6 +235,16 @@ suite('toc: generateTOC', () => {
     const out = generateTOC(headings, DEFAULT_OPTIONS);
     assert.ok(out.includes('- [A](#a)'));
     assert.ok(!out.includes('???'));
+  });
+
+  test('includes non-ASCII headings and filters emoji-only headings', () => {
+    const out = generateTOC(
+      extractHeadings('# Überblick\n## 概要\n## 🎉'),
+      DEFAULT_OPTIONS
+    );
+    assert.ok(out.includes('- [Überblick](#überblick)'));
+    assert.ok(out.includes('  - [概要](#概要)'));
+    assert.ok(!out.includes('🎉'));
   });
 
   test('without markers produces only the list', () => {
