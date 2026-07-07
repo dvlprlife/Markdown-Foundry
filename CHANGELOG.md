@@ -11,7 +11,8 @@ All notable changes to the Markdown Foundry extension will be documented in this
 - Tab-selecting a cell in a right- or center-aligned column now selects only the cell's content, not the surrounding alignment padding — so typing over the selection no longer eats the padding and misaligns the table ([#106](https://github.com/dvlprlife/Markdown-Foundry/pull/106)).
 - `Paste Image` no longer silently overwrites an existing image when the generated filename collides (e.g. two pastes within the same second) — it now appends `-1`, `-2`, … until the name is free ([#108](https://github.com/dvlprlife/Markdown-Foundry/pull/108)).
 - `Insert Link to File`, `Paste Link`, and `Paste Image` now wrap link destinations containing spaces or parentheses in angle brackets (`[text](<my file.docx>)`), so links to such paths render correctly instead of producing broken Markdown ([#109](https://github.com/dvlprlife/Markdown-Foundry/pull/109)).
-- Heading toggle and promote/demote now recognize headings indented by 1–3 spaces (valid CommonMark) — toggling `  ## Title` removes or swaps the heading instead of producing `## ## Title`, and promote/demote no longer silently no-op on indented headings. Lines indented 4+ spaces are still treated as code, not headings.
+- `Toggle Task List Item` now recognizes `*` and `+` bullets, cycling them in place (`* item` → `* [ ] item` → `* [x] item`) instead of mangling them into `- [ ] * item` ([#126](https://github.com/dvlprlife/Markdown-Foundry/pull/126)).
+- Heading toggle and promote/demote now recognize headings indented by 1–3 spaces (valid CommonMark) — toggling `  ## Title` removes or swaps the heading instead of producing `## ## Title`, and promote/demote no longer silently no-op on indented headings. Lines indented 4+ spaces are still treated as code, not headings ([#127](https://github.com/dvlprlife/Markdown-Foundry/pull/127)).
 
 ## [0.5.0] - 2026-05-09
 

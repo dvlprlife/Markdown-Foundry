@@ -239,6 +239,24 @@ suite('format: toggleTaskItem', () => {
       '- [ ] first\n\n- [ ] third'
     );
   });
+
+  test('asterisk bullet cycles keeping its marker', () => {
+    assert.strictEqual(toggleTaskItem('* item'), '* [ ] item');
+    assert.strictEqual(toggleTaskItem('* [ ] item'), '* [x] item');
+    assert.strictEqual(toggleTaskItem('* [x] item'), '* [ ] item');
+  });
+
+  test('plus bullet is promoted to an unchecked task keeping its marker', () => {
+    assert.strictEqual(toggleTaskItem('+ item'), '+ [ ] item');
+    assert.strictEqual(toggleTaskItem('+ [ ] item'), '+ [x] item');
+    assert.strictEqual(toggleTaskItem('+ [x] item'), '+ [ ] item');
+  });
+
+  test('indented asterisk bullet preserves indentation and marker', () => {
+    assert.strictEqual(toggleTaskItem('  * item'), '  * [ ] item');
+    assert.strictEqual(toggleTaskItem('  * [ ] item'), '  * [x] item');
+    assert.strictEqual(toggleTaskItem('  * [x] item'), '  * [ ] item');
+  });
 });
 
 suite('format: toggleBulletItem', () => {

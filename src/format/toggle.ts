@@ -131,8 +131,8 @@ export function toggleNumberedItem(text: string): string {
 /**
  * Cycle each non-empty line through: plain → `- [ ] x` → `- [x] x` → `- [ ] x`
  * → ... . Preserves leading indentation. A bullet line without a checkbox
- * (`- x`) is promoted to an unchecked task (`- [ ] x`). Empty lines pass
- * through unchanged.
+ * (`- x`, `* x`, or `+ x`) is promoted to an unchecked task keeping its
+ * bullet marker. Empty lines pass through unchanged.
  */
 export function toggleTaskItem(text: string): string {
   return text.split(/\r?\n/).map(toggleTaskLine).join('\n');
@@ -145,13 +145,14 @@ function toggleTaskLine(line: string): string {
   const indent = indentMatch ? indentMatch[1] : '';
   const body = indentMatch ? indentMatch[2] : line;
 
-  const checked = body.match(/^-\s+\[x\]\s+(.*)$/i);
-  if (checked) {return `${indent}- [ ] ${checked[1]}`;}
+  const checked = body.match(/^([-*+])\s+\[x\]\s+(.*)$/i);
+  if (checked) {return `${indent}${checked[1]} [ ] ${checked[2]}`;}
 
-  const unchecked = body.match(/^-\s+\[ \]\s+(.*)$/);
-  if (unchecked) {return `${indent}- [x] ${unchecked[1]}`;}
+  const unchecked = body.match(/^([-*+])\s+\[ \]\s+(.*)$/);
+  if (unchecked) {return `${indent}${unchecked[1]} [x] ${unchecked[2]}`;}
 
-  const bullet = body.match(/^-\s+(.*)$/);
-  const bodyText = bullet ? bullet[1] : body;
-  return `${indent}- [ ] ${bodyText}`;
+  const bullet = body.match(/^([-*+])\s+(.*)$/);
+  if (bullet) {return `${indent}${bullet[1]} [ ] ${bullet[2]}`;}
+
+  return `${indent}- [ ] ${body}`;
 }
