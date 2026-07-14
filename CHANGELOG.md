@@ -12,6 +12,11 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 - Table editing commands no longer re-align the whole table. Insert/Delete/Move Row or Column, Sort Table by Column, and the row added by `Tab` or `Enter` at the end of a table now edit surgically and leave the padding of every untouched cell exactly as it was — an inserted row mirrors its neighbor's cell widths, and an inserted column adds an empty `|  |` cell. Align explicitly with `Align Table` (`Shift+Alt+T`), or opt back in with `markdownFoundry.alignOnEdit` ([#136](https://github.com/dvlprlife/Markdown-Foundry/pull/136)).
 
+### Fixed
+
+- `Move Column Left` no longer throws when the cursor sits in a cell past the header's last column (possible when a body row has more cells than the header) — it is now a no-op, like `Move Column Right` already was ([#136](https://github.com/dvlprlife/Markdown-Foundry/pull/136)).
+- `Delete Column` with the cursor in a cell past the header's last column no longer rewrites the table — there is no column there to delete, so it no longer dirties the buffer or pushes an undo step ([#136](https://github.com/dvlprlife/Markdown-Foundry/pull/136)).
+
 ## [0.6.0] - 2026-07-07
 
 ### Changed

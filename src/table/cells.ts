@@ -106,23 +106,14 @@ function appendCell(line: string, text: string): string {
 
 /** Remove the cell at `index`, along with one of its delimiting pipes. */
 export function removeCell(line: string, index: number): string {
-  const spans = cellSpans(line);
-  if (index < 0 || index >= spans.length) {
+  const row = rowShape(line);
+  if (!row || index < 0 || index >= row.cells.length) {
     return line;
   }
 
-  if (spans.length === 1) {
-    return keepIndent(line, line.slice(0, spans[0].start) + line.slice(spans[0].end));
-  }
-
-  if (index === spans.length - 1) {
-    return line.slice(0, spans[index - 1].end) + line.slice(spans[index].end);
-  }
-
-  return keepIndent(
-    line,
-    line.slice(0, spans[index].start) + line.slice(spans[index + 1].start)
-  );
+  const cells = [...row.cells];
+  cells.splice(index, 1);
+  return renderRow({ ...row, cells });
 }
 
 /** Swap the raw text (padding included) of two cells. */
@@ -130,32 +121,78 @@ export function swapCells(line: string, a: number, b: number): string {
   if (a === b) {
     return line;
   }
-  const spans = cellSpans(line);
-  const low = Math.min(a, b);
-  const high = Math.max(a, b);
-  if (low < 0 || high >= spans.length) {
+  const row = rowShape(line);
+  if (!row || Math.min(a, b) < 0 || Math.max(a, b) >= row.cells.length) {
     return line;
   }
 
-  const first = spans[low];
-  const second = spans[high];
-  return keepIndent(
-    line,
-    line.slice(0, first.start) +
-      line.slice(second.start, second.end) +
-      line.slice(first.end, second.start) +
-      line.slice(first.start, first.end) +
-      line.slice(second.end)
-  );
+  const cells = [...row.cells];
+  [cells[a], cells[b]] = [cells[b], cells[a]];
+  return renderRow({ ...row, cells });
 }
 
 /**
- * Re-anchor a transformed line to the source's indent. On a row without a
- * leading pipe the first cell's span starts at the indent, so moving another
- * cell's padding into that slot would silently re-indent the whole table.
+ * A row taken apart into the pieces a transform may reorder, so it can be put
+ * back together with delimiters that still fit what the cells became.
  */
-function keepIndent(source: string, result: string): string {
-  return source.slice(0, firstNonSpace(source)) + result.slice(firstNonSpace(result));
+interface RowShape {
+  indent: string;
+  /** Is there a pipe before the first cell? */
+  leading: boolean;
+  /** Raw cell text, padding included. */
+  cells: string[];
+  /** Is there a pipe after the last cell? */
+  closing: boolean;
+  /** Whitespace trailing the row. */
+  tail: string;
+}
+
+function rowShape(line: string): RowShape | null {
+  const spans = cellSpans(line);
+  if (spans.length === 0) {
+    return null;
+  }
+  const last = spans[spans.length - 1];
+  const closing = hasClosingPipe(line, spans);
+  return {
+    indent: line.slice(0, firstNonSpace(line)),
+    leading: hasLeadingPipe(line),
+    cells: spans.map((span) => line.slice(span.start, span.end)),
+    closing,
+    tail: line.slice(closing ? last.end + 1 : last.end)
+  };
+}
+
+/**
+ * Reassemble a row, adding the delimiters its cells now need. A blank cell at
+ * either end is only addressable if a pipe holds it open, and a row with no
+ * unescaped pipe left is no longer a table row at all — it would render as a
+ * paragraph, or worse, as a setext heading.
+ */
+function renderRow(row: RowShape): string {
+  const { cells, indent, tail } = row;
+  if (cells.length === 0) {
+    return indent + '||' + tail;
+  }
+
+  const single = cells.length < 2;
+  const leading = row.leading || single || isBlank(cells[0]);
+  const closing = row.closing || single || isBlank(cells[cells.length - 1]);
+
+  // Without a leading pipe the first cell starts at the indent, so any padding
+  // it picked up from another cell would be read as indentation.
+  const body = [...cells];
+  if (!leading) {
+    body[0] = body[0].replace(/^\s+/, '');
+  }
+
+  return (
+    indent + (leading ? '|' : '') + body.join('|') + (closing ? '|' : '') + tail
+  );
+}
+
+function isBlank(text: string): boolean {
+  return text.trim() === '';
 }
 
 function hasLeadingPipe(line: string): boolean {

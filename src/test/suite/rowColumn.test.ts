@@ -492,6 +492,21 @@ suite('rowColumn (preserve): edits leave untouched cells byte-for-byte', () => {
     assertCaretInCell(editor, 3, 0);
   });
 
+  // Stripping the last pipes would leave `Age` over `---` — a setext heading,
+  // not a table.
+  test('deleting a column from a pipeless table keeps it a table', async () => {
+    const editor = await openTable(['Name | Age', '--- | ---', 'Alice | 30'].join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await deleteColumnCommand();
+    assertLines(editor, ['| Age|', '| ---|', '| 30|']);
+
+    for (let line = 0; line < 3; line++) {
+      const text = editor.document.lineAt(line).text;
+      assert.ok(/(?<!\\)\|/.test(text), `line ${line} is no longer row-like: [${text}]`);
+      assert.strictEqual(cellCount(text), 1);
+    }
+  });
+
   test('a row inserted next to a ragged row is still as wide as the header', async () => {
     const editor = await openTable(RAGGED.join('\n'));
     placeCursorInCell(editor, 2, 0); // the ragged row — it has 1 cell, the header has 3

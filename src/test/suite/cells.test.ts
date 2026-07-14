@@ -30,8 +30,14 @@ const SHAPES = [
   '| a1 |',
   '|  |  |',
   '| 日本語 | 30 |',
-  '| --- | --- |'
+  '| --- | --- |',
+  '|  | x',
+  '||x',
+  '|  | x |'
 ];
+
+/** Mirrors the locator's test for a line that can be part of a table. */
+const UNESCAPED_PIPE = /(?<!\\)\|/;
 
 suite('cells: cellSpans', () => {
   test('spans cover each cell pipe-to-pipe, padding included', () => {
@@ -161,6 +167,44 @@ suite('cells: removeCell', () => {
     assert.strictEqual(removeCell('a | b | c', 0), 'b | c');
     assert.strictEqual(removeCell('  a | b | c', 0), '  b | c');
   });
+
+  test('a surviving blank cell keeps the delimiter that holds it open', () => {
+    // Without the closing pipe, '|  ' is trailing whitespace, not a cell.
+    assert.strictEqual(removeCell('|  | x', 1), '|  |');
+    assert.strictEqual(removeCell('||x', 1), '||');
+  });
+
+  test('the last two columns of a pipeless table keep their pipes', () => {
+    // 'Age' over '---' with no pipes left is not a table — it is a setext H2.
+    assert.strictEqual(removeCell('Name | Age', 0), '| Age|');
+    assert.strictEqual(removeCell('--- | ---', 0), '| ---|');
+    assert.strictEqual(removeCell('Alice | 30', 0), '| 30|');
+  });
+
+  test('removing the only cell leaves an empty, still row-like cell', () => {
+    assert.strictEqual(removeCell('| only |', 0), '||');
+  });
+
+  test('removes one cell and keeps the row row-like, for every row shape', () => {
+    for (const shape of SHAPES) {
+      const count = cellCount(shape);
+      if (count < 2) {
+        continue;
+      }
+      for (let i = 0; i < count; i++) {
+        const result = removeCell(shape, i);
+        assert.strictEqual(
+          cellCount(result),
+          count - 1,
+          `[${shape}] minus cell ${i} gave [${result}]`
+        );
+        assert.ok(
+          UNESCAPED_PIPE.test(result),
+          `[${shape}] minus cell ${i} gave [${result}], which is no longer a table row`
+        );
+      }
+    }
+  });
 });
 
 suite('cells: swapCells', () => {
@@ -184,6 +228,31 @@ suite('cells: swapCells', () => {
   test('keeps the indent of a pipeless row', () => {
     assert.strictEqual(swapCells('a | b', 0, 1), 'b|a ');
     assert.strictEqual(swapCells('  a | b', 0, 1), '  b|a ');
+  });
+
+  test('a blank cell swapped to the end keeps the delimiter that holds it open', () => {
+    assert.strictEqual(swapCells('|  | x', 0, 1), '| x|  |');
+    assert.strictEqual(cellCount(swapCells('|  | x', 0, 1)), 2);
+  });
+
+  test('cell count is invariant under swapCells, for every row shape', () => {
+    for (const shape of SHAPES) {
+      const count = cellCount(shape);
+      for (let a = 0; a < count; a++) {
+        for (let b = 0; b < count; b++) {
+          const result = swapCells(shape, a, b);
+          assert.strictEqual(
+            cellCount(result),
+            count,
+            `[${shape}] swap ${a},${b} gave [${result}]`
+          );
+          assert.ok(
+            UNESCAPED_PIPE.test(result),
+            `[${shape}] swap ${a},${b} gave [${result}], which is no longer a table row`
+          );
+        }
+      }
+    }
   });
 });
 
