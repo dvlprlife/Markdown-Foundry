@@ -282,20 +282,29 @@ suite('rowColumn (alignOnEdit): re-aligns the whole table', () => {
   });
 
   // The cursor's column is counted on its own line, so a body row wider than
-  // the header reports a column past the header's last. v0.6.0 clamped it via
-  // Array.splice; the new column must not run off the end of the table.
-  test('insert column right from a cell past the header clamps to the last column', async () => {
+  // the header reports a column past the header's last. The new column is
+  // clamped to the header's width, and the align pass now grows the table to
+  // fit the over-wide cells rather than dropping them.
+  test('insert column right from a cell past the header clamps the new column and keeps c and d', async () => {
     const editor = await openTable(HEADER_NARROW.join('\n'));
     placeCursorInCell(editor, 2, 3); // the body row's 4th cell — the header has 2
     await insertColumnRightCommand();
-    assertLines(editor, ['| A   | B   |     |', '| --- | --- | :-- |', '| a   | b   |     |']);
+    assertLines(editor, [
+      '| A   | B   |     |     |     |',
+      '| --- | --- | :-- | --- | --- |',
+      '| a   | b   |     | c   | d   |'
+    ]);
   });
 
-  test('insert column left from a cell past the header clamps to the last column', async () => {
+  test('insert column left from a cell past the header clamps the new column and keeps c and d', async () => {
     const editor = await openTable(HEADER_NARROW.join('\n'));
     placeCursorInCell(editor, 2, 2); // the body row's 3rd cell — the header has 2
     await insertColumnLeftCommand();
-    assertLines(editor, ['| A   | B   |     |', '| --- | --- | :-- |', '| a   | b   |     |']);
+    assertLines(editor, [
+      '| A   | B   |     |     |     |',
+      '| --- | --- | :-- | --- | --- |',
+      '| a   | b   |     | c   | d   |'
+    ]);
   });
 
   // There is no column there to delete, so the command must not touch the
@@ -525,6 +534,23 @@ suite('rowColumn (preserve): edits leave untouched cells byte-for-byte', () => {
     placeCursorInCell(editor, 2, 3);
     await insertColumnRightCommand();
     assertLines(editor, ['| A | B |  |', '| --- | --- | :--- |', '| a | b |  | c | d |']);
+  });
+
+  // Align mode grows the table to fit an over-wide row. Preserve mode never
+  // round-trips through the model, so it must not reflow the table at all.
+  test('an over-wide row is left byte-for-byte by an edit elsewhere in the table', async () => {
+    const editor = await openTable(
+      ['| A | B |', '| --- | --- |', '| a1 | b1 |', '| a2 | b2 | c2 | d2 |'].join('\n')
+    );
+    placeCursorInCell(editor, 2, 0);
+    await insertRowBelowCommand();
+    assertLines(editor, [
+      '| A | B |',
+      '| --- | --- |',
+      '| a1 | b1 |',
+      '|    |    |',
+      '| a2 | b2 | c2 | d2 |'
+    ]);
   });
 
   test('a CRLF document keeps its line endings', async () => {
