@@ -1,5 +1,80 @@
 import * as assert from 'assert';
-import { computeCellRange } from '../../table/commands/navigate';
+import * as vscode from 'vscode';
+import {
+  computeCellRange,
+  nextCellCommand,
+  nextRowCommand
+} from '../../table/commands/navigate';
+
+const COMPACT = ['| Name | Age |', '| --- | --- |', '| Alice | 30 |', '| Bob | 7 |'];
+
+async function openTable(lines: string[]): Promise<vscode.TextEditor> {
+  const doc = await vscode.workspace.openTextDocument({
+    language: 'markdown',
+    content: lines.join('\n')
+  });
+  return vscode.window.showTextDocument(doc);
+}
+
+async function setAlignOnEdit(value: boolean | undefined): Promise<void> {
+  await vscode.workspace
+    .getConfiguration('markdownFoundry')
+    .update('alignOnEdit', value, vscode.ConfigurationTarget.Global);
+}
+
+function placeCursorInCell(editor: vscode.TextEditor, line: number, columnIndex: number): void {
+  const range = computeCellRange(editor.document.lineAt(line).text, columnIndex);
+  assert.ok(range, `no cell ${columnIndex} on line ${line}`);
+  const pos = new vscode.Position(line, range.start);
+  editor.selection = new vscode.Selection(pos, pos);
+}
+
+suite('navigate: the row added past the last cell', () => {
+  suiteTeardown(async () => {
+    await setAlignOnEdit(undefined);
+  });
+
+  test('Tab off the last cell adds a row shaped like its neighbor', async () => {
+    await setAlignOnEdit(false);
+    const editor = await openTable(COMPACT);
+    placeCursorInCell(editor, 3, 1);
+    await nextCellCommand();
+    assert.strictEqual(
+      editor.document.getText(),
+      [...COMPACT, '|     |   |'].join('\n')
+    );
+    assert.strictEqual(editor.selection.active.line, 4);
+  });
+
+  test('Enter on the last row adds a row shaped like its neighbor', async () => {
+    await setAlignOnEdit(false);
+    const editor = await openTable(COMPACT);
+    placeCursorInCell(editor, 3, 0);
+    await nextRowCommand();
+    assert.strictEqual(
+      editor.document.getText(),
+      [...COMPACT, '|     |   |'].join('\n')
+    );
+    assert.strictEqual(editor.selection.active.line, 4);
+  });
+
+  test('alignOnEdit re-aligns the table around the added row', async () => {
+    await setAlignOnEdit(true);
+    const editor = await openTable(COMPACT);
+    placeCursorInCell(editor, 3, 1);
+    await nextCellCommand();
+    assert.strictEqual(
+      editor.document.getText(),
+      [
+        '| Name  | Age |',
+        '| ----- | --- |',
+        '| Alice | 30  |',
+        '| Bob   | 7   |',
+        '|       |     |'
+      ].join('\n')
+    );
+  });
+});
 
 suite('navigate: computeCellRange', () => {
   test('returns trimmed bounds of a non-empty cell', () => {

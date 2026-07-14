@@ -182,6 +182,11 @@
           "default": false,
           "description": "Automatically align all Markdown tables in the file when it is saved."
         },
+        "markdownFoundry.alignOnEdit": {
+          "type": "boolean",
+          "default": false,
+          "description": "Re-align the whole table after a table editing command (insert/delete/move row or column, sort, and the row added by Tab or Enter at the end of a table). When off, edits preserve the existing cell padding; use the Align Table command to align explicitly."
+        },
         "markdownFoundry.defaultAlignment": {
           "type": "string",
           "enum": ["left", "center", "right"],

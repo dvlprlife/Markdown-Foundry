@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { locateTable, cursorToTableCoords } from '../locator';
-import { parseTable } from '../parser';
-import { formatTable } from '../formatter';
+import { splitRow } from '../parser';
+import { documentEol, readTableLines, renderTableLines } from './tableEdit';
 
 /**
  * Sort the table rows by the column containing the cursor.
@@ -35,31 +35,41 @@ export async function sortByColumnCommand(): Promise<void> {
   );
   if (!direction) {return;}
 
-  const model = parseTable(document, location);
-  const col = coords.columnIndex;
+  const lines = readTableLines(document, location);
+  const sorted = [
+    ...lines.slice(0, 2),
+    ...sortRowLines(lines.slice(2), coords.columnIndex, direction.value === 'desc')
+  ];
 
-  const isNumeric = model.rows.every((row) => {
-    const value = (row[col] ?? '').trim();
+  const text = renderTableLines(sorted, location, documentEol(document));
+  await editor.edit((edit) => edit.replace(location.range, text));
+}
+
+/** Reorder body rows verbatim, comparing the cell values of one column. */
+export function sortRowLines(
+  rows: string[],
+  columnIndex: number,
+  descending: boolean
+): string[] {
+  const valueOf = (line: string): string => (splitRow(line)[columnIndex] ?? '').trim();
+
+  const isNumeric = rows.every((line) => {
+    const value = valueOf(line);
     if (value === '') {return true;}
     return !isNaN(Number(value));
   });
 
-  const sorted = [...model.rows].sort((a, b) => {
-    const av = (a[col] ?? '').trim();
-    const bv = (b[col] ?? '').trim();
+  const sorted = [...rows].sort((a, b) => {
+    const av = valueOf(a);
+    const bv = valueOf(b);
     if (isNumeric) {
-      const an = Number(av);
-      const bn = Number(bv);
-      return an - bn;
+      return Number(av) - Number(bv);
     }
     return av.localeCompare(bv, undefined, { sensitivity: 'base' });
   });
 
-  if (direction.value === 'desc') {
+  if (descending) {
     sorted.reverse();
   }
-
-  const newModel = { ...model, rows: sorted };
-  const formatted = formatTable(newModel);
-  await editor.edit((edit) => edit.replace(location.range, formatted));
+  return sorted;
 }

@@ -75,6 +75,7 @@ All other commands are available through the Command Palette (search for "Markdo
 | Setting | Default | Description |
 | --- | --- | --- |
 | `markdownFoundry.alignOnSave` | `false` | Align all tables in the file when saving. |
+| `markdownFoundry.alignOnEdit` | `false` | Re-align the whole table after a table editing command. Off by default, so edits keep your existing cell padding. |
 | `markdownFoundry.defaultAlignment` | `"left"` | Alignment for new columns. |
 | `markdownFoundry.imageFolder` | `"images"` | Folder (relative to the file) where pasted images are saved. |
 | `markdownFoundry.imageNameFormat` | `"image-${timestamp}"` | Template for pasted image filenames. Tokens: `${timestamp}`, `${date}`, `${filename}`. |

@@ -22,9 +22,18 @@ const TABLE = [
   '| a3 | b3 | c3 |'
 ].join('\n');
 
+/** Deliberately unpadded — every cell is as narrow as its content. */
+const COMPACT = ['| Name | Age |', '| --- | --- |', '| Alice | 30 |', '| Bob | 7 |'];
+
 async function openTable(content: string = TABLE): Promise<vscode.TextEditor> {
   const doc = await vscode.workspace.openTextDocument({ language: 'markdown', content });
   return vscode.window.showTextDocument(doc);
+}
+
+async function setAlignOnEdit(value: boolean | undefined): Promise<void> {
+  await vscode.workspace
+    .getConfiguration('markdownFoundry')
+    .update('alignOnEdit', value, vscode.ConfigurationTarget.Global);
 }
 
 function placeCursorInCell(editor: vscode.TextEditor, line: number, columnIndex: number): void {
@@ -49,7 +58,21 @@ function assertCaretInCell(editor: vscode.TextEditor, line: number, columnIndex:
   assert.strictEqual(editor.selection.active.character, range.start, 'caret at cell content start');
 }
 
-suite('rowColumn: move commands keep the cursor on the moved content', () => {
+function assertLines(editor: vscode.TextEditor, expected: string[]): void {
+  assert.strictEqual(editor.document.getText(), expected.join('\n'));
+}
+
+// The cursor-following behavior below is mode-independent, so it runs against
+// the aligned default of v0.6.0 (alignOnEdit) as a regression guard.
+suite('rowColumn (alignOnEdit): cursor follows the edit', () => {
+  suiteSetup(async () => {
+    await setAlignOnEdit(true);
+  });
+
+  suiteTeardown(async () => {
+    await setAlignOnEdit(undefined);
+  });
+
   test('move row up follows the moved row, same column', async () => {
     const editor = await openTable();
     placeCursorInCell(editor, 3, 1); // a2 row, column B
@@ -109,9 +132,7 @@ suite('rowColumn: move commands keep the cursor on the moved content', () => {
     assert.strictEqual(cellAt(editor.document, 0, 1), 'C');
     assertCaretInCell(editor, 0, 2);
   });
-});
 
-suite('rowColumn: insert commands place the cursor in the new row/column', () => {
   test('insert row above puts the caret in the inserted row, same column', async () => {
     const editor = await openTable();
     placeCursorInCell(editor, 3, 1); // a2 row, column B
@@ -147,9 +168,7 @@ suite('rowColumn: insert commands place the cursor in the new row/column', () =>
     assert.strictEqual(cellAt(editor.document, 2, 1), 'b1');
     assertCaretInCell(editor, 2, 2);
   });
-});
 
-suite('rowColumn: delete commands clamp the cursor to what remains', () => {
   test('delete middle row keeps the caret at the same row index, same column', async () => {
     const editor = await openTable();
     placeCursorInCell(editor, 3, 1); // a2 row, column B
@@ -183,5 +202,254 @@ suite('rowColumn: delete commands clamp the cursor to what remains', () => {
     assert.strictEqual(cellAt(editor.document, 0, 1), 'B');
     assert.strictEqual(cellAt(editor.document, 3, 1), 'b2');
     assertCaretInCell(editor, 3, 1);
+  });
+});
+
+// v0.6.0 emitted an aligned table after every edit. These pin that output so
+// alignOnEdit stays a faithful opt-in to the old behavior.
+suite('rowColumn (alignOnEdit): re-aligns the whole table', () => {
+  suiteSetup(async () => {
+    await setAlignOnEdit(true);
+  });
+
+  suiteTeardown(async () => {
+    await setAlignOnEdit(undefined);
+  });
+
+  test('insert column right', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await insertColumnRightCommand();
+    assertLines(editor, [
+      '| Name  |     | Age |',
+      '| ----- | :-- | --- |',
+      '| Alice |     | 30  |',
+      '| Bob   |     | 7   |'
+    ]);
+  });
+
+  test('insert row below', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await insertRowBelowCommand();
+    assertLines(editor, [
+      '| Name  | Age |',
+      '| ----- | --- |',
+      '| Alice | 30  |',
+      '|       |     |',
+      '| Bob   | 7   |'
+    ]);
+  });
+
+  test('delete column', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 1);
+    await deleteColumnCommand();
+    assertLines(editor, ['| Name  |', '| ----- |', '| Alice |', '| Bob   |']);
+  });
+
+  test('move column left', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 1);
+    await moveColumnLeftCommand();
+    assertLines(editor, [
+      '| Age | Name  |',
+      '| --- | ----- |',
+      '| 30  | Alice |',
+      '| 7   | Bob   |'
+    ]);
+  });
+
+  test('indented table keeps its indent', async () => {
+    const editor = await openTable(['  | A | B |', '  | --- | --- |', '  | a1 | b1 |'].join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await insertColumnRightCommand();
+    assertLines(editor, [
+      '  | A   |     | B   |',
+      '  | --- | :-- | --- |',
+      '  | a1  |     | b1  |'
+    ]);
+  });
+});
+
+suite('rowColumn (preserve): edits leave untouched cells byte-for-byte', () => {
+  suiteSetup(async () => {
+    await setAlignOnEdit(false);
+  });
+
+  suiteTeardown(async () => {
+    await setAlignOnEdit(undefined);
+  });
+
+  test('insert column right adds an empty cell and a defaultAlignment marker', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await insertColumnRightCommand();
+    assertLines(editor, [
+      '| Name |  | Age |',
+      '| --- | :--- | --- |',
+      '| Alice |  | 30 |',
+      '| Bob |  | 7 |'
+    ]);
+    assertCaretInCell(editor, 2, 1);
+  });
+
+  test('insert column left adds the cell before the cursor column', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 1);
+    await insertColumnLeftCommand();
+    assertLines(editor, [
+      '| Name |  | Age |',
+      '| --- | :--- | --- |',
+      '| Alice |  | 30 |',
+      '| Bob |  | 7 |'
+    ]);
+    assertCaretInCell(editor, 2, 1);
+  });
+
+  test('insert row below mirrors the neighboring row cell widths', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 1);
+    await insertRowBelowCommand();
+    assertLines(editor, [
+      '| Name | Age |',
+      '| --- | --- |',
+      '| Alice | 30 |',
+      '|       |    |',
+      '| Bob | 7 |'
+    ]);
+    assertCaretInCell(editor, 3, 1);
+  });
+
+  test('insert row above mirrors the neighboring row cell widths', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 3, 0);
+    await insertRowAboveCommand();
+    assertLines(editor, [
+      '| Name | Age |',
+      '| --- | --- |',
+      '| Alice | 30 |',
+      '|     |   |',
+      '| Bob | 7 |'
+    ]);
+    assertCaretInCell(editor, 3, 0);
+  });
+
+  test('delete column removes only that column', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 1);
+    await deleteColumnCommand();
+    assertLines(editor, ['| Name |', '| --- |', '| Alice |', '| Bob |']);
+    assertCaretInCell(editor, 2, 0);
+  });
+
+  test('delete row removes only that line', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await deleteRowCommand();
+    assertLines(editor, ['| Name | Age |', '| --- | --- |', '| Bob | 7 |']);
+    assertCaretInCell(editor, 2, 0);
+  });
+
+  test('move column carries the cell text, not the column padding', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 1);
+    await moveColumnLeftCommand();
+    assertLines(editor, [
+      '| Age | Name |',
+      '| --- | --- |',
+      '| 30 | Alice |',
+      '| 7 | Bob |'
+    ]);
+    assertCaretInCell(editor, 2, 0);
+  });
+
+  test('move row swaps whole lines verbatim', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await moveRowDownCommand();
+    assertLines(editor, [
+      '| Name | Age |',
+      '| --- | --- |',
+      '| Bob | 7 |',
+      '| Alice | 30 |'
+    ]);
+    assertCaretInCell(editor, 3, 0);
+  });
+
+  test('an already-aligned table stays aligned', async () => {
+    const aligned = [
+      '| A     | B   |',
+      '| :---- | --: |',
+      '| a1    |  b1 |',
+      '| a2    |  b2 |'
+    ];
+    const editor = await openTable(aligned.join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await moveRowDownCommand();
+    assertLines(editor, [
+      '| A     | B   |',
+      '| :---- | --: |',
+      '| a2    |  b2 |',
+      '| a1    |  b1 |'
+    ]);
+  });
+
+  test('escaped pipes are never treated as cell separators', async () => {
+    const editor = await openTable(
+      ['| A | B |', '| --- | --- |', '| a \\| x | b1 |'].join('\n')
+    );
+    placeCursorInCell(editor, 2, 0);
+    await insertColumnRightCommand();
+    assertLines(editor, [
+      '| A |  | B |',
+      '| --- | :--- | --- |',
+      '| a \\| x |  | b1 |'
+    ]);
+  });
+
+  test('a table indented inside a list item keeps its indent', async () => {
+    const editor = await openTable(
+      ['- item', '  | A | B |', '  | --- | --- |', '  | a1 | b1 |'].join('\n')
+    );
+    placeCursorInCell(editor, 3, 0);
+    await insertColumnRightCommand();
+    assertLines(editor, [
+      '- item',
+      '  | A |  | B |',
+      '  | --- | :--- | --- |',
+      '  | a1 |  | b1 |'
+    ]);
+  });
+
+  test('a ragged row is padded out, not corrupted', async () => {
+    const editor = await openTable(
+      ['| A | B | C |', '| --- | --- | --- |', '| a1 |', '| a2 | b2 | c2 |'].join('\n')
+    );
+    placeCursorInCell(editor, 3, 2);
+    await insertColumnRightCommand();
+    assertLines(editor, [
+      '| A | B | C |  |',
+      '| --- | --- | --- | :--- |',
+      '| a1 |  |  |  |',
+      '| a2 | b2 | c2 |  |'
+    ]);
+  });
+
+  test('a CRLF document keeps its line endings', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    await editor.edit((edit) => edit.setEndOfLine(vscode.EndOfLine.CRLF));
+    placeCursorInCell(editor, 2, 0);
+    await insertRowBelowCommand();
+    assert.strictEqual(
+      editor.document.getText(),
+      [
+        '| Name | Age |',
+        '| --- | --- |',
+        '| Alice | 30 |',
+        '|       |    |',
+        '| Bob | 7 |'
+      ].join('\r\n')
+    );
   });
 });
