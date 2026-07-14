@@ -74,18 +74,20 @@ export function insertCell(line: string, index: number, text: string): string {
     return line + '|' + text;
   }
 
-  let out = line;
-  for (let n = spans.length; n < index; n++) {
-    out = appendCell(out, text);
-  }
-  return appendCell(out, text);
+  return appendCell(padCells(line, index, text), text);
 }
 
 /** Grow the line to `count` cells by appending cells of raw text `fill`. */
 export function padCells(line: string, count: number, fill: string): string {
   let out = line;
-  for (let n = cellCount(out); n < count; n++) {
+  let grown = cellCount(out);
+  while (grown < count) {
     out = appendCell(out, fill);
+    const next = cellCount(out);
+    if (next <= grown) {
+      return out;
+    }
+    grown = next;
   }
   return out;
 }
@@ -97,7 +99,7 @@ function appendCell(line: string, text: string): string {
   }
   // A row without a trailing pipe (`a | b`) needs one, or an appended blank
   // cell reads as trailing whitespace and is lost.
-  const closer = hasTrailingPipe(line) ? '' : '|';
+  const closer = hasClosingPipe(line, spans) ? '' : '|';
   const at = spans[spans.length - 1].end;
   return line.slice(0, at) + '|' + text + closer + line.slice(at);
 }
@@ -160,9 +162,13 @@ function hasLeadingPipe(line: string): boolean {
   return line[firstNonSpace(line)] === '|';
 }
 
-function hasTrailingPipe(line: string): boolean {
-  const end = lastNonSpaceEnd(line);
-  return end > firstNonSpace(line) && line[end - 1] === '|';
+/**
+ * Does a delimiter close the last cell? Sniffing the final character would
+ * misread a row that legitimately ends in an escaped pipe (`| a | b \|`),
+ * whose last cell runs to the end of the line with nothing closing it.
+ */
+function hasClosingPipe(line: string, spans: CellSpan[]): boolean {
+  return spans.length > 0 && spans[spans.length - 1].end < lastNonSpaceEnd(line);
 }
 
 /**
@@ -190,7 +196,7 @@ export function blankRowLike(line: string): string {
     }
     out += ' '.repeat(visualWidth(line.slice(spans[i].start, spans[i].end)));
   }
-  return out + (hasTrailingPipe(line) ? '' : '|') + line.slice(last.end);
+  return out + (hasClosingPipe(line, spans) ? '' : '|') + line.slice(last.end);
 }
 
 function firstNonSpace(line: string): number {

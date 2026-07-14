@@ -89,6 +89,19 @@ suite('navigate: the row added past the last cell', () => {
     assert.strictEqual(editor.selection.active.line, 3);
   });
 
+  test('Enter on a ragged last row adds a row as wide as the header', async () => {
+    await setAlignOnEdit(false);
+    const ragged = ['| A | B |', '| --- | --- |', '| a1 |'];
+    const editor = await openTable(ragged);
+    placeCursorInCell(editor, 2, 0);
+    await nextRowCommand();
+    assert.strictEqual(editor.document.getText(), [...ragged, '|    |  |'].join('\n'));
+
+    const added = editor.document.lineAt(3).text;
+    assert.strictEqual(cellCount(added), 2, 'inherits the header width, not the ragged neighbor');
+    assert.ok(computeCellRange(added, 1), 'column 1 is navigable');
+  });
+
   test('alignOnEdit re-aligns the table around the added row', async () => {
     await setAlignOnEdit(true);
     const editor = await openTable(COMPACT);

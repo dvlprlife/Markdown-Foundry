@@ -32,6 +32,9 @@ const HEADER_NARROW = ['| A | B |', '| --- | --- |', '| a | b | c | d |'];
 /** Valid GFM: rows need no leading or trailing pipes. */
 const PIPELESS = ['a | b', '--- | ---', 'a1 | b1'];
 
+/** A body row with fewer cells than the header. */
+const RAGGED = ['| A | B | C |', '| --- | --- | --- |', '| a1 |'];
+
 async function openTable(content: string = TABLE): Promise<vscode.TextEditor> {
   const doc = await vscode.workspace.openTextDocument({ language: 'markdown', content });
   return vscode.window.showTextDocument(doc);
@@ -295,11 +298,13 @@ suite('rowColumn (alignOnEdit): re-aligns the whole table', () => {
     assertLines(editor, ['| A   | B   |     |', '| --- | --- | :-- |', '| a   | b   |     |']);
   });
 
-  test('delete column from a cell past the header deletes nothing', async () => {
+  // There is no column there to delete, so the command must not touch the
+  // buffer at all — not even to re-align it as a side effect.
+  test('delete column from a cell past the header leaves the buffer untouched', async () => {
     const editor = await openTable(HEADER_NARROW.join('\n'));
     placeCursorInCell(editor, 2, 3);
     await deleteColumnCommand();
-    assertLines(editor, ['| A   | B   |', '| --- | --- |', '| a   | b   |']);
+    assertLines(editor, HEADER_NARROW);
   });
 
   test('move column from a cell past the header is a no-op', async () => {
@@ -484,6 +489,19 @@ suite('rowColumn (preserve): edits leave untouched cells byte-for-byte', () => {
     assert.strictEqual(cellCount(inserted), cellCount(PIPELESS[2]), 'cell count preserved');
     assert.ok(computeCellRange(inserted, 0), 'column 0 is navigable');
     assert.ok(computeCellRange(inserted, 1), 'column 1 is navigable');
+    assertCaretInCell(editor, 3, 0);
+  });
+
+  test('a row inserted next to a ragged row is still as wide as the header', async () => {
+    const editor = await openTable(RAGGED.join('\n'));
+    placeCursorInCell(editor, 2, 0); // the ragged row — it has 1 cell, the header has 3
+    await insertRowBelowCommand();
+    assertLines(editor, [...RAGGED, '|    |  |  |']);
+
+    const inserted = editor.document.lineAt(3).text;
+    assert.strictEqual(cellCount(inserted), 3, 'inherits the header width, not the neighbor');
+    assert.ok(computeCellRange(inserted, 1), 'column 1 is navigable');
+    assert.ok(computeCellRange(inserted, 2), 'column 2 is navigable');
     assertCaretInCell(editor, 3, 0);
   });
 

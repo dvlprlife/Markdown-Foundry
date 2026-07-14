@@ -1,7 +1,95 @@
 import * as assert from 'assert';
-import { sortRowLines } from '../../table/commands/sort';
+import * as vscode from 'vscode';
+import { sortByColumnCommand, sortRowLines } from '../../table/commands/sort';
+import { computeCellRange } from '../../table/commands/navigate';
 
 const ROWS = ['| Bob | 7 |', '| Alice | 30 |', '| carol | 8 |'];
+
+const UNSORTED = ['| Name | Age |', '| --- | --- |', '| Bob | 7 |', '| Alice | 30 |'];
+
+/**
+ * Answer the sort command's direction prompt without a UI. The vscode
+ * namespace is not writable through its own types, hence the cast.
+ */
+function stubQuickPick(value: 'asc' | 'desc'): () => void {
+  const win = vscode.window as unknown as { showQuickPick: unknown };
+  const original = win.showQuickPick;
+  win.showQuickPick = (items: unknown): Thenable<unknown> =>
+    Promise.resolve((items as { value: string }[]).find((item) => item.value === value));
+  return () => {
+    win.showQuickPick = original;
+  };
+}
+
+async function setAlignOnEdit(value: boolean | undefined): Promise<void> {
+  await vscode.workspace
+    .getConfiguration('markdownFoundry')
+    .update('alignOnEdit', value, vscode.ConfigurationTarget.Global);
+}
+
+async function openTable(lines: string[]): Promise<vscode.TextEditor> {
+  const doc = await vscode.workspace.openTextDocument({
+    language: 'markdown',
+    content: lines.join('\n')
+  });
+  const editor = await vscode.window.showTextDocument(doc);
+  const range = computeCellRange(doc.lineAt(2).text, 0);
+  assert.ok(range);
+  const pos = new vscode.Position(2, range.start);
+  editor.selection = new vscode.Selection(pos, pos);
+  return editor;
+}
+
+suite('sort: sortByColumnCommand', () => {
+  suiteTeardown(async () => {
+    await setAlignOnEdit(undefined);
+  });
+
+  test('preserve mode reorders the rows without touching their padding', async () => {
+    await setAlignOnEdit(false);
+    const restore = stubQuickPick('asc');
+    try {
+      const editor = await openTable(UNSORTED);
+      await sortByColumnCommand();
+      assert.strictEqual(
+        editor.document.getText(),
+        ['| Name | Age |', '| --- | --- |', '| Alice | 30 |', '| Bob | 7 |'].join('\n')
+      );
+    } finally {
+      restore();
+    }
+  });
+
+  test('descending reverses the rows, still verbatim', async () => {
+    await setAlignOnEdit(false);
+    const restore = stubQuickPick('desc');
+    try {
+      const editor = await openTable(UNSORTED);
+      await sortByColumnCommand();
+      assert.strictEqual(
+        editor.document.getText(),
+        ['| Name | Age |', '| --- | --- |', '| Bob | 7 |', '| Alice | 30 |'].join('\n')
+      );
+    } finally {
+      restore();
+    }
+  });
+
+  test('alignOnEdit re-aligns the sorted table', async () => {
+    await setAlignOnEdit(true);
+    const restore = stubQuickPick('asc');
+    try {
+      const editor = await openTable(UNSORTED);
+      await sortByColumnCommand();
+      assert.strictEqual(
+        editor.document.getText(),
+        ['| Name  | Age |', '| ----- | --- |', '| Alice | 30  |', '| Bob   | 7   |'].join('\n')
+      );
+    } finally {
+      restore();
+    }
+  });
+});
 
 suite('sort: sortRowLines', () => {
   test('reorders body lines verbatim, padding included', () => {

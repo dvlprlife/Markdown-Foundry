@@ -106,7 +106,7 @@ export async function insertRowAboveCommand(): Promise<void> {
   await transformTable((lines, { rowIndex, columnIndex }) => {
     const insertAt = Math.max(0, rowIndex); // header row treated as index 0
     const next = [...lines];
-    next.splice(insertAt + 2, 0, blankRowLike(lines[lineOf(rowIndex)]));
+    next.splice(insertAt + 2, 0, blankRowFrom(lines, rowIndex));
     return { lines: next, cursor: { rowIndex: insertAt, columnIndex } };
   });
 }
@@ -115,9 +115,19 @@ export async function insertRowBelowCommand(): Promise<void> {
   await transformTable((lines, { rowIndex, columnIndex }) => {
     const insertAt = rowIndex < 0 ? 0 : rowIndex + 1;
     const next = [...lines];
-    next.splice(insertAt + 2, 0, blankRowLike(lines[lineOf(rowIndex)]));
+    next.splice(insertAt + 2, 0, blankRowFrom(lines, rowIndex));
     return { lines: next, cursor: { rowIndex: insertAt, columnIndex } };
   });
+}
+
+/**
+ * A blank row shaped like the cursor's row, but never narrower than the
+ * header — a ragged neighbor must not hand the new row too few cells to put
+ * the cursor in.
+ */
+function blankRowFrom(lines: string[], rowIndex: number): string {
+  const reference = lines[lineOf(rowIndex)];
+  return blankRowLike(padCells(reference, cellCount(lines[0]), EMPTY_CELL));
 }
 
 export async function insertColumnLeftCommand(): Promise<void> {
@@ -177,7 +187,7 @@ export async function deleteColumnCommand(): Promise<void> {
     // A cursor in a body row wider than the header can point past the last
     // column; there is nothing there to delete.
     if (columnIndex >= columns) {
-      return { lines, cursor: { rowIndex, columnIndex: columns - 1 } };
+      return null;
     }
     return {
       lines: lines.map((line) => removeCell(line, columnIndex)),

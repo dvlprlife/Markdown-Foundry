@@ -13,6 +13,26 @@ function texts(line: string): string[] {
   return cellSpans(line).map((span) => line.slice(span.start, span.end));
 }
 
+/** Every row shape the primitives have to survive. */
+const SHAPES = [
+  '| a | b | c |',
+  'a | b',
+  '| a | b',
+  'a | b |',
+  '  | a | b |',
+  '  a | b',
+  '| a \\| x | b |',
+  'a \\| x | b',
+  '| a | b \\|',
+  '  | a | b \\|',
+  'a | b \\|',
+  '| only |',
+  '| a1 |',
+  '|  |  |',
+  '| 日本語 | 30 |',
+  '| --- | --- |'
+];
+
 suite('cells: cellSpans', () => {
   test('spans cover each cell pipe-to-pipe, padding included', () => {
     assert.deepStrictEqual(cellSpans('| a | b |'), [
@@ -99,6 +119,22 @@ suite('cells: padCells', () => {
   test('leaves a row that is already wide enough alone', () => {
     assert.strictEqual(padCells('| a | b | c |', 3, '  '), '| a | b | c |');
     assert.strictEqual(padCells('| a | b | c |', 2, '  '), '| a | b | c |');
+  });
+
+  test('grows a row that ends in an escaped pipe', () => {
+    assert.strictEqual(padCells('| a | b \\|', 4, '  '), '| a | b \\||  |  |');
+  });
+
+  test('always reaches the requested width, whatever the row shape', () => {
+    for (const shape of SHAPES) {
+      for (let width = 1; width <= 5; width++) {
+        const padded = padCells(shape, width, '  ');
+        assert.ok(
+          cellCount(padded) >= Math.max(width, cellCount(shape)),
+          `[${shape}] padded to ${width} gave [${padded}] (${cellCount(padded)} cells)`
+        );
+      }
+    }
   });
 });
 
@@ -188,23 +224,15 @@ suite('cells: blankRowLike', () => {
     assert.strictEqual(blankRowLike('  a | b'), '  |  |  |');
   });
 
+  test('a row ending in an escaped pipe is not mistaken for a closed row', () => {
+    // `| a | b \|` has no closing delimiter — its last cell is `b |`.
+    assert.strictEqual(cellCount('| a | b \\|'), 2);
+    assert.strictEqual(blankRowLike('| a | b \\|'), '|   |     |');
+    assert.strictEqual(cellCount(blankRowLike('| a | b \\|')), 2);
+  });
+
   test('cell count is invariant under blankRowLike, for every row shape', () => {
-    const shapes = [
-      '| a | b | c |',
-      'a | b',
-      '| a | b',
-      'a | b |',
-      '  | a | b |',
-      '  a | b',
-      '| a \\| x | b |',
-      'a \\| x | b',
-      '| only |',
-      '| a1 |',
-      '|  |  |',
-      '| 日本語 | 30 |',
-      '| --- | --- |'
-    ];
-    for (const shape of shapes) {
+    for (const shape of SHAPES) {
       assert.strictEqual(
         cellCount(blankRowLike(shape)),
         cellCount(shape),

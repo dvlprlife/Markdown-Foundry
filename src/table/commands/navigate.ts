@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { locateTable, cursorToTableCoords, TableLocation } from '../locator';
-import { blankRowLike, cellCount } from '../cells';
+import { blankRowLike, cellCount, padCells } from '../cells';
 import { documentEol, readTableLines, renderTableLines } from './tableEdit';
 
 /**
@@ -43,15 +43,17 @@ function bodyRowCount(lines: string[]): number {
 }
 
 /**
- * Append a row shaped like the table's last line, so its pipes line up with
- * the table as it already is when `alignOnEdit` is off.
+ * Append a row shaped like the table's last line — but never narrower than
+ * the header — so its pipes line up with the table as it already is when
+ * `alignOnEdit` is off, and every column can still be tabbed into.
  */
 async function appendBlankRow(
   editor: vscode.TextEditor,
   location: TableLocation,
   lines: string[]
 ): Promise<void> {
-  const next = [...lines, blankRowLike(lines[lines.length - 1])];
+  const reference = padCells(lines[lines.length - 1], cellCount(lines[0]), '  ');
+  const next = [...lines, blankRowLike(reference)];
   const text = renderTableLines(next, location, documentEol(editor.document));
   await editor.edit((edit) => edit.replace(location.range, text));
 }
