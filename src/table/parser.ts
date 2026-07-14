@@ -15,27 +15,34 @@ export function parseTable(
   document: vscode.TextDocument,
   location: TableLocation
 ): TableModel {
-  const headerText = document.lineAt(location.headerLine).text;
-  const separatorText = document.lineAt(location.separatorLine).text;
+  const lines: string[] = [];
+  for (let i = location.headerLine; i <= location.lastBodyLine; i++) {
+    lines.push(document.lineAt(i).text);
+  }
+  const eol = document.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n';
+  return parseTableFromLines(lines, location.range, eol);
+}
+
+/**
+ * Parse raw table lines — header, separator, then body rows — into a
+ * TableModel. Lets edited lines be re-parsed without a TextDocument.
+ */
+export function parseTableFromLines(
+  lines: string[],
+  range: vscode.Range,
+  eol: string
+): TableModel {
+  const headerText = lines[0] ?? '';
+  const separatorText = lines[1] ?? '';
 
   const indent = leadingIndent(headerText);
   const headers = splitRow(headerText);
   const alignments = parseAlignments(separatorText, headers.length);
+  const rows = lines
+    .slice(2)
+    .map((line) => normalizeRowWidth(splitRow(line), headers.length));
 
-  const rows: string[][] = [];
-  for (let i = location.separatorLine + 1; i <= location.lastBodyLine; i++) {
-    const row = splitRow(document.lineAt(i).text);
-    rows.push(normalizeRowWidth(row, headers.length));
-  }
-
-  return {
-    headers,
-    alignments,
-    rows,
-    range: location.range,
-    indent,
-    eol: document.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n'
-  };
+  return { headers, alignments, rows, range, indent, eol };
 }
 
 function leadingIndent(text: string): string {

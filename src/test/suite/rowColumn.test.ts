@@ -13,6 +13,7 @@ import {
   moveColumnRightCommand
 } from '../../table/commands/rowColumn';
 import { computeCellRange } from '../../table/commands/navigate';
+import { cellCount } from '../../table/cells';
 
 const TABLE = [
   '| A | B | C |',
@@ -22,9 +23,27 @@ const TABLE = [
   '| a3 | b3 | c3 |'
 ].join('\n');
 
+/** Deliberately unpadded — every cell is as narrow as its content. */
+const COMPACT = ['| Name | Age |', '| --- | --- |', '| Alice | 30 |', '| Bob | 7 |'];
+
+/** A body row wider than the header, so the cursor can sit past its last column. */
+const HEADER_NARROW = ['| A | B |', '| --- | --- |', '| a | b | c | d |'];
+
+/** Valid GFM: rows need no leading or trailing pipes. */
+const PIPELESS = ['a | b', '--- | ---', 'a1 | b1'];
+
+/** A body row with fewer cells than the header. */
+const RAGGED = ['| A | B | C |', '| --- | --- | --- |', '| a1 |'];
+
 async function openTable(content: string = TABLE): Promise<vscode.TextEditor> {
   const doc = await vscode.workspace.openTextDocument({ language: 'markdown', content });
   return vscode.window.showTextDocument(doc);
+}
+
+async function setAlignOnEdit(value: boolean | undefined): Promise<void> {
+  await vscode.workspace
+    .getConfiguration('markdownFoundry')
+    .update('alignOnEdit', value, vscode.ConfigurationTarget.Global);
 }
 
 function placeCursorInCell(editor: vscode.TextEditor, line: number, columnIndex: number): void {
@@ -49,7 +68,21 @@ function assertCaretInCell(editor: vscode.TextEditor, line: number, columnIndex:
   assert.strictEqual(editor.selection.active.character, range.start, 'caret at cell content start');
 }
 
-suite('rowColumn: move commands keep the cursor on the moved content', () => {
+function assertLines(editor: vscode.TextEditor, expected: string[]): void {
+  assert.strictEqual(editor.document.getText(), expected.join('\n'));
+}
+
+// The cursor-following behavior below is mode-independent, so it runs against
+// the aligned default of v0.6.0 (alignOnEdit) as a regression guard.
+suite('rowColumn (alignOnEdit): cursor follows the edit', () => {
+  suiteSetup(async () => {
+    await setAlignOnEdit(true);
+  });
+
+  suiteTeardown(async () => {
+    await setAlignOnEdit(undefined);
+  });
+
   test('move row up follows the moved row, same column', async () => {
     const editor = await openTable();
     placeCursorInCell(editor, 3, 1); // a2 row, column B
@@ -109,9 +142,7 @@ suite('rowColumn: move commands keep the cursor on the moved content', () => {
     assert.strictEqual(cellAt(editor.document, 0, 1), 'C');
     assertCaretInCell(editor, 0, 2);
   });
-});
 
-suite('rowColumn: insert commands place the cursor in the new row/column', () => {
   test('insert row above puts the caret in the inserted row, same column', async () => {
     const editor = await openTable();
     placeCursorInCell(editor, 3, 1); // a2 row, column B
@@ -147,9 +178,7 @@ suite('rowColumn: insert commands place the cursor in the new row/column', () =>
     assert.strictEqual(cellAt(editor.document, 2, 1), 'b1');
     assertCaretInCell(editor, 2, 2);
   });
-});
 
-suite('rowColumn: delete commands clamp the cursor to what remains', () => {
   test('delete middle row keeps the caret at the same row index, same column', async () => {
     const editor = await openTable();
     placeCursorInCell(editor, 3, 1); // a2 row, column B
@@ -183,5 +212,335 @@ suite('rowColumn: delete commands clamp the cursor to what remains', () => {
     assert.strictEqual(cellAt(editor.document, 0, 1), 'B');
     assert.strictEqual(cellAt(editor.document, 3, 1), 'b2');
     assertCaretInCell(editor, 3, 1);
+  });
+});
+
+// v0.6.0 emitted an aligned table after every edit. These pin that output so
+// alignOnEdit stays a faithful opt-in to the old behavior.
+suite('rowColumn (alignOnEdit): re-aligns the whole table', () => {
+  suiteSetup(async () => {
+    await setAlignOnEdit(true);
+  });
+
+  suiteTeardown(async () => {
+    await setAlignOnEdit(undefined);
+  });
+
+  test('insert column right', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await insertColumnRightCommand();
+    assertLines(editor, [
+      '| Name  |     | Age |',
+      '| ----- | :-- | --- |',
+      '| Alice |     | 30  |',
+      '| Bob   |     | 7   |'
+    ]);
+  });
+
+  test('insert row below', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await insertRowBelowCommand();
+    assertLines(editor, [
+      '| Name  | Age |',
+      '| ----- | --- |',
+      '| Alice | 30  |',
+      '|       |     |',
+      '| Bob   | 7   |'
+    ]);
+  });
+
+  test('delete column', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 1);
+    await deleteColumnCommand();
+    assertLines(editor, ['| Name  |', '| ----- |', '| Alice |', '| Bob   |']);
+  });
+
+  test('move column left', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 1);
+    await moveColumnLeftCommand();
+    assertLines(editor, [
+      '| Age | Name  |',
+      '| --- | ----- |',
+      '| 30  | Alice |',
+      '| 7   | Bob   |'
+    ]);
+  });
+
+  test('indented table keeps its indent', async () => {
+    const editor = await openTable(['  | A | B |', '  | --- | --- |', '  | a1 | b1 |'].join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await insertColumnRightCommand();
+    assertLines(editor, [
+      '  | A   |     | B   |',
+      '  | --- | :-- | --- |',
+      '  | a1  |     | b1  |'
+    ]);
+  });
+
+  // The cursor's column is counted on its own line, so a body row wider than
+  // the header reports a column past the header's last. v0.6.0 clamped it via
+  // Array.splice; the new column must not run off the end of the table.
+  test('insert column right from a cell past the header clamps to the last column', async () => {
+    const editor = await openTable(HEADER_NARROW.join('\n'));
+    placeCursorInCell(editor, 2, 3); // the body row's 4th cell — the header has 2
+    await insertColumnRightCommand();
+    assertLines(editor, ['| A   | B   |     |', '| --- | --- | :-- |', '| a   | b   |     |']);
+  });
+
+  test('insert column left from a cell past the header clamps to the last column', async () => {
+    const editor = await openTable(HEADER_NARROW.join('\n'));
+    placeCursorInCell(editor, 2, 2); // the body row's 3rd cell — the header has 2
+    await insertColumnLeftCommand();
+    assertLines(editor, ['| A   | B   |     |', '| --- | --- | :-- |', '| a   | b   |     |']);
+  });
+
+  // There is no column there to delete, so the command must not touch the
+  // buffer at all — not even to re-align it as a side effect.
+  test('delete column from a cell past the header leaves the buffer untouched', async () => {
+    const editor = await openTable(HEADER_NARROW.join('\n'));
+    placeCursorInCell(editor, 2, 3);
+    await deleteColumnCommand();
+    assertLines(editor, HEADER_NARROW);
+  });
+
+  test('move column from a cell past the header is a no-op', async () => {
+    const editor = await openTable(HEADER_NARROW.join('\n'));
+    placeCursorInCell(editor, 2, 3);
+    await moveColumnLeftCommand();
+    assertLines(editor, HEADER_NARROW);
+  });
+});
+
+suite('rowColumn (preserve): edits leave untouched cells byte-for-byte', () => {
+  suiteSetup(async () => {
+    await setAlignOnEdit(false);
+  });
+
+  suiteTeardown(async () => {
+    await setAlignOnEdit(undefined);
+  });
+
+  test('insert column right adds an empty cell and a defaultAlignment marker', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await insertColumnRightCommand();
+    assertLines(editor, [
+      '| Name |  | Age |',
+      '| --- | :--- | --- |',
+      '| Alice |  | 30 |',
+      '| Bob |  | 7 |'
+    ]);
+    assertCaretInCell(editor, 2, 1);
+  });
+
+  test('insert column left adds the cell before the cursor column', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 1);
+    await insertColumnLeftCommand();
+    assertLines(editor, [
+      '| Name |  | Age |',
+      '| --- | :--- | --- |',
+      '| Alice |  | 30 |',
+      '| Bob |  | 7 |'
+    ]);
+    assertCaretInCell(editor, 2, 1);
+  });
+
+  test('insert row below mirrors the neighboring row cell widths', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 1);
+    await insertRowBelowCommand();
+    assertLines(editor, [
+      '| Name | Age |',
+      '| --- | --- |',
+      '| Alice | 30 |',
+      '|       |    |',
+      '| Bob | 7 |'
+    ]);
+    assertCaretInCell(editor, 3, 1);
+  });
+
+  test('insert row above mirrors the neighboring row cell widths', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 3, 0);
+    await insertRowAboveCommand();
+    assertLines(editor, [
+      '| Name | Age |',
+      '| --- | --- |',
+      '| Alice | 30 |',
+      '|     |   |',
+      '| Bob | 7 |'
+    ]);
+    assertCaretInCell(editor, 3, 0);
+  });
+
+  test('delete column removes only that column', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 1);
+    await deleteColumnCommand();
+    assertLines(editor, ['| Name |', '| --- |', '| Alice |', '| Bob |']);
+    assertCaretInCell(editor, 2, 0);
+  });
+
+  test('delete row removes only that line', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await deleteRowCommand();
+    assertLines(editor, ['| Name | Age |', '| --- | --- |', '| Bob | 7 |']);
+    assertCaretInCell(editor, 2, 0);
+  });
+
+  test('move column carries the cell text, not the column padding', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 1);
+    await moveColumnLeftCommand();
+    assertLines(editor, [
+      '| Age | Name |',
+      '| --- | --- |',
+      '| 30 | Alice |',
+      '| 7 | Bob |'
+    ]);
+    assertCaretInCell(editor, 2, 0);
+  });
+
+  test('move row swaps whole lines verbatim', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await moveRowDownCommand();
+    assertLines(editor, [
+      '| Name | Age |',
+      '| --- | --- |',
+      '| Bob | 7 |',
+      '| Alice | 30 |'
+    ]);
+    assertCaretInCell(editor, 3, 0);
+  });
+
+  test('an already-aligned table stays aligned', async () => {
+    const aligned = [
+      '| A     | B   |',
+      '| :---- | --: |',
+      '| a1    |  b1 |',
+      '| a2    |  b2 |'
+    ];
+    const editor = await openTable(aligned.join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await moveRowDownCommand();
+    assertLines(editor, [
+      '| A     | B   |',
+      '| :---- | --: |',
+      '| a2    |  b2 |',
+      '| a1    |  b1 |'
+    ]);
+  });
+
+  test('escaped pipes are never treated as cell separators', async () => {
+    const editor = await openTable(
+      ['| A | B |', '| --- | --- |', '| a \\| x | b1 |'].join('\n')
+    );
+    placeCursorInCell(editor, 2, 0);
+    await insertColumnRightCommand();
+    assertLines(editor, [
+      '| A |  | B |',
+      '| --- | :--- | --- |',
+      '| a \\| x |  | b1 |'
+    ]);
+  });
+
+  test('a table indented inside a list item keeps its indent', async () => {
+    const editor = await openTable(
+      ['- item', '  | A | B |', '  | --- | --- |', '  | a1 | b1 |'].join('\n')
+    );
+    placeCursorInCell(editor, 3, 0);
+    await insertColumnRightCommand();
+    assertLines(editor, [
+      '- item',
+      '  | A |  | B |',
+      '  | --- | :--- | --- |',
+      '  | a1 |  | b1 |'
+    ]);
+  });
+
+  test('a ragged row is padded out, not corrupted', async () => {
+    const editor = await openTable(
+      ['| A | B | C |', '| --- | --- | --- |', '| a1 |', '| a2 | b2 | c2 |'].join('\n')
+    );
+    placeCursorInCell(editor, 3, 2);
+    await insertColumnRightCommand();
+    assertLines(editor, [
+      '| A | B | C |  |',
+      '| --- | --- | --- | :--- |',
+      '| a1 |  |  |  |',
+      '| a2 | b2 | c2 |  |'
+    ]);
+  });
+
+  test('a row inserted into a pipeless table stays addressable', async () => {
+    const editor = await openTable(PIPELESS.join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await insertRowBelowCommand();
+    assertLines(editor, [...PIPELESS, '|   |   |']);
+
+    const inserted = editor.document.lineAt(3).text;
+    assert.strictEqual(cellCount(inserted), cellCount(PIPELESS[2]), 'cell count preserved');
+    assert.ok(computeCellRange(inserted, 0), 'column 0 is navigable');
+    assert.ok(computeCellRange(inserted, 1), 'column 1 is navigable');
+    assertCaretInCell(editor, 3, 0);
+  });
+
+  // Stripping the last pipes would leave `Age` over `---` — a setext heading,
+  // not a table.
+  test('deleting a column from a pipeless table keeps it a table', async () => {
+    const editor = await openTable(['Name | Age', '--- | ---', 'Alice | 30'].join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await deleteColumnCommand();
+    assertLines(editor, ['| Age|', '| ---|', '| 30|']);
+
+    for (let line = 0; line < 3; line++) {
+      const text = editor.document.lineAt(line).text;
+      assert.ok(/(?<!\\)\|/.test(text), `line ${line} is no longer row-like: [${text}]`);
+      assert.strictEqual(cellCount(text), 1);
+    }
+  });
+
+  test('a row inserted next to a ragged row is still as wide as the header', async () => {
+    const editor = await openTable(RAGGED.join('\n'));
+    placeCursorInCell(editor, 2, 0); // the ragged row — it has 1 cell, the header has 3
+    await insertRowBelowCommand();
+    assertLines(editor, [...RAGGED, '|    |  |  |']);
+
+    const inserted = editor.document.lineAt(3).text;
+    assert.strictEqual(cellCount(inserted), 3, 'inherits the header width, not the neighbor');
+    assert.ok(computeCellRange(inserted, 1), 'column 1 is navigable');
+    assert.ok(computeCellRange(inserted, 2), 'column 2 is navigable');
+    assertCaretInCell(editor, 3, 0);
+  });
+
+  test('inserting a column past the header does not destroy the extra cells', async () => {
+    const editor = await openTable(HEADER_NARROW.join('\n'));
+    placeCursorInCell(editor, 2, 3);
+    await insertColumnRightCommand();
+    assertLines(editor, ['| A | B |  |', '| --- | --- | :--- |', '| a | b |  | c | d |']);
+  });
+
+  test('a CRLF document keeps its line endings', async () => {
+    const editor = await openTable(COMPACT.join('\n'));
+    await editor.edit((edit) => edit.setEndOfLine(vscode.EndOfLine.CRLF));
+    placeCursorInCell(editor, 2, 0);
+    await insertRowBelowCommand();
+    assert.strictEqual(
+      editor.document.getText(),
+      [
+        '| Name | Age |',
+        '| --- | --- |',
+        '| Alice | 30 |',
+        '|       |    |',
+        '| Bob | 7 |'
+      ].join('\r\n')
+    );
   });
 });

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { locateTable, cursorToTableCoords } from '../locator';
-import { parseTable } from '../parser';
-import { formatTable } from '../formatter';
+import { locateTable, cursorToTableCoords, TableLocation } from '../locator';
+import { blankRowLike, cellCount, padCells } from '../cells';
+import { documentEol, readTableLines, renderTableLines } from './tableEdit';
 
 /**
  * Move cursor to the next cell.
@@ -18,8 +18,8 @@ export async function nextCellCommand(): Promise<void> {
   const coords = cursorToTableCoords(document, location, editor.selection.active);
   if (!coords) {return;}
 
-  const model = parseTable(document, location);
-  const columnCount = model.headers.length;
+  const lines = readTableLines(document, location);
+  const columnCount = cellCount(lines[0]);
 
   let targetRow = coords.rowIndex;
   let targetCol = coords.columnIndex + 1;
@@ -28,17 +28,34 @@ export async function nextCellCommand(): Promise<void> {
     targetCol = 0;
     targetRow = targetRow + 1;
 
-    if (targetRow >= model.rows.length) {
-      const newRow = Array(columnCount).fill('');
-      model.rows.push(newRow);
-      const formatted = formatTable(model);
-      await editor.edit((edit) => edit.replace(location.range, formatted));
+    if (targetRow >= bodyRowCount(lines)) {
+      await appendBlankRow(editor, location, lines);
       await moveCursorToCell(location.headerLine, targetRow, targetCol);
       return;
     }
   }
 
   await moveCursorToCell(location.headerLine, targetRow, targetCol);
+}
+
+function bodyRowCount(lines: string[]): number {
+  return lines.length - 2;
+}
+
+/**
+ * Append a row shaped like the table's last line — but never narrower than
+ * the header — so its pipes line up with the table as it already is when
+ * `alignOnEdit` is off, and every column can still be tabbed into.
+ */
+async function appendBlankRow(
+  editor: vscode.TextEditor,
+  location: TableLocation,
+  lines: string[]
+): Promise<void> {
+  const reference = padCells(lines[lines.length - 1], cellCount(lines[0]), '  ');
+  const next = [...lines, blankRowLike(reference)];
+  const text = renderTableLines(next, location, documentEol(editor.document));
+  await editor.edit((edit) => edit.replace(location.range, text));
 }
 
 export async function previousCellCommand(): Promise<void> {
@@ -52,13 +69,13 @@ export async function previousCellCommand(): Promise<void> {
   const coords = cursorToTableCoords(document, location, editor.selection.active);
   if (!coords) {return;}
 
-  const model = parseTable(document, location);
+  const lines = readTableLines(document, location);
 
   let targetRow = coords.rowIndex;
   let targetCol = coords.columnIndex - 1;
 
   if (targetCol < 0) {
-    targetCol = model.headers.length - 1;
+    targetCol = cellCount(lines[0]) - 1;
     targetRow = targetRow - 1;
     if (targetRow < -1) {return;}
   }
@@ -81,15 +98,11 @@ export async function nextRowCommand(): Promise<void> {
   const coords = cursorToTableCoords(document, location, editor.selection.active);
   if (!coords) {return;}
 
-  const model = parseTable(document, location);
-  const columnCount = model.headers.length;
+  const lines = readTableLines(document, location);
   const targetRow = coords.rowIndex + 1;
 
-  if (targetRow >= model.rows.length) {
-    const newRow = Array(columnCount).fill('');
-    model.rows.push(newRow);
-    const formatted = formatTable(model);
-    await editor.edit((edit) => edit.replace(location.range, formatted));
+  if (targetRow >= bodyRowCount(lines)) {
+    await appendBlankRow(editor, location, lines);
   }
 
   await moveCursorToCell(location.headerLine, targetRow, 0);
