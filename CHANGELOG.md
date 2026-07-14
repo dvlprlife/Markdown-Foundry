@@ -4,6 +4,8 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-07-14
+
 ### Added
 
 - `markdownFoundry.alignOnEdit` (default `false`) — set it to `true` to restore the previous behavior of re-aligning the whole table after every table editing command ([#136](https://github.com/dvlprlife/Markdown-Foundry/pull/136)).
