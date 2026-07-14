@@ -169,6 +169,10 @@ function hasTrailingPipe(line: string): boolean {
  * Clone a row's pipe structure with every cell blanked, keeping each cell's
  * rendered width so the new row's pipes line up with the row it was cloned
  * from — however that row happens to be padded.
+ *
+ * A blanked clone of a row without a leading or trailing pipe (`a | b`) needs
+ * one: with every cell now whitespace, the outermost pipes are all that keeps
+ * the cells addressable. cellCount is invariant under this function.
  */
 export function blankRowLike(line: string): string {
   const spans = cellSpans(line);
@@ -176,14 +180,17 @@ export function blankRowLike(line: string): string {
     return line;
   }
 
-  let out = '';
-  let cursor = 0;
-  for (const span of spans) {
-    out += line.slice(cursor, span.start);
-    out += ' '.repeat(visualWidth(line.slice(span.start, span.end)));
-    cursor = span.end;
+  const first = spans[0];
+  const last = spans[spans.length - 1];
+
+  let out = line.slice(0, first.start) + (hasLeadingPipe(line) ? '' : '|');
+  for (let i = 0; i < spans.length; i++) {
+    if (i > 0) {
+      out += line.slice(spans[i - 1].end, spans[i].start);
+    }
+    out += ' '.repeat(visualWidth(line.slice(spans[i].start, spans[i].end)));
   }
-  return out + line.slice(cursor);
+  return out + (hasTrailingPipe(line) ? '' : '|') + line.slice(last.end);
 }
 
 function firstNonSpace(line: string): number {

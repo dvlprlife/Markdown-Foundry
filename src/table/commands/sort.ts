@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { locateTable, cursorToTableCoords } from '../locator';
 import { splitRow } from '../parser';
+import { cellCount } from '../cells';
 import { documentEol, readTableLines, renderTableLines } from './tableEdit';
 
 /**
@@ -38,20 +39,31 @@ export async function sortByColumnCommand(): Promise<void> {
   const lines = readTableLines(document, location);
   const sorted = [
     ...lines.slice(0, 2),
-    ...sortRowLines(lines.slice(2), coords.columnIndex, direction.value === 'desc')
+    ...sortRowLines(
+      lines.slice(2),
+      coords.columnIndex,
+      direction.value === 'desc',
+      cellCount(lines[0])
+    )
   ];
 
   const text = renderTableLines(sorted, location, documentEol(document));
   await editor.edit((edit) => edit.replace(location.range, text));
 }
 
-/** Reorder body rows verbatim, comparing the cell values of one column. */
+/**
+ * Reorder body rows verbatim, comparing the cell values of one column.
+ * Cells past the header's last column are not part of the table, so they
+ * compare as empty — a row wider than the header cannot skew the sort.
+ */
 export function sortRowLines(
   rows: string[],
   columnIndex: number,
-  descending: boolean
+  descending: boolean,
+  columnCount: number
 ): string[] {
-  const valueOf = (line: string): string => (splitRow(line)[columnIndex] ?? '').trim();
+  const valueOf = (line: string): string =>
+    columnIndex >= columnCount ? '' : (splitRow(line)[columnIndex] ?? '').trim();
 
   const isNumeric = rows.every((line) => {
     const value = valueOf(line);

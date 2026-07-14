@@ -122,17 +122,25 @@ export async function insertRowBelowCommand(): Promise<void> {
 
 export async function insertColumnLeftCommand(): Promise<void> {
   await transformTable((lines, { rowIndex, columnIndex }) => {
-    return { lines: insertColumnAt(lines, columnIndex), cursor: { rowIndex, columnIndex } };
+    const index = columnOf(lines, columnIndex);
+    return { lines: insertColumnAt(lines, index), cursor: { rowIndex, columnIndex: index } };
   });
 }
 
 export async function insertColumnRightCommand(): Promise<void> {
   await transformTable((lines, { rowIndex, columnIndex }) => {
-    return {
-      lines: insertColumnAt(lines, columnIndex + 1),
-      cursor: { rowIndex, columnIndex: columnIndex + 1 }
-    };
+    const index = columnOf(lines, columnIndex + 1);
+    return { lines: insertColumnAt(lines, index), cursor: { rowIndex, columnIndex: index } };
   });
+}
+
+/**
+ * A body row wider than the header lets the cursor report a column past the
+ * header's last one. Clamping keeps the new column inside the table, the way
+ * Array.splice clamps a past-the-end index.
+ */
+function columnOf(lines: string[], index: number): number {
+  return Math.min(index, cellCount(lines[0]));
 }
 
 function insertColumnAt(lines: string[], index: number): string[] {
@@ -165,6 +173,11 @@ export async function deleteColumnCommand(): Promise<void> {
     if (columns <= 1) {
       vscode.window.showInformationMessage('Markdown Foundry: cannot delete the last column.');
       return null;
+    }
+    // A cursor in a body row wider than the header can point past the last
+    // column; there is nothing there to delete.
+    if (columnIndex >= columns) {
+      return { lines, cursor: { rowIndex, columnIndex: columns - 1 } };
     }
     return {
       lines: lines.map((line) => removeCell(line, columnIndex)),
@@ -201,7 +214,7 @@ function swapLines(lines: string[], a: number, b: number): string[] {
 
 export async function moveColumnLeftCommand(): Promise<void> {
   await transformTable((lines, { rowIndex, columnIndex }) => {
-    if (columnIndex <= 0) {return null;}
+    if (columnIndex <= 0 || columnIndex >= cellCount(lines[0])) {return null;}
     return {
       lines: swapColumns(lines, columnIndex, columnIndex - 1),
       cursor: { rowIndex, columnIndex: columnIndex - 1 }

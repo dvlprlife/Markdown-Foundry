@@ -178,4 +178,38 @@ suite('cells: blankRowLike', () => {
     assert.strictEqual(blankRowLike('| a \\| b | c |'), '|        |   |');
     assert.strictEqual(cellCount(blankRowLike('| a \\| b | c |')), 2);
   });
+
+  test('a row missing a leading or trailing pipe gets one, so its cells stay addressable', () => {
+    // Every cell is whitespace now, so the outer pipes are all that delimits
+    // them: 'a | b' blanked to '  |  ' would parse as zero cells.
+    assert.strictEqual(blankRowLike('a | b'), '|  |  |');
+    assert.strictEqual(blankRowLike('| a | b'), '|   |  |');
+    assert.strictEqual(blankRowLike('a | b |'), '|  |   |');
+    assert.strictEqual(blankRowLike('  a | b'), '  |  |  |');
+  });
+
+  test('cell count is invariant under blankRowLike, for every row shape', () => {
+    const shapes = [
+      '| a | b | c |',
+      'a | b',
+      '| a | b',
+      'a | b |',
+      '  | a | b |',
+      '  a | b',
+      '| a \\| x | b |',
+      'a \\| x | b',
+      '| only |',
+      '| a1 |',
+      '|  |  |',
+      '| 日本語 | 30 |',
+      '| --- | --- |'
+    ];
+    for (const shape of shapes) {
+      assert.strictEqual(
+        cellCount(blankRowLike(shape)),
+        cellCount(shape),
+        `cell count changed: [${shape}] -> [${blankRowLike(shape)}]`
+      );
+    }
+  });
 });

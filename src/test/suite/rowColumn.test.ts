@@ -13,6 +13,7 @@ import {
   moveColumnRightCommand
 } from '../../table/commands/rowColumn';
 import { computeCellRange } from '../../table/commands/navigate';
+import { cellCount } from '../../table/cells';
 
 const TABLE = [
   '| A | B | C |',
@@ -24,6 +25,12 @@ const TABLE = [
 
 /** Deliberately unpadded — every cell is as narrow as its content. */
 const COMPACT = ['| Name | Age |', '| --- | --- |', '| Alice | 30 |', '| Bob | 7 |'];
+
+/** A body row wider than the header, so the cursor can sit past its last column. */
+const HEADER_NARROW = ['| A | B |', '| --- | --- |', '| a | b | c | d |'];
+
+/** Valid GFM: rows need no leading or trailing pipes. */
+const PIPELESS = ['a | b', '--- | ---', 'a1 | b1'];
 
 async function openTable(content: string = TABLE): Promise<vscode.TextEditor> {
   const doc = await vscode.workspace.openTextDocument({ language: 'markdown', content });
@@ -270,6 +277,37 @@ suite('rowColumn (alignOnEdit): re-aligns the whole table', () => {
       '  | a1  |     | b1  |'
     ]);
   });
+
+  // The cursor's column is counted on its own line, so a body row wider than
+  // the header reports a column past the header's last. v0.6.0 clamped it via
+  // Array.splice; the new column must not run off the end of the table.
+  test('insert column right from a cell past the header clamps to the last column', async () => {
+    const editor = await openTable(HEADER_NARROW.join('\n'));
+    placeCursorInCell(editor, 2, 3); // the body row's 4th cell — the header has 2
+    await insertColumnRightCommand();
+    assertLines(editor, ['| A   | B   |     |', '| --- | --- | :-- |', '| a   | b   |     |']);
+  });
+
+  test('insert column left from a cell past the header clamps to the last column', async () => {
+    const editor = await openTable(HEADER_NARROW.join('\n'));
+    placeCursorInCell(editor, 2, 2); // the body row's 3rd cell — the header has 2
+    await insertColumnLeftCommand();
+    assertLines(editor, ['| A   | B   |     |', '| --- | --- | :-- |', '| a   | b   |     |']);
+  });
+
+  test('delete column from a cell past the header deletes nothing', async () => {
+    const editor = await openTable(HEADER_NARROW.join('\n'));
+    placeCursorInCell(editor, 2, 3);
+    await deleteColumnCommand();
+    assertLines(editor, ['| A   | B   |', '| --- | --- |', '| a   | b   |']);
+  });
+
+  test('move column from a cell past the header is a no-op', async () => {
+    const editor = await openTable(HEADER_NARROW.join('\n'));
+    placeCursorInCell(editor, 2, 3);
+    await moveColumnLeftCommand();
+    assertLines(editor, HEADER_NARROW);
+  });
 });
 
 suite('rowColumn (preserve): edits leave untouched cells byte-for-byte', () => {
@@ -434,6 +472,26 @@ suite('rowColumn (preserve): edits leave untouched cells byte-for-byte', () => {
       '| a1 |  |  |  |',
       '| a2 | b2 | c2 |  |'
     ]);
+  });
+
+  test('a row inserted into a pipeless table stays addressable', async () => {
+    const editor = await openTable(PIPELESS.join('\n'));
+    placeCursorInCell(editor, 2, 0);
+    await insertRowBelowCommand();
+    assertLines(editor, [...PIPELESS, '|   |   |']);
+
+    const inserted = editor.document.lineAt(3).text;
+    assert.strictEqual(cellCount(inserted), cellCount(PIPELESS[2]), 'cell count preserved');
+    assert.ok(computeCellRange(inserted, 0), 'column 0 is navigable');
+    assert.ok(computeCellRange(inserted, 1), 'column 1 is navigable');
+    assertCaretInCell(editor, 3, 0);
+  });
+
+  test('inserting a column past the header does not destroy the extra cells', async () => {
+    const editor = await openTable(HEADER_NARROW.join('\n'));
+    placeCursorInCell(editor, 2, 3);
+    await insertColumnRightCommand();
+    assertLines(editor, ['| A | B |  |', '| --- | --- | :--- |', '| a | b |  | c | d |']);
   });
 
   test('a CRLF document keeps its line endings', async () => {

@@ -5,8 +5,12 @@ import {
   nextCellCommand,
   nextRowCommand
 } from '../../table/commands/navigate';
+import { cellCount } from '../../table/cells';
 
 const COMPACT = ['| Name | Age |', '| --- | --- |', '| Alice | 30 |', '| Bob | 7 |'];
+
+/** Valid GFM: rows need no leading or trailing pipes. */
+const PIPELESS = ['a | b', '--- | ---', 'a1 | b1'];
 
 async function openTable(lines: string[]): Promise<vscode.TextEditor> {
   const doc = await vscode.workspace.openTextDocument({
@@ -56,6 +60,33 @@ suite('navigate: the row added past the last cell', () => {
       [...COMPACT, '|     |   |'].join('\n')
     );
     assert.strictEqual(editor.selection.active.line, 4);
+  });
+
+  test('Tab off a pipeless table adds a row whose cells are still addressable', async () => {
+    await setAlignOnEdit(false);
+    const editor = await openTable(PIPELESS);
+    placeCursorInCell(editor, 2, 1);
+    await nextCellCommand();
+    assert.strictEqual(editor.document.getText(), [...PIPELESS, '|   |   |'].join('\n'));
+
+    const added = editor.document.lineAt(3).text;
+    assert.strictEqual(cellCount(added), cellCount(PIPELESS[2]), 'cell count preserved');
+    assert.ok(computeCellRange(added, 0), 'column 0 is navigable');
+    assert.ok(computeCellRange(added, 1), 'column 1 is navigable');
+    assert.strictEqual(editor.selection.active.line, 3);
+  });
+
+  test('Enter on the last row of a pipeless table adds an addressable row', async () => {
+    await setAlignOnEdit(false);
+    const editor = await openTable(PIPELESS);
+    placeCursorInCell(editor, 2, 0);
+    await nextRowCommand();
+    assert.strictEqual(editor.document.getText(), [...PIPELESS, '|   |   |'].join('\n'));
+
+    const added = editor.document.lineAt(3).text;
+    assert.strictEqual(cellCount(added), 2);
+    assert.ok(computeCellRange(added, 1), 'column 1 is navigable');
+    assert.strictEqual(editor.selection.active.line, 3);
   });
 
   test('alignOnEdit re-aligns the table around the added row', async () => {
