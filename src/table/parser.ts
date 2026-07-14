@@ -6,8 +6,10 @@ import { TableLocation } from './locator';
  * Parse the lines of a located table into a TableModel.
  *
  * Contract:
- *   - headers.length === alignments.length
- *   - every row in rows has exactly headers.length cells (padded/truncated as needed)
+ *   - headers.length === alignments.length === the table's column count
+ *   - the column count is the widest of the header, the separator and every
+ *     body row, so no cell is ever dropped
+ *   - every row in rows has exactly headers.length cells (short rows padded)
  *   - cell values are trimmed and have escaped pipes unescaped
  *   - indent is the leading whitespace of the header line
  */
@@ -36,11 +38,19 @@ export function parseTableFromLines(
   const separatorText = lines[1] ?? '';
 
   const indent = leadingIndent(headerText);
-  const headers = splitRow(headerText);
-  const alignments = parseAlignments(separatorText, headers.length);
-  const rows = lines
-    .slice(2)
-    .map((line) => normalizeRowWidth(splitRow(line), headers.length));
+  const headerCells = splitRow(headerText);
+  const bodyCells = lines.slice(2).map(splitRow);
+
+  // Widening to the widest row rather than the header's width is what keeps a
+  // body cell past the last header column from being deleted on re-emit.
+  const columns = bodyCells.reduce(
+    (widest, row) => Math.max(widest, row.length),
+    Math.max(headerCells.length, splitRow(separatorText).length)
+  );
+
+  const headers = normalizeRowWidth(headerCells, columns);
+  const alignments = parseAlignments(separatorText, columns);
+  const rows = bodyCells.map((row) => normalizeRowWidth(row, columns));
 
   return { headers, alignments, rows, range, indent, eol };
 }

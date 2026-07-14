@@ -14,6 +14,7 @@ All notable changes to the Markdown Foundry extension will be documented in this
 
 ### Fixed
 
+- Aligning a table no longer discards body cells that sit past the last header column. `Align Table`, `markdownFoundry.alignOnSave`, and edits made with `markdownFoundry.alignOnEdit` now widen the table to fit the widest row — the header and separator grow empty, unaligned (`---`) columns instead of the extra cells being silently deleted ([#138](https://github.com/dvlprlife/Markdown-Foundry/pull/138)).
 - `Move Column Left` no longer throws when the cursor sits in a cell past the header's last column (possible when a body row has more cells than the header) — it is now a no-op, like `Move Column Right` already was ([#136](https://github.com/dvlprlife/Markdown-Foundry/pull/136)).
 - `Delete Column` with the cursor in a cell past the header's last column no longer rewrites the table — there is no column there to delete, so it no longer dirties the buffer or pushes an undo step ([#136](https://github.com/dvlprlife/Markdown-Foundry/pull/136)).
 

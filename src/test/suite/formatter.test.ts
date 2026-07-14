@@ -44,6 +44,20 @@ suite('formatter: formatTable', () => {
     assert.ok(/-+:/.test(separator), 'right marker present');
   });
 
+  test('emits a column for every cell of a widened model', () => {
+    const model = makeModel({
+      headers: ['A', 'B', '', ''],
+      alignments: ['left', 'right', 'none', 'none'],
+      rows: [['a', 'b', 'c', 'd']]
+    });
+    assert.strictEqual(
+      formatTable(model),
+      ['| A   |   B |     |     |', '| :-- | --: | --- | --- |', '| a   |   b | c   | d   |'].join(
+        '\n'
+      )
+    );
+  });
+
   test('escapes pipes inside cells', () => {
     const model = makeModel({
       headers: ['a'],
